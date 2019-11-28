@@ -1,0 +1,61 @@
+from wpilib.command import Command
+from wpilib import Timer
+
+class AutonomousDrive(Command):
+    """
+    11/26/2019 CJH
+    This command drives the robot over a given distance with simple proportional
+    control - handled internally by the sparkMAX
+    This should be one of the three canonical autonomous functions:
+    1) drive a distance
+    2) rotate an angle
+    3) actuate some mechanism
+    """
+    # may need to use variables at some point ... leftover from pacgoat example
+    tolerance = 0.5
+    KP = -1.0 / 5.0
+
+    def __init__(self, robot, setpoint=10, control_type='position', button = 'None'):
+        """The constructor"""
+        super().__init__()
+        # Signal that we require ExampleSubsystem
+        self.requires(robot.drivetrain)
+        self.setpoint = setpoint
+        self.robot = robot
+        self.control_type = control_type
+        self.button = button
+
+    def initialize(self):
+        """Called just before this Command runs the first time."""
+        print("\n" + f"Started {self.__class__} with setpoint {self.setpoint} and control_type {self.control_type} at {round(Timer.getFPGATimestamp() - self.robot.enabled_time, 1)} s")
+        if self.control_type == 'position':
+            self.robot.drivetrain.goToSetPoint(self.setpoint)
+        elif self.control_type == 'velocity':
+            self.robot.drivetrain.set_velocity(self.setpoint)
+        else:
+            pass
+        self.setTimeout(5)
+
+    def execute(self):
+        """Called repeatedly when this Command is scheduled to run"""
+        pass
+
+    def isFinished(self):
+        """Make this return true when this Command no longer needs to run execute()"""
+        # somehow need to wait for the error level to get to a tolerance... request from drivetrain?
+        if self.control_type == 'position':
+            return abs(self.setpoint - self.robot.drivetrain.get_position()) <= self.tolerance or self.isTimedOut()
+        elif self.control_type == 'velocity':
+            return self.button.get()
+        else:
+            return self.button.get()
+
+    def end(self):
+        """Called once after isFinished returns true"""
+        print("\n" + f"Ended {self.__class__} at {round(Timer.getFPGATimestamp() - self.robot.enabled_time, 1)} s")
+        self.robot.drivetrain.stop()
+
+    def interrupted(self):
+        """Called when another command which requires one or more of the same subsystems is scheduled to run."""
+        self.end()
+        print("\n" + f"Interrupted {self.__class__} at {round(Timer.getFPGATimestamp() - self.robot.enabled_time, 1)} s")
