@@ -11,14 +11,14 @@ class DriveByJoystick(Command):
         super().__init__()
         self.requires(robot.drivetrain)
         self.robot = robot
-        self.twist_sensitivity = -0.5
+        self.twist_sensitivity = 0.5
     def initialize(self):
         """Called just before this Command runs the first time."""
         pass
 
     def execute(self):
         """Called repeatedly when this Command is scheduled to run"""
-        self.robot.drivetrain.smooth_drive(self.robot.oi.stick.getRawAxis(1), self.twist_sensitivity*self.robot.oi.stick.getRawAxis(4))
+        self.robot.drivetrain.smooth_drive(-self.robot.oi.stick.getRawAxis(1), self.twist_sensitivity*self.robot.oi.stick.getRawAxis(4))
 
     def isFinished(self):
         """Make this return true when this Command no longer needs to run execute()"""

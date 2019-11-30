@@ -10,20 +10,9 @@
         "hgap": 16.0,
         "vgap": 16.0,
         "tiles": {
-          "2,3": {
+          "7,0": {
             "size": [
-              2,
-              1
-            ],
-            "content": {
-              "_type": "Command",
-              "_source0": "network_table:///SmartDashboard/Update PIDs",
-              "_title": "Update PIDs"
-            }
-          },
-          "6,0": {
-            "size": [
-              2,
+              1,
               2
             ],
             "content": {
@@ -32,29 +21,27 @@
               "_title": "Robot X"
             }
           },
-          "6,2": {
+          "7,2": {
             "size": [
-              2,
+              1,
               2
             ],
             "content": {
-              "_type": "Graph",
+              "_type": "Text View",
               "_source0": "network_table:///SmartDashboard/Robot Y",
-              "_title": "Robot Y",
-              "Graph/Visible time": 60.0,
-              "Visible data/SmartDashboard/Robot Y": true
+              "_title": "Robot Y"
             }
           },
-          "2,0": {
+          "3,0": {
             "size": [
               2,
-              3
+              4
             ],
             "content": {
               "_type": "Grid Layout",
               "_title": "PIDs: 0-\u003eposition, 1-\u003evelocity",
               "Layout/Number of columns": 2,
-              "Layout/Number of rows": 5,
+              "Layout/Number of rows": 6,
               "Layout/Label position": "BOTTOM",
               "_children": {
                 "0,0": {
@@ -106,11 +93,16 @@
                   "_type": "Text View",
                   "_source0": "network_table:///SmartDashboard/kFF_1",
                   "_title": "kFF_1"
+                },
+                "0,5": {
+                  "_type": "Command",
+                  "_source0": "network_table:///SmartDashboard/Update PIDs",
+                  "_title": "Update PIDs"
                 }
               }
             }
           },
-          "4,0": {
+          "5,0": {
             "size": [
               1,
               4
@@ -153,7 +145,7 @@
               ]
             }
           },
-          "5,0": {
+          "6,0": {
             "size": [
               1,
               4
@@ -202,6 +194,44 @@
                 }
               ]
             }
+          },
+          "0,0": {
+            "size": [
+              3,
+              2
+            ],
+            "content": {
+              "_type": "Camera Stream",
+              "_source0": "camera_server://GeniusCam",
+              "_title": "GeniusCam",
+              "Crosshair/Show crosshair": true,
+              "Crosshair/Crosshair color": "#FFFFFFFF",
+              "Controls/Show controls": true,
+              "Controls/Rotation": "NONE",
+              "compression": 49.0,
+              "fps": 20,
+              "imageWidth": 320,
+              "imageHeight": 240
+            }
+          },
+          "0,2": {
+            "size": [
+              3,
+              2
+            ],
+            "content": {
+              "_type": "Camera Stream",
+              "_source0": "camera_server://Genius Processed",
+              "_title": "Genius Processed",
+              "Crosshair/Show crosshair": false,
+              "Crosshair/Crosshair color": "#FFFFFFFF",
+              "Controls/Show controls": true,
+              "Controls/Rotation": "NONE",
+              "compression": 49.0,
+              "fps": 20,
+              "imageWidth": 320,
+              "imageHeight": 240
+            }
           }
         }
       }
@@ -248,7 +278,7 @@
                   "Range/Max": 5.0,
                   "Range/Center": 0.0,
                   "Visuals/Orientation": "HORIZONTAL",
-                  "Visuals/Number of tick marks": 5.0
+                  "Visuals/Number of tick marks": 5
                 }
               ]
             }
@@ -258,9 +288,9 @@
     }
   ],
   "windowGeometry": {
-    "x": 593.0,
-    "y": 11.0,
-    "width": 1235.0,
-    "height": 724.0
+    "x": 296.0,
+    "y": 15.0,
+    "width": 1538.0,
+    "height": 772.0
   }
 }

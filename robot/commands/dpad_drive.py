@@ -14,7 +14,7 @@ class DpadDrive(Command):
         self.state = state
         self.button = button
         self.drive_power = 0.15
-        self.twist_power = 0.27
+        self.twist_power = 0.1
         self.direction = 1 # change this to -1 change all directions quickly
 
     def initialize(self):
@@ -27,13 +27,13 @@ class DpadDrive(Command):
         Should not have to change this if it works - just change variables above
         """
         if self.state.lower() == "up":
-            self.robot.drivetrain.SparkWithStick(-self.drive_power*self.direction, 0)
+            self.robot.drivetrain.spark_with_stick(-self.drive_power*self.direction, 0)
         if self.state.lower() == "down":
-            self.robot.drivetrain.SparkWithStick(self.drive_power*self.direction, 0)
+            self.robot.drivetrain.spark_with_stick(self.drive_power*self.direction, 0)
         if self.state.lower() == "right":
-            self.robot.drivetrain.SparkWithStick(0, -self.twist_power*self.direction)
+            self.robot.drivetrain.spark_with_stick(0, self.twist_power*self.direction)
         if self.state.lower() == "left":
-            self.robot.drivetrain.SparkWithStick(0, self.twist_power*self.direction)
+            self.robot.drivetrain.spark_with_stick(0, -self.twist_power*self.direction)
 
     def isFinished(self):
         """Make this return true when this Command no longer needs to run execute()"""

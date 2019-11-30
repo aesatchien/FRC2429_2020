@@ -37,13 +37,13 @@ class OI(object):
         self.buttonB.whenPressed(UpdatePIDs(robot,0.66, from_dashboard=False))
         self.buttonX.whenPressed(AutonomousDrive(robot, setpoint=40, control_type='position'))
         self.buttonY.whenPressed(AutonomousRotate(robot, setpoint=45))
-        #self.buttonLB.whenPressed
-        self.buttonRB.whenPressed(AutonomousDrive(robot, setpoint=250, control_type='velocity', button=self.buttonRB))
+        self.buttonLB.whenPressed(AutonomousDrive(robot, setpoint=2000, control_type='velocity', button=self.buttonLB))
+        self.buttonRB.whenPressed(AutonomousDrive(robot, setpoint=500, control_type='velocity', button=self.buttonRB))
         # self.buttonBack.whenPressed
         # self.buttonStart.whenPressed
         # self.axisButtonLT.whenPressed
         # self.axisButtonRT.whenPressed
-        self.povButtonDown.whenPressed(DpadDrive(robot,"up",self.povButtonUp))
+        self.povButtonUp.whenPressed(DpadDrive(robot,"up",self.povButtonUp))
         self.povButtonDown.whenPressed(DpadDrive(robot, "down", self.povButtonDown))
         self.povButtonRight.whenPressed(DpadDrive(robot, "right", self.povButtonRight))
         self.povButtonLeft.whenPressed(DpadDrive(robot, "left", self.povButtonLeft))

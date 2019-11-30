@@ -6,6 +6,7 @@ from wpilib.command import Subsystem
 from wpilib.speedcontrollergroup import SpeedControllerGroup
 from wpilib.drive import DifferentialDrive
 import rev
+from wpilib import Timer
 from commands.drive_by_joystick import DriveByJoystick
 
 
@@ -25,8 +26,8 @@ class DriveTrain(Subsystem):
         self.current_twist = 0
         self.acceleration_limit = 0.1
         self.counter = 0
-        self.PID_dict_pos = {'kP':0.06, 'kI':0.0, 'kD':0.01, 'kIz':0, 'kFF':0, 'kMaxOutput':0.99, 'kMinOutput':-0.99}
-        self.PID_dict_vel = {'kP': 5.0e-4, 'kI': 1.0e-6, 'kD': 0.002, 'kIz': 0, 'kFF': 0.1, 'kMaxOutput': 0.99, 'kMinOutput': -0.99}
+        self.PID_dict_pos = {'kP':0.008, 'kI':0.0, 'kD':0.02, 'kIz':0, 'kFF':0.004, 'kMaxOutput':0.99, 'kMinOutput':-0.99}
+        self.PID_dict_vel = {'kP': 0.001, 'kI': 1.0e-6, 'kD': 0.002, 'kIz': 0, 'kFF': 0.0001, 'kMaxOutput': 0.99, 'kMinOutput': -0.99}
         self.current_limit = 40
         self.x = 0
         self.y = 0
@@ -59,8 +60,12 @@ class DriveTrain(Subsystem):
             # Configure encoders and controllers
             self.sparkneo_encoder_1= rev.CANSparkMax.getEncoder(self.spark_neo_l1)
             self.sparkneo_encoder_3 = rev.CANSparkMax.getEncoder(self.spark_neo_r3)
-            self.sparkneo_encoder_1.setPositionConversionFactor(4.0 * 3.141 / 12.255)
-            self.sparkneo_encoder_1.setPositionConversionFactor(4.0 * 3.141 / 12.255)
+            # Not sure if this is the right place to put in an "inverted" factor but I can't find it in the API
+            # also, doesn't seem to care what numbers I put here, so that's a problem
+            self.sparkneo_encoder_1.setPositionConversionFactor(-4.0 * 3.141 )
+            self.sparkneo_encoder_1.setPositionConversionFactor(-4.0 * 3.141 )
+            self.sparkneo_encoder_1.
+
             if robot.isReal():
                 pass
             else:
@@ -71,14 +76,13 @@ class DriveTrain(Subsystem):
 
     def initDefaultCommand(self):
         """
-        When other commands aren't using the drivetrain, allow arcade drive with
-        the joystick.
+        When other commands aren't using the drivetrain, allow arcade drive with the joystick.
         """
         self.setDefaultCommand(DriveByJoystick(self.robot))
 
     def spark_with_stick(self, x_speed, z_rotation):
         '''Simplest way to drive with a joystick'''
-        self.differential_drive.arcadeDrive(x_speed, self.twist_sensitivity * z_rotation, False)
+        self.differential_drive.arcadeDrive(-x_speed, self.twist_sensitivity * z_rotation, False)
 
     def stop(self):
         self.differential_drive.arcadeDrive(0,0)
@@ -120,32 +124,36 @@ class DriveTrain(Subsystem):
 
     def set_velocity(self, velocity):
         multiplier = 1.0
-        self.spark_PID_controller_left.setReference(-multiplier*velocity, rev.ControlType.kVelocity, 1)
-        self.spark_PID_controller_right.setReference(multiplier*velocity, rev.ControlType.kVelocity, 1)
-        self.differential_drive.feed()
+        self.spark_PID_controller_left.setReference(multiplier*velocity, rev.ControlType.kVelocity, 1)
+        self.spark_PID_controller_right.setReference(-multiplier*velocity, rev.ControlType.kVelocity, 1)
+        #self.differential_drive.feed()
 
     def goToSetPoint(self, set_point):
         multiplier = 1.0
         self.reset()
-        self.spark_PID_controller_right.setReference(-multiplier*set_point, rev.ControlType.kPosition)
         self.spark_PID_controller_left.setReference(multiplier*set_point, rev.ControlType.kPosition)
+        self.spark_PID_controller_right.setReference(-multiplier*set_point, rev.ControlType.kPosition)
 
     def reset(self):
         self.sparkneo_encoder_1.setPosition(0)
         self.sparkneo_encoder_3.setPosition(0)
         self.x = 0
         self.y = 0
+        wpilib.Timer.delay(0.02)
 
     def configure_controllers(self, pid_only = False):
         '''Set the PIDs, etc for the controllers, slot 0 is position and slot 1 is velocity'''
-        #self.PID_dict_pos = {'kP': 0.06, 'kI': 0.0, 'kD': 0, 'kIz': 0, 'kFF': 0, 'kMaxOutput': 0.99,'kMinOutput': -0.99}
-        #self.PID_dict_vel = {'kP': 5.0e-4, 'kI': 1.0e-6, 'kD': 0, 'kIz': 0, 'kFF': 0, 'kMaxOutput': 0.99, 'kMinOutput': -0.99}
         if not pid_only:
             controllers = [self.spark_neo_l1,self.spark_neo_l2,self.spark_neo_r3,self.spark_neo_r4]
             for controller in controllers:
+                Timer.delay(0.01)
                 controller.restoreFactoryDefaults()
-                controller.setIdleMode(rev.IdleMode.kCoast)
+                #controller.setIdleMode(rev.IdleMode.kCoast)
+                Timer.delay(0.01)
+                controller.setIdleMode(rev.IdleMode.kBrake)
+                Timer.delay(0.01)
                 controller.setSmartCurrentLimit(self.current_limit)
+                Timer.delay(0.01)
             self.spark_neo_l2.follow(self.spark_neo_l1)
             self.spark_neo_r4.follow(self.spark_neo_r3)
         controllers = [self.spark_neo_l1, self.spark_neo_r3]
@@ -186,8 +194,8 @@ class DriveTrain(Subsystem):
     def display_PIDs(self):
         keys = ['kP', 'kI', 'kD', 'kIz', 'kFF']
         for key in keys:
-            SmartDashboard.putNumber(key + '_0', round(self.PID_dict_pos[key],4))
-            SmartDashboard.putNumber(key + '_1', round(self.PID_dict_vel[key],4))
+            SmartDashboard.putNumber(key + '_0', self.PID_dict_pos[key])
+            SmartDashboard.putNumber(key + '_1', self.PID_dict_vel[key])
 
     def print_PIDs(self):
         print(f"Pos: kP: {self.PID_dict_pos['kP']}  kI: {self.PID_dict_pos['kI']}  kD: {self.PID_dict_pos['kD']}  kIz: {self.PID_dict_pos['kIz']}  kFF: {self.PID_dict_pos['kFF']}")
@@ -198,10 +206,10 @@ class DriveTrain(Subsystem):
         if self.counter % 10 == 0:
             # start keeping track of where the robot is with an x and y position
             try:
-                distance = 0.5*(self.sparkneo_encoder_1.getPosition() + self.sparkneo_encoder_3.getPosition())
+                distance = 0.5*(self.sparkneo_encoder_1.getPosition() - self.sparkneo_encoder_3.getPosition())
             except:
                 print(f"Problem: encoder position returns {self.sparkneo_encoder_1.getPosition()}")
-                distance = self.counter / 200
+                distance = 0
             self.x = self.x + (distance-self.previous_distance) * math.sin(math.radians(self.robot.navigation.get_angle()))
             self.y = self.y + (distance-self.previous_distance) * math.cos(math.radians(self.robot.navigation.get_angle()))
             self.previous_distance = distance

@@ -25,6 +25,7 @@ class AutonomousDrive(Command):
         self.control_type = control_type
         self.button = button
 
+
     def initialize(self):
         """Called just before this Command runs the first time."""
         print("\n" + f"Started {self.__class__} with setpoint {self.setpoint} and control_type {self.control_type} at {round(Timer.getFPGATimestamp() - self.robot.enabled_time, 1)} s")
@@ -34,21 +35,24 @@ class AutonomousDrive(Command):
             self.robot.drivetrain.set_velocity(self.setpoint)
         else:
             pass
-        self.setTimeout(5)
+        self.setTimeout(10)
 
     def execute(self):
         """Called repeatedly when this Command is scheduled to run"""
-        pass
+        self.robot.drivetrain.differential_drive.feed()
 
     def isFinished(self):
         """Make this return true when this Command no longer needs to run execute()"""
         # somehow need to wait for the error level to get to a tolerance... request from drivetrain?
         if self.control_type == 'position':
-            return abs(self.setpoint - self.robot.drivetrain.get_position()) <= self.tolerance or self.isTimedOut()
+            if self.setpoint > 0:
+                return (self.setpoint - self.robot.drivetrain.get_position()) <= self.tolerance or self.isTimedOut()
+            else:
+                return (self.setpoint - self.robot.drivetrain.get_position()) >= self.tolerance or self.isTimedOut()
         elif self.control_type == 'velocity':
-            return self.button.get()
+            return not self.button.get()
         else:
-            return self.button.get()
+            return True
 
     def end(self):
         """Called once after isFinished returns true"""
