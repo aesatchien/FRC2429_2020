@@ -12,10 +12,14 @@ class UpdatePIDs(Command):
         self.robot = robot
         self.factor = factor
         self.from_dashboard = from_dashboard
+        strip_name = lambda x: str(x)[1 + str(x).rfind('.'):-2]
+        self.name = strip_name(self.__class__)
+
 
     def initialize(self):
         """Called just before this Command runs the first time."""
-        print("\n" + f"Started {self.__class__} with input {self.factor} at {round(Timer.getFPGATimestamp() - self.robot.enabled_time, 1)} s")
+        strip_name = lambda x: str(x)[1+str(x).rfind('.'):-2]
+        print("\n" + f"** Started {self.name} with input {self.factor} at {round(Timer.getFPGATimestamp() - self.robot.enabled_time, 1)} s **")
         if self.from_dashboard:
             keys = ['kP', 'kI', 'kD', 'kIz', 'kFF']
             dict_0 = {}
@@ -25,8 +29,7 @@ class UpdatePIDs(Command):
                 dict_0.update({key:value})
                 value = float(SmartDashboard.getNumber(str(key) + '_1', 0))
                 dict_1.update({key: value})
-            self.robot.drivetrain.change_PIDs(factor=1, dict_0=dict_0)
-            self.robot.drivetrain.change_PIDs(factor=1, dict_1=dict_1)
+            self.robot.drivetrain.change_PIDs(factor=1, dict_0=dict_0, dict_1=dict_1)
         else:
             self.robot.drivetrain.change_PIDs(self.factor)
 

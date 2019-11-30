@@ -1,5 +1,5 @@
 from wpilib.command import Command
-from wpilib import Timer
+from wpilib import Timer, SmartDashboard
 
 class DpadDrive(Command):
     """
@@ -16,11 +16,14 @@ class DpadDrive(Command):
         self.drive_power = 0.15
         self.twist_power = 0.1
         self.direction = 1 # change this to -1 change all directions quickly
+        strip_name = lambda x: str(x)[1 + str(x).rfind('.'):-2]
+        self.name = strip_name(self.__class__)
 
     def initialize(self):
         """Called just before this Command runs the first time."""
-        print("\n" + f"Ended {self.__class__} with input {self.state} at {round(Timer.getFPGATimestamp() - self.robot.enabled_time,1)} s")
-
+        self.start_time = round(Timer.getFPGATimestamp() - self.robot.enabled_time,1)
+        print("\n" + f"** Started {self.name} with input {self.state} at {self.start_time} s **")
+        SmartDashboard.putString("alert", f"** Started {self.name} with input {self.state} at {self.start_time} s **")
     def execute(self):
         """
         Called repeatedly when this Command is scheduled to run
@@ -42,8 +45,8 @@ class DpadDrive(Command):
     def end(self):
         """Called once after isFinished returns true"""
         self.robot.drivetrain.stop()
-        print("\n" + f"Ended {self.__class__} at {round(Timer.getFPGATimestamp() - self.robot.enabled_time, 1)} s")
+        print("\n" + f"** Ended {self.name} at {round(Timer.getFPGATimestamp() - self.robot.enabled_time, 1)} s **")
     def interrupted(self):
         """Called when another command which requires one or more of the same subsystems is scheduled to run."""
         self.robot.drivetrain.stop()
-        print("\n" + f"Interrupted {self.__class__} at {round(Timer.getFPGATimestamp() - self.robot.enabled_time, 1)} s")
+        print("\n" + f"** Interrupted {self.name} at {round(Timer.getFPGATimestamp() - self.robot.enabled_time, 1)} s **")

@@ -60,12 +60,15 @@ class DriveTrain(Subsystem):
             # Configure encoders and controllers
             self.sparkneo_encoder_1= rev.CANSparkMax.getEncoder(self.spark_neo_l1)
             self.sparkneo_encoder_3 = rev.CANSparkMax.getEncoder(self.spark_neo_r3)
+            wpilib.Timer.delay(0.02)
             # Not sure if this is the right place to put in an "inverted" factor but I can't find it in the API
             # also, doesn't seem to care what numbers I put here, so that's a problem
-            self.sparkneo_encoder_1.setPositionConversionFactor(-4.0 * 3.141 )
-            self.sparkneo_encoder_1.setPositionConversionFactor(-4.0 * 3.141 )
-            self.sparkneo_encoder_1.
-
+            # should be wheel_diameter * pi / gear_ratio - and for the old double reduction gear box
+            # the gear ratio was either  5.67:1 or 4.17:1.  With the shifter (low gear) I think it was a 12.26.
+            err_1 = self.sparkneo_encoder_1.setPositionConversionFactor(-4.0 * 3.141 / 4.17)
+            err_2 = self.sparkneo_encoder_3.setPositionConversionFactor(-4.0 * 3.141 / 4.17)
+            if err_1 != rev.CANError.kOK or err_2 != rev.CANError.kOK:
+                print(f"Warning: drivetrain encoder issue with neo1 returning {err_1} and neo3 returning {err_2}")
             if robot.isReal():
                 pass
             else:
@@ -135,43 +138,53 @@ class DriveTrain(Subsystem):
         self.spark_PID_controller_right.setReference(-multiplier*set_point, rev.ControlType.kPosition)
 
     def reset(self):
-        self.sparkneo_encoder_1.setPosition(0)
-        self.sparkneo_encoder_3.setPosition(0)
+        err_1 = self.sparkneo_encoder_1.setPosition(0)
+        err_2 = self.sparkneo_encoder_3.setPosition(0)
+        if err_1 != rev.CANError.kOK or err_2 != rev.CANError.kOK:
+            print(f"Warning: drivetrain reset issue with neo1 returning {err_1} and neo3 returning {err_2}")
         self.x = 0
         self.y = 0
         wpilib.Timer.delay(0.02)
 
     def configure_controllers(self, pid_only = False):
         '''Set the PIDs, etc for the controllers, slot 0 is position and slot 1 is velocity'''
+        error_list = []
         if not pid_only:
             controllers = [self.spark_neo_l1,self.spark_neo_l2,self.spark_neo_r3,self.spark_neo_r4]
             for controller in controllers:
                 Timer.delay(0.01)
-                controller.restoreFactoryDefaults()
+                error_list.append(controller.restoreFactoryDefaults())
                 #controller.setIdleMode(rev.IdleMode.kCoast)
                 Timer.delay(0.01)
-                controller.setIdleMode(rev.IdleMode.kBrake)
+                error_list.append(controller.setIdleMode(rev.IdleMode.kBrake))
                 Timer.delay(0.01)
-                controller.setSmartCurrentLimit(self.current_limit)
+                error_list.append(controller.setSmartCurrentLimit(self.current_limit))
                 Timer.delay(0.01)
-            self.spark_neo_l2.follow(self.spark_neo_l1)
-            self.spark_neo_r4.follow(self.spark_neo_r3)
+            err_1 = self.spark_neo_l2.follow(self.spark_neo_l1)
+            err_2 = self.spark_neo_r4.follow(self.spark_neo_r3)
+            if err_1 != rev.CANError.kOK or err_2 != rev.CANError.kOK:
+                print(f"Warning: drivetrain follower issue with neo2 returning {err_1} and neo4 returning {err_2}")
         controllers = [self.spark_neo_l1, self.spark_neo_r3]
         for controller in controllers:
-            controller.setParameter(rev.ConfigParameter.kP_0,self.PID_dict_pos['kP'])
-            controller.setParameter(rev.ConfigParameter.kP_1, self.PID_dict_vel['kP'])
-            controller.setParameter(rev.ConfigParameter.kI_0, self.PID_dict_pos['kI'])
-            controller.setParameter(rev.ConfigParameter.kI_1, self.PID_dict_vel['kI'])
-            controller.setParameter(rev.ConfigParameter.kD_0, self.PID_dict_pos['kD'])
-            controller.setParameter(rev.ConfigParameter.kD_1, self.PID_dict_vel['kD'])
-            controller.setParameter(rev.ConfigParameter.kIZone_0, self.PID_dict_pos['kIz'])
-            controller.setParameter(rev.ConfigParameter.kIZone_1, self.PID_dict_vel['kIz'])
-            controller.setParameter(rev.ConfigParameter.kF_0, self.PID_dict_pos['kFF'])
-            controller.setParameter(rev.ConfigParameter.kF_1, self.PID_dict_vel['kFF'])
-            controller.setParameter(rev.ConfigParameter.kOutputMax_0, self.PID_dict_pos['kMaxOutput'])
-            controller.setParameter(rev.ConfigParameter.kOutputMax_1, self.PID_dict_vel['kMaxOutput'])
-            controller.setParameter(rev.ConfigParameter.kOutputMin_0, self.PID_dict_pos['kMinOutput'])
-            controller.setParameter(rev.ConfigParameter.kOutputMin_1, self.PID_dict_vel['kMinOutput'])
+            error_list.append(controller.setParameter(rev.ConfigParameter.kP_0,self.PID_dict_pos['kP']))
+            error_list.append(controller.setParameter(rev.ConfigParameter.kP_1, self.PID_dict_vel['kP']))
+            error_list.append(controller.setParameter(rev.ConfigParameter.kI_0, self.PID_dict_pos['kI']))
+            error_list.append(controller.setParameter(rev.ConfigParameter.kI_1, self.PID_dict_vel['kI']))
+            error_list.append(controller.setParameter(rev.ConfigParameter.kD_0, self.PID_dict_pos['kD']))
+            error_list.append(controller.setParameter(rev.ConfigParameter.kD_1, self.PID_dict_vel['kD']))
+            error_list.append(controller.setParameter(rev.ConfigParameter.kIZone_0, self.PID_dict_pos['kIz']))
+            error_list.append(controller.setParameter(rev.ConfigParameter.kIZone_1, self.PID_dict_vel['kIz']))
+            error_list.append(controller.setParameter(rev.ConfigParameter.kF_0, self.PID_dict_pos['kFF']))
+            error_list.append(controller.setParameter(rev.ConfigParameter.kF_1, self.PID_dict_vel['kFF']))
+            error_list.append(controller.setParameter(rev.ConfigParameter.kOutputMax_0, self.PID_dict_pos['kMaxOutput']))
+            error_list.append(controller.setParameter(rev.ConfigParameter.kOutputMax_1, self.PID_dict_vel['kMaxOutput']))
+            error_list.append(controller.setParameter(rev.ConfigParameter.kOutputMin_0, self.PID_dict_pos['kMinOutput']))
+            error_list.append(controller.setParameter(rev.ConfigParameter.kOutputMin_1, self.PID_dict_vel['kMinOutput']))
+
+        #if 1 in error_list or 2 in error_list:
+        #    print(f'Issue in configuring controllers: {error_list}')
+       # else:
+        print(f'Results of configuring controllers: {error_list}')
 
     def change_PIDs(self,factor=1, dict_0 = None, dict_1 = None):
         '''Pass a value to the and update the PIDs, probably use 1.5 and 0.67 to see how they change
@@ -221,3 +234,4 @@ class DriveTrain(Subsystem):
             SmartDashboard.putNumber("Velocity Enc3", round(self.sparkneo_encoder_3.getVelocity(),2))
         if self.counter % 1000 == 0:
             self.display_PIDs()
+            SmartDashboard.putString("alert", f"Position: ({round(self.x,1)},{round(self.y,1)})  Time: {round(Timer.getFPGATimestamp() - self.robot.enabled_time, 1)}")

@@ -1,6 +1,7 @@
 from wpilib.command import Command
 from wpilib import Timer
 import math
+from wpilib import SmartDashboard
 
 class AutonomousRotate(Command):
     """
@@ -22,10 +23,14 @@ class AutonomousRotate(Command):
         self.error = 0
         self.power = 0
         self.prev_error = 0
+        strip_name = lambda x: str(x)[1 + str(x).rfind('.'):-2]
+        self.name = strip_name(self.__class__)
 
     def initialize(self):
         """Called just before this Command runs the first time."""
-        print("\n" + f"Started {self.__class__} with setpoint {self.setpoint} at {round(Timer.getFPGATimestamp() - self.robot.enabled_time, 1)} s")
+        self.start_time = round(Timer.getFPGATimestamp() - self.robot.enabled_time, 1)
+        print("\n" + f"** Started {self.name} with setpoint {self.setpoint} at {self.start_time} s **")
+        SmartDashboard.putString("alert", f"** Started {self.name} with setpoint {self.setpoint} at {self.start_time} s **")
         self.setTimeout(5)
         self.start_yaw = self.robot.navigation.get_yaw()
         self.error = 0
@@ -46,10 +51,12 @@ class AutonomousRotate(Command):
 
     def end(self):
         """Called once after isFinished returns true"""
-        print("\n" + f"Ended {self.__class__} at {round(Timer.getFPGATimestamp() - self.robot.enabled_time, 1)} s")
+        end_time = round(Timer.getFPGATimestamp() - self.robot.enabled_time, 1)
+        print("\n" + f"** Ended {self.name} at {end_time} s with a duration of {round(end_time-self.start_time,1)} s **")
+        SmartDashboard.putString("alert", f"** Ended {self.name} at {end_time} s with a duration of {round(end_time - self.start_time, 1)} s **")
         self.robot.drivetrain.stop()
 
     def interrupted(self):
         """Called when another command which requires one or more of the same subsystems is scheduled to run."""
-        self.end()
-        print("\n" + f"Interrupted {self.__class__} at {round(Timer.getFPGATimestamp() - self.robot.enabled_time, 1)} s")
+        self.robot.drivetrain.stop()
+        print("\n" + f"** Interrupted {self.name} at {round(Timer.getFPGATimestamp() - self.robot.enabled_time, 1)} s **")

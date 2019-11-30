@@ -1,5 +1,6 @@
 from wpilib.command import Command
 from wpilib import Timer
+from wpilib import SmartDashboard
 
 class AutonomousDrive(Command):
     """
@@ -15,6 +16,7 @@ class AutonomousDrive(Command):
     tolerance = 0.5
     KP = -1.0 / 5.0
 
+
     def __init__(self, robot, setpoint=10, control_type='position', button = 'None'):
         """The constructor"""
         super().__init__()
@@ -24,11 +26,15 @@ class AutonomousDrive(Command):
         self.robot = robot
         self.control_type = control_type
         self.button = button
+        strip_name = lambda x: str(x)[1 + str(x).rfind('.'):-2]
+        self.name = strip_name(self.__class__)
 
 
     def initialize(self):
         """Called just before this Command runs the first time."""
-        print("\n" + f"Started {self.__class__} with setpoint {self.setpoint} and control_type {self.control_type} at {round(Timer.getFPGATimestamp() - self.robot.enabled_time, 1)} s")
+        self.start_time = round(Timer.getFPGATimestamp() - self.robot.enabled_time, 1)
+        print("\n" + f"** Started {self.name} with setpoint {self.setpoint} and control_type {self.control_type} at {self.start_time} s **")
+        SmartDashboard.putString("alert", f"** Started {self.name} with setpoint {self.setpoint} and control_type {self.control_type} at {self.start_time} s **")
         if self.control_type == 'position':
             self.robot.drivetrain.goToSetPoint(self.setpoint)
         elif self.control_type == 'velocity':
@@ -56,10 +62,12 @@ class AutonomousDrive(Command):
 
     def end(self):
         """Called once after isFinished returns true"""
-        print("\n" + f"Ended {self.__class__} at {round(Timer.getFPGATimestamp() - self.robot.enabled_time, 1)} s")
+        end_time = round(Timer.getFPGATimestamp() - self.robot.enabled_time, 1)
+        print("\n" + f"** Ended {self.name} at {end_time} s with a duration of {round(end_time-self.start_time,1)} s **")
+        SmartDashboard.putString("alert", f"** Ended {self.name} at {end_time} s with a duration of {round(end_time-self.start_time,1)} s **")
         self.robot.drivetrain.stop()
 
     def interrupted(self):
         """Called when another command which requires one or more of the same subsystems is scheduled to run."""
         self.end()
-        print("\n" + f"Interrupted {self.__class__} at {round(Timer.getFPGATimestamp() - self.robot.enabled_time, 1)} s")
+        print("\n" + f"** Interrupted {self.name} at {round(Timer.getFPGATimestamp() - self.robot.enabled_time, 1)} s **")

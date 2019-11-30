@@ -35,7 +35,7 @@ class Robot(CommandBasedRobot):
         self.autonomousCommand = None
 
     def autonomousInit(self):
-        self.enabledTime = Timer.getFPGATimestamp()
+        self.enabled_time = Timer.getFPGATimestamp()
     # self.autonomousCommand = self.autoChooser.getSelected()
     # self.autonomousCommand.start()
 
@@ -50,7 +50,7 @@ class Robot(CommandBasedRobot):
         # teleop starts running. If you want the autonomous to
         # continue until interrupted by another command, remove
         # this line or comment it out.
-        self.enabledTime = Timer.getFPGATimestamp()
+        self.enabled_time = Timer.getFPGATimestamp()
         if self.autonomousCommand is not None:
             self.autonomousCommand.cancel()
 
@@ -61,7 +61,7 @@ class Robot(CommandBasedRobot):
 
     def testPeriodic(self):
         """This function is called periodically during test mode."""
-        wpilib.LiveWindow.run()
+        #wpilib.LiveWindow.run()
 
     def disabledInit(self):
         self.reset()
