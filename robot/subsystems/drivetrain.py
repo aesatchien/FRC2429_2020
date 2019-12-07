@@ -65,8 +65,11 @@ class DriveTrain(Subsystem):
             # also, doesn't seem to care what numbers I put here, so that's a problem
             # should be wheel_diameter * pi / gear_ratio - and for the old double reduction gear box
             # the gear ratio was either  5.67:1 or 4.17:1.  With the shifter (low gear) I think it was a 12.26.
-            err_1 = self.sparkneo_encoder_1.setPositionConversionFactor(-4.0 * 3.141 / 4.17)
-            err_2 = self.sparkneo_encoder_3.setPositionConversionFactor(-4.0 * 3.141 / 4.17)
+            #err_1 = self.sparkneo_encoder_1.setPositionConversionFactor(-6.0 * 3.141 / 4.17)
+            #err_2 = self.sparkneo_encoder_3.setPositionConversionFactor(-6.0 * 3.141 / 4.17)
+            err_1 = self.sparkneo_encoder_1.setPositionConversionFactor(-500)
+            err_2 = self.sparkneo_encoder_3.setPositionConversionFactor(-500)
+
             if err_1 != rev.CANError.kOK or err_2 != rev.CANError.kOK:
                 print(f"Warning: drivetrain encoder issue with neo1 returning {err_1} and neo3 returning {err_2}")
             if robot.isReal():
