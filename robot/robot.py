@@ -19,7 +19,7 @@ class Robot(CommandBasedRobot):
         used for any initialization code.
         """
         # make this true to ignore joystick errors
-        self.debug = True
+        self.debug = False
 
         self.enabled_time = 0
         # Initialize the subsystems
