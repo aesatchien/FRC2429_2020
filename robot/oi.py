@@ -9,7 +9,6 @@ from commands.dpad_drive import DpadDrive
 from commands.update_PIDs import UpdatePIDs
 from commands.autonomous_drive import AutonomousDrive
 from commands.autonomous_rotate import AutonomousRotate #
-# teaching people to update git second time
 
 class OI(object):
     """
@@ -70,7 +69,8 @@ class OI(object):
 
         # SmartDashboard Buttons - test some autonomous commands here
         SmartDashboard.putData("Drive Forward", AutonomousDrive(robot, setpoint=40, control_type='position'))
-        SmartDashboard.putData("Update PIDs", (UpdatePIDs(robot, factor=1, from_dashboard=True)))
+        SmartDashboard.putData("Update Pos PIDs", (UpdatePIDs(robot, factor=1, from_dashboard='position')))
+        SmartDashboard.putData("Update Vel PIDs", (UpdatePIDs(robot, factor=1, from_dashboard='velocity')))
         SmartDashboard.putData("Rotate X", AutonomousRotate(robot, 45))
 
     def getJoystick(self):

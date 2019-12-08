@@ -35,6 +35,7 @@ class Robot(CommandBasedRobot):
         self.autonomousCommand = None
 
     def autonomousInit(self):
+        self.reset()
         self.enabled_time = Timer.getFPGATimestamp()
     # self.autonomousCommand = self.autoChooser.getSelected()
     # self.autonomousCommand.start()
@@ -50,6 +51,7 @@ class Robot(CommandBasedRobot):
         # teleop starts running. If you want the autonomous to
         # continue until interrupted by another command, remove
         # this line or comment it out.
+        self.reset()
         self.enabled_time = Timer.getFPGATimestamp()
         if self.autonomousCommand is not None:
             self.autonomousCommand.cancel()
