@@ -8,7 +8,8 @@ from triggers.pov_button import POVButton
 from commands.dpad_drive import DpadDrive
 from commands.update_PIDs import UpdatePIDs
 from commands.autonomous_drive import AutonomousDrive
-from commands.autonomous_rotate import AutonomousRotate
+from commands.autonomous_rotate import AutonomousRotate #
+# teaching people to update git second time
 
 class OI(object):
     """
