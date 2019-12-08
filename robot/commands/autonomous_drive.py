@@ -17,12 +17,18 @@ class AutonomousDrive(Command):
     KP = -1.0 / 5.0
 
 
-    def __init__(self, robot, setpoint=10, control_type='position', button = 'None'):
+    def __init__(self, robot, setpoint=None, control_type='position', button = 'None', timeout=None, from_dashboard = True):
         """The constructor"""
         super().__init__()
         # Signal that we require ExampleSubsystem
         self.requires(robot.drivetrain)
+        # little trick here so we can call this either from code explicitly with a setpoint or get from smartdashboard
+        self.from_dashboard = from_dashboard
         self.setpoint = setpoint
+        if timeout is None:
+            self.setTimeout(5)
+        else:
+            self.setTimeout(timeout)
         self.robot = robot
         self.control_type = control_type
         self.button = button
@@ -32,6 +38,8 @@ class AutonomousDrive(Command):
 
     def initialize(self):
         """Called just before this Command runs the first time."""
+        if self.from_dashboard:
+            self.setpoint = SmartDashboard.getNumber('Auto Distance',0)
         self.start_time = round(Timer.getFPGATimestamp() - self.robot.enabled_time, 1)
         print("\n" + f"** Started {self.name} with setpoint {self.setpoint} and control_type {self.control_type} at {self.start_time} s **")
         SmartDashboard.putString("alert", f"** Started {self.name} with setpoint {self.setpoint} and control_type {self.control_type} at {self.start_time} s **")
@@ -41,7 +49,6 @@ class AutonomousDrive(Command):
             self.robot.drivetrain.set_velocity(self.setpoint)
         else:
             pass
-        self.setTimeout(10)
 
     def execute(self):
         """Called repeatedly when this Command is scheduled to run"""

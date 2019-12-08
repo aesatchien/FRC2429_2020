@@ -2,18 +2,25 @@ from wpilib.command import Command
 from wpilib import Timer
 import math
 from wpilib import SmartDashboard
+from wpilib import DriverStation
 
 class AutonomousRotate(Command):
     """
     This command drives the robot over a given distance with simple proportional
     control - handled internally by the sparkMAX
     """
-    def __init__(self, robot, setpoint=10):
+    def __init__(self, robot, setpoint=None, timeout=None, from_dashboard = True):
         """The constructor"""
         super().__init__()
         # Signal that we require ExampleSubsystem
         self.requires(robot.drivetrain)
+        # little trick here so we can call this either from code explicitly with a setpoint or get from smartdashboard
+        self.from_dashboard = from_dashboard
         self.setpoint = setpoint
+        if timeout is None:
+            self.setTimeout(5)
+        else:
+            self.setTimeout(timeout)
         self.robot = robot
         self.tolerance = 1
         self.kp = 0.01
@@ -28,10 +35,11 @@ class AutonomousRotate(Command):
 
     def initialize(self):
         """Called just before this Command runs the first time."""
+        if self.from_dashboard:
+            self.setpoint = SmartDashboard.getNumber('Auto Rotation',0)
         self.start_time = round(Timer.getFPGATimestamp() - self.robot.enabled_time, 1)
         print("\n" + f"** Started {self.name} with setpoint {self.setpoint} at {self.start_time} s **")
         SmartDashboard.putString("alert", f"** Started {self.name} with setpoint {self.setpoint} at {self.start_time} s **")
-        self.setTimeout(5)
         self.start_yaw = self.robot.navigation.get_yaw()
         self.error = 0
         self.prev_error = 0

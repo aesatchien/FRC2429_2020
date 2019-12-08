@@ -8,7 +8,7 @@ from triggers.pov_button import POVButton
 from commands.dpad_drive import DpadDrive
 from commands.update_PIDs import UpdatePIDs
 from commands.autonomous_drive import AutonomousDrive
-from commands.autonomous_rotate import AutonomousRotate #
+from commands.autonomous_rotate import AutonomousRotate
 
 class OI(object):
     """
@@ -17,6 +17,22 @@ class OI(object):
     """
 
     def __init__(self, robot):
+        self.robot = robot
+        if not robot.debug:
+            self.initialize_joysitics()
+        else:
+            self.stick = wpilib.Joystick(0)
+
+        # SmartDashboard Buttons - test some autonomous commands here
+        SmartDashboard.putNumber("Auto Distance", 10)
+        SmartDashboard.putNumber("Auto Rotation", 10)
+        SmartDashboard.putData("Drive Forward", AutonomousDrive(robot, setpoint=None, control_type='position', timeout=4))
+        SmartDashboard.putData("Rotate X", AutonomousRotate(robot, setpoint=None, timeout=6))
+        SmartDashboard.putData("Update Pos PIDs", (UpdatePIDs(robot, factor=1, from_dashboard='position')))
+        SmartDashboard.putData("Update Vel PIDs", (UpdatePIDs(robot, factor=1, from_dashboard='velocity')))
+
+    def initialize_joysticks(self):
+        robot = self.robot
         self.stick = wpilib.Joystick(0)
         self.buttonA = JoystickButton(self.stick, 1)
         self.buttonB = JoystickButton(self.stick, 2)
@@ -35,10 +51,10 @@ class OI(object):
 
         self.buttonA.whenPressed(UpdatePIDs(robot,1.5, from_dashboard=False))
         self.buttonB.whenPressed(UpdatePIDs(robot,0.66, from_dashboard=False))
-        self.buttonX.whenPressed(AutonomousDrive(robot, setpoint=40, control_type='position'))
-        self.buttonY.whenPressed(AutonomousRotate(robot, setpoint=45))
-        self.buttonLB.whenPressed(AutonomousDrive(robot, setpoint=2000, control_type='velocity', button=self.buttonLB))
-        self.buttonRB.whenPressed(AutonomousDrive(robot, setpoint=500, control_type='velocity', button=self.buttonRB))
+        #self.buttonX.whenPressed(AutonomousDrive(robot, setpoint=40, control_type='position'))
+        #self.buttonY.whenPressed(AutonomousRotate(robot, setpoint=45))
+        self.buttonLB.whenPressed(AutonomousDrive(robot, setpoint=2000, control_type='velocity', button=self.buttonLB, from_dashboard=True))
+        self.buttonRB.whenPressed(AutonomousDrive(robot, setpoint=500, control_type='velocity', button=self.buttonRB, from_dashboard=True))
         # self.buttonBack.whenPressed
         # self.buttonStart.whenPressed
         # self.axisButtonLT.whenPressed
@@ -66,12 +82,6 @@ class OI(object):
             self.co_povButtonLeft = POVButton(self.co_stick, 270)
             self.co_axisButtonLT = AxisButton(self.co_stick, 2)
             self.co_axisButtonRT = AxisButton(self.co_stick, 3)
-
-        # SmartDashboard Buttons - test some autonomous commands here
-        SmartDashboard.putData("Drive Forward", AutonomousDrive(robot, setpoint=40, control_type='position'))
-        SmartDashboard.putData("Update Pos PIDs", (UpdatePIDs(robot, factor=1, from_dashboard='position')))
-        SmartDashboard.putData("Update Vel PIDs", (UpdatePIDs(robot, factor=1, from_dashboard='velocity')))
-        SmartDashboard.putData("Rotate X", AutonomousRotate(robot, 45))
 
     def getJoystick(self):
         return self.stick

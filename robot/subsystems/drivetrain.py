@@ -258,3 +258,5 @@ class DriveTrain(Subsystem):
                                      f"Position: ({round(self.x, 1)},{round(self.y, 1)})  Time: {round(Timer.getFPGATimestamp() - self.robot.enabled_time, 1)}")
             SmartDashboard.putString("Controller1 Idle", str(self.spark_neo_l1.getIdleMode()))
             SmartDashboard.putNumber("Enc1 Conversion", self.sparkneo_encoder_1.getPositionConversionFactor())
+            SmartDashboard.putNumber("Auto Distance", 10)
+            SmartDashboard.putNumber("Auto Rotation", 10)

@@ -18,6 +18,9 @@ class Robot(CommandBasedRobot):
         This function is run when the robot is first started up and should be
         used for any initialization code.
         """
+        # make this true to ignore joystick errors
+        self.debug = True
+
         self.enabled_time = 0
         # Initialize the subsystems
         self.drivetrain = DriveTrain(self)
@@ -31,8 +34,10 @@ class Robot(CommandBasedRobot):
         # news. Don't move it.
         self.oi = OI(self)
 
+        wpilib.SmartDashboard.putData(Scheduler.getInstance())
         # instantiate the command used for the autonomous period
         self.autonomousCommand = None
+
 
     def autonomousInit(self):
         self.reset()
