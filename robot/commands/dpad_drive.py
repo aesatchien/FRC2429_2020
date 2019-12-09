@@ -30,9 +30,9 @@ class DpadDrive(Command):
         Should not have to change this if it works - just change variables above
         """
         if self.state.lower() == "up":
-            self.robot.drivetrain.spark_with_stick(self.drive_power*self.direction, 0)
-        if self.state.lower() == "down":
             self.robot.drivetrain.spark_with_stick(-self.drive_power*self.direction, 0)
+        if self.state.lower() == "down":
+            self.robot.drivetrain.spark_with_stick(self.drive_power*self.direction, 0)
         if self.state.lower() == "right":
             self.robot.drivetrain.spark_with_stick(0, -self.twist_power*self.direction)
         if self.state.lower() == "left":
