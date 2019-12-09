@@ -9,6 +9,7 @@ from commands.dpad_drive import DpadDrive
 from commands.update_PIDs import UpdatePIDs
 from commands.autonomous_drive import AutonomousDrive
 from commands.autonomous_rotate import AutonomousRotate
+from commands.pneumatic_piston import PneumaticPiston
 
 class OI(object):
     """
@@ -31,7 +32,7 @@ class OI(object):
         SmartDashboard.putData("Update Pos PIDs", (UpdatePIDs(robot, factor=1, from_dashboard='position')))
         SmartDashboard.putData("Update Vel PIDs", (UpdatePIDs(robot, factor=1, from_dashboard='velocity')))
 
-    def initialize_joysticks(self):
+    def initialize_joysitics(self):
         robot = self.robot
         self.stick = wpilib.Joystick(0)
         self.buttonA = JoystickButton(self.stick, 1)
@@ -51,8 +52,8 @@ class OI(object):
 
         self.buttonA.whenPressed(UpdatePIDs(robot,1.5, from_dashboard=False))
         self.buttonB.whenPressed(UpdatePIDs(robot,0.66, from_dashboard=False))
-        #self.buttonX.whenPressed(AutonomousDrive(robot, setpoint=40, control_type='position'))
-        #self.buttonY.whenPressed(AutonomousRotate(robot, setpoint=45))
+        self.buttonX.whenPressed(PneumaticPiston(robot, 'open'))
+        self.buttonY.whenPressed(PneumaticPiston(robot, 'close'))
         self.buttonLB.whenPressed(AutonomousDrive(robot, setpoint=2000, control_type='velocity', button=self.buttonLB, from_dashboard=True))
         self.buttonRB.whenPressed(AutonomousDrive(robot, setpoint=500, control_type='velocity', button=self.buttonRB, from_dashboard=True))
         # self.buttonBack.whenPressed
