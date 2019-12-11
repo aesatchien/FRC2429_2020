@@ -39,16 +39,42 @@ class DriveTrain(Subsystem):
 
         # Configure drive motors
         try:
-            self.spark_neo_l1 = rev.CANSparkMax(1, rev.MotorType.kBrushless)
-            self.spark_neo_l2 = rev.CANSparkMax(2, rev.MotorType.kBrushless)
-            self.spark_neo_r3 = rev.CANSparkMax(3, rev.MotorType.kBrushless)
-            self.spark_neo_r4 = rev.CANSparkMax(4, rev.MotorType.kBrushless)
+            if robot.isReal():
+                self.spark_neo_l1 = rev.CANSparkMax(1, rev.MotorType.kBrushless)
+                self.spark_neo_l2 = rev.CANSparkMax(2, rev.MotorType.kBrushless)
+                self.spark_neo_r3 = rev.CANSparkMax(3, rev.MotorType.kBrushless)
+                self.spark_neo_r4 = rev.CANSparkMax(4, rev.MotorType.kBrushless)
+                self.spark_PID_controller_right = self.spark_neo_r3.getPIDController()
+                self.spark_PID_controller_left = self.spark_neo_l1.getPIDController()
+                wpilib.Timer.delay(0.02)
+                self.sparkneo_encoder_1 = rev.CANSparkMax.getEncoder(self.spark_neo_l1)
+                self.sparkneo_encoder_3 = rev.CANSparkMax.getEncoder(self.spark_neo_r3)
+                wpilib.Timer.delay(0.02)
+
+                # Configure encoders and controllers
+                # should be wheel_diameter * pi / gear_ratio - and for the old double reduction gear box
+                # the gear ratio was either  5.67:1 or 4.17:1.  With the shifter (low gear) I think it was a 12.26.
+                err_1 = self.sparkneo_encoder_1.setPositionConversionFactor(6.0 * 3.141 / 4.17)
+                err_2 = self.sparkneo_encoder_3.setPositionConversionFactor(6.0 * 3.141 / 4.17)
+                wpilib.Timer.delay(0.02)
+                # TODO - figure out if I want to invert the motors or the encoders
+                self.spark_neo_l1.setInverted(True)
+                self.spark_neo_r3.setInverted(True)
+                if err_1 != rev.CANError.kOK or err_2 != rev.CANError.kOK:
+                    print(f"Warning: drivetrain encoder issue with neo1 returning {err_1} and neo3 returning {err_2}")
+                self.configure_controllers()
+                self.display_PIDs()
+
+            else:
+                self.spark_neo_l1 = wpilib.Talon(1)
+                self.spark_neo_l2 = wpilib.Talon(2)
+                self.spark_neo_r3 = wpilib.Talon(3)
+                self.spark_neo_r4 = wpilib.Talon(4)
+
             # Not sure if speedcontrollergroups work with the single sparkmax in python - seems to complain
             self.speedgroup_left = SpeedControllerGroup(self.spark_neo_l1)
             self.speedgroup_right = SpeedControllerGroup(self.spark_neo_r3)
             self.differential_drive = DifferentialDrive(self.speedgroup_left, self.speedgroup_right)
-            self.spark_PID_controller_right = self.spark_neo_r3.getPIDController()
-            self.spark_PID_controller_left = self.spark_neo_l1.getPIDController()
 
             # wpilib.LiveWindow.addActuator("DriveTrain", "spark_neo_l1", self.spark_neo_l1)
             # wpilib.LiveWindow.addActuator("DriveTrain", "spark_neo_r3", self.spark_neo_r3)
@@ -61,29 +87,9 @@ class DriveTrain(Subsystem):
             # self.differential_drive.setSensitivity(0.5)
             self.differential_drive.setMaxOutput(1.0)
 
-            # Configure encoders and controllers
-            self.sparkneo_encoder_1 = rev.CANSparkMax.getEncoder(self.spark_neo_l1)
-            self.sparkneo_encoder_3 = rev.CANSparkMax.getEncoder(self.spark_neo_r3)
-            wpilib.Timer.delay(0.02)
-            # should be wheel_diameter * pi / gear_ratio - and for the old double reduction gear box
-            # the gear ratio was either  5.67:1 or 4.17:1.  With the shifter (low gear) I think it was a 12.26.
-            err_1 = self.sparkneo_encoder_1.setPositionConversionFactor(6.0 * 3.141 / 4.17)
-            err_2 = self.sparkneo_encoder_3.setPositionConversionFactor(6.0 * 3.141 / 4.17)
-            self.spark_neo_l1.setInverted(True)
-            self.spark_neo_r3.setInverted(True)
-
-            #err_1 = self.sparkneo_encoder_1.__setattr__(rev.ConfigParameter.kPositionConversionFactor, -6.0 * 3.141 / 4.17)
-            #err_2 = self.sparkneo_encoder_3.__setattr__(rev.ConfigParameter.kPositionConversionFactor, -6.0 * 3.141 / 4.17)
-
-            if err_1 != rev.CANError.kOK or err_2 != rev.CANError.kOK:
-                print(f"Warning: drivetrain encoder issue with neo1 returning {err_1} and neo3 returning {err_2}")
-            if robot.isReal():
-                pass
-            else:
-                self.configure_controllers()
         except rev.CANError:
             print('Buncha CAN errors)')
-        self.display_PIDs()
+
 
     def initDefaultCommand(self):
         """
@@ -148,10 +154,11 @@ class DriveTrain(Subsystem):
         self.spark_PID_controller_right.setReference(-multiplier * set_point, rev.ControlType.kPosition)
 
     def reset(self):
-        err_1 = self.sparkneo_encoder_1.setPosition(0)
-        err_2 = self.sparkneo_encoder_3.setPosition(0)
-        if err_1 != rev.CANError.kOK or err_2 != rev.CANError.kOK:
-            print(f"Warning: drivetrain reset issue with neo1 returning {err_1} and neo3 returning {err_2}")
+        if self.robot.isReal():
+            err_1 = self.sparkneo_encoder_1.setPosition(0)
+            err_2 = self.sparkneo_encoder_3.setPosition(0)
+            if err_1 != rev.CANError.kOK or err_2 != rev.CANError.kOK:
+                print(f"Warning: drivetrain reset issue with neo1 returning {err_1} and neo3 returning {err_2}")
         self.x = 0
         self.y = 0
         wpilib.Timer.delay(0.02)

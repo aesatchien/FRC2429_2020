@@ -22,7 +22,7 @@ class DpadDrive(Command):
     def initialize(self):
         """Called just before this Command runs the first time."""
         self.start_time = round(Timer.getFPGATimestamp() - self.robot.enabled_time,1)
-        print("\n" + f"** Started {self.name} with input {self.state} at {self.start_time} s **")
+        print("\n" + f"** Started {self.name} with input {self.state} at {self.start_time} s **", flush=True)
         SmartDashboard.putString("alert", f"** Started {self.name} with input {self.state} at {self.start_time} s **")
     def execute(self):
         """
