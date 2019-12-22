@@ -23,12 +23,13 @@ class AutonomousRotate(Command):
             self.setTimeout(timeout)
         self.robot = robot
         self.tolerance = 1
-        self.kp = 0.01
-        self.kd = 0.1
-        self.kf = 0.3
+        self.kp = 0.05
+        self.kd = 0.01
+        self.kf = 0.0
         self.start_yaw =0
         self.error = 0
         self.power = 0
+        self.max_power = 0.2
         self.prev_error = 0
         strip_name = lambda x: str(x)[1 + str(x).rfind('.'):-2]
         self.name = strip_name(self.__class__)
@@ -40,21 +41,22 @@ class AutonomousRotate(Command):
         self.start_time = round(Timer.getFPGATimestamp() - self.robot.enabled_time, 1)
         print("\n" + f"** Started {self.name} with setpoint {self.setpoint} at {self.start_time} s **")
         SmartDashboard.putString("alert", f"** Started {self.name} with setpoint {self.setpoint} at {self.start_time} s **")
-        self.start_yaw = self.robot.navigation.get_yaw()
+        self.start_angle = self.robot.navigation.get_angle()
         self.error = 0
         self.prev_error = 0
 
     def execute(self):
         """Called repeatedly when this Command is scheduled to run"""
-        self.error = self.setpoint - (self.robot.navigation.get_yaw()-self.start_yaw)
+        self.error = self.setpoint - (self.robot.navigation.get_angle()-self.start_angle)
         self.power = self.kp * self.error + self.kf * math.copysign(1, self.error) + self.kd * (self.error - self.prev_error) / 0.02
         self.prev_error = self.error
-        self.robot.drivetrain.tank_drive(-self.power, self.power)
+        self.power = min(self.max_power, self.power)
+        self.robot.drivetrain.smooth_drive(0,-self.power)
 
     def isFinished(self):
         """Make this return true when this Command no longer needs to run execute()"""
         # somehow need to wait for the error level to get to a tolerance... request from drivetrain?
-        return abs(self.setpoint - self.robot.navigation.get_yaw()) <= self.tolerance or self.isTimedOut()
+        return abs(self.setpoint - (self.robot.navigation.get_angle()-self.start_angle)) <= self.tolerance or self.isTimedOut()
 
 
     def end(self):

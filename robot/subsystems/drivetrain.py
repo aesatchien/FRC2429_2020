@@ -24,15 +24,15 @@ class DriveTrain(Subsystem):
         self.twist_sensitivity = 0.99
         self.current_thrust = 0
         self.current_twist = 0
-        self.acceleration_limit = 0.1
+        self.acceleration_limit = 0.015
         self.counter = 0
         # due to limitations in displaying digits in the Shuffleboard, we'll multiply these by 1000 and divide when updating the controllers
         self.PID_multiplier = 1000.
-        self.PID_dict_pos = {'kP': 0.008, 'kI': 0.0, 'kD': 0.02, 'kIz': 0, 'kFF': 0.004, 'kMaxOutput': 0.99,
+        self.PID_dict_pos = {'kP': 0.010, 'kI': 5.0e-7, 'kD': 0.40, 'kIz': 0, 'kFF': 0.002, 'kMaxOutput': 0.59,
                              'kMinOutput': -0.99}
-        self.PID_dict_vel = {'kP': 0.001, 'kI': 1.0e-6, 'kD': 0.002, 'kIz': 0, 'kFF': 0.0001, 'kMaxOutput': 0.99,
+        self.PID_dict_vel = {'kP': 0.0002, 'kI': 1.0e-6, 'kD': 0.00, 'kIz': 0, 'kFF': 0.00022, 'kMaxOutput': 0.59,
                              'kMinOutput': -0.99}
-        self.current_limit = 40
+        self.current_limit = 80
         self.x = 0
         self.y = 0
         self.previous_distance = 0
@@ -47,8 +47,10 @@ class DriveTrain(Subsystem):
                 self.spark_PID_controller_right = self.spark_neo_r3.getPIDController()
                 self.spark_PID_controller_left = self.spark_neo_l1.getPIDController()
                 wpilib.Timer.delay(0.02)
-                self.sparkneo_encoder_1 = rev.CANSparkMax.getEncoder(self.spark_neo_l1)
-                self.sparkneo_encoder_3 = rev.CANSparkMax.getEncoder(self.spark_neo_r3)
+
+                # swap encoders to get sign right
+                self.sparkneo_encoder_1 = rev.CANSparkMax.getEncoder(self.spark_neo_r3)
+                self.sparkneo_encoder_3 = rev.CANSparkMax.getEncoder(self.spark_neo_l1)
                 wpilib.Timer.delay(0.02)
 
                 # Configure encoders and controllers
@@ -142,13 +144,13 @@ class DriveTrain(Subsystem):
         return self.sparkneo_encoder_1.getPosition()
 
     def set_velocity(self, velocity):
-        multiplier = 1.0
+        multiplier = -1.0
         self.spark_PID_controller_left.setReference(multiplier * velocity, rev.ControlType.kVelocity, 1)
         self.spark_PID_controller_right.setReference(-multiplier * velocity, rev.ControlType.kVelocity, 1)
         # self.differential_drive.feed()
 
     def goToSetPoint(self, set_point):
-        multiplier = 1.0
+        multiplier = -1.0
         self.reset()
         self.spark_PID_controller_left.setReference(multiplier * set_point, rev.ControlType.kPosition)
         self.spark_PID_controller_right.setReference(-multiplier * set_point, rev.ControlType.kPosition)
@@ -170,8 +172,8 @@ class DriveTrain(Subsystem):
             controllers = [self.spark_neo_l1, self.spark_neo_l2, self.spark_neo_r3, self.spark_neo_r4]
             for controller in controllers:
                 Timer.delay(0.01)
-                error_list.append(controller.restoreFactoryDefaults())
-                Timer.delay(0.01)
+                #error_list.append(controller.restoreFactoryDefaults())
+                #Timer.delay(0.01)
                 #looks like they orphaned the setIdleMode - it doesn't work.  Try ConfigParameter
                 #error_list.append(controller.setIdleMode(rev.IdleMode.kBrake))
                 controller.setParameter(rev.ConfigParameter.kIdleMode, rev.IdleMode.kBrake)
@@ -265,5 +267,5 @@ class DriveTrain(Subsystem):
                                      f"Position: ({round(self.x, 1)},{round(self.y, 1)})  Time: {round(Timer.getFPGATimestamp() - self.robot.enabled_time, 1)}")
             SmartDashboard.putString("Controller1 Idle", str(self.spark_neo_l1.getIdleMode()))
             SmartDashboard.putNumber("Enc1 Conversion", self.sparkneo_encoder_1.getPositionConversionFactor())
-            SmartDashboard.putNumber("Auto Distance", 10)
-            SmartDashboard.putNumber("Auto Rotation", 10)
+            #SmartDashboard.putNumber("Auto Distance", 10)
+            #SmartDashboard.putNumber("Auto Rotation", 10)
