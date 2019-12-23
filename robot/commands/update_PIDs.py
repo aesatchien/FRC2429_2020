@@ -7,7 +7,7 @@ class UpdatePIDs(Command):
     """
     Update the PIDs by a pre-determined factor, or read them from the dashboard
     I started with a pre-determined factor, but then added on the ability to read from dashboard
-    So it's a bit clunky - CJH
+    So it's a bit clunky.  Need to get rid of everything but the dashboard call - CJH
     """
 
     def __init__(self, robot, factor=1, from_dashboard=None):

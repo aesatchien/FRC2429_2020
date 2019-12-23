@@ -24,18 +24,19 @@ class DriveTrain(Subsystem):
         self.twist_sensitivity = 0.99
         self.current_thrust = 0
         self.current_twist = 0
-        self.acceleration_limit = 0.015
+        self.acceleration_limit = 0.05
         self.counter = 0
         # due to limitations in displaying digits in the Shuffleboard, we'll multiply these by 1000 and divide when updating the controllers
         self.PID_multiplier = 1000.
-        self.PID_dict_pos = {'kP': 0.010, 'kI': 5.0e-7, 'kD': 0.40, 'kIz': 0, 'kFF': 0.002, 'kMaxOutput': 0.59,
+        self.PID_dict_pos = {'kP': 0.010, 'kI': 5.0e-7, 'kD': 0.40, 'kIz': 0, 'kFF': 0.002, 'kMaxOutput': 0.99,
                              'kMinOutput': -0.99}
-        self.PID_dict_vel = {'kP': 0.0002, 'kI': 1.0e-6, 'kD': 0.00, 'kIz': 0, 'kFF': 0.00022, 'kMaxOutput': 0.59,
+        self.PID_dict_vel = {'kP': 0.0002, 'kI': 1.0e-6, 'kD': 0.00, 'kIz': 0, 'kFF': 0.00022, 'kMaxOutput': 0.99,
                              'kMinOutput': -0.99}
-        self.current_limit = 80
+        self.current_limit = 40
         self.x = 0
         self.y = 0
         self.previous_distance = 0
+        self.is_limited = False
 
         # Configure drive motors
         try:
@@ -68,10 +69,11 @@ class DriveTrain(Subsystem):
                 self.display_PIDs()
 
             else:
-                self.spark_neo_l1 = wpilib.Talon(1)
-                self.spark_neo_l2 = wpilib.Talon(2)
-                self.spark_neo_r3 = wpilib.Talon(3)
-                self.spark_neo_r4 = wpilib.Talon(4)
+                pass
+                #self.spark_neo_l1 = wpilib.Talon(1)
+                #self.spark_neo_l2 = wpilib.Talon(2)
+                #self.spark_neo_r3 = wpilib.Talon(3)
+                #self.spark_neo_r4 = wpilib.Talon(4)
 
             # Not sure if speedcontrollergroups work with the single sparkmax in python - seems to complain
             self.speedgroup_left = SpeedControllerGroup(self.spark_neo_l1)
@@ -109,8 +111,12 @@ class DriveTrain(Subsystem):
     def smooth_drive(self, thrust, twist):
         '''A less jittery way to drive with a joystick
         TODO: See if this can be implemented in hardware - seems like the acceleration limit can be set there
+        TODO: Should be ok to slow down quickly, but not speed up - check this code
+        TODO: Set a smartdash to see if we are in software limit mode - like with a boolean
         '''
         deadzone = 0.02
+        self.is_limited = False
+        # thrust section
         if math.fabs(thrust) < deadzone:
             self.current_thrust = 0
         else:
@@ -119,10 +125,20 @@ class DriveTrain(Subsystem):
                 self.current_thrust = thrust
             else:
                 if thrust - self.current_thrust > 0:
+                    # accelerating forward
                     self.current_thrust = self.current_thrust + self.acceleration_limit
+                    self.is_limited = True
+                elif (thrust - self.current_thrust) < 0 and thrust > 0:
+                    # ok to slow down quickly, although really the deadzone should catch this
+                    self.current_thrust = thrust
+                elif (thrust - self.current_thrust) > 0 and thrust < 0:
+                    # ok to slow down quickly, although really the deadzone should catch this
+                    self.current_thrust = thrust
                 else:
+                    # accelerating backward
                     self.current_thrust = self.current_thrust - self.acceleration_limit
-
+                    self.is_limited = True
+        # twist section
         if math.fabs(twist) < deadzone:
             self.current_twist = 0
         else:
@@ -171,13 +187,11 @@ class DriveTrain(Subsystem):
         if not pid_only:
             controllers = [self.spark_neo_l1, self.spark_neo_l2, self.spark_neo_r3, self.spark_neo_r4]
             for controller in controllers:
-                Timer.delay(0.01)
                 #error_list.append(controller.restoreFactoryDefaults())
                 #Timer.delay(0.01)
                 #looks like they orphaned the setIdleMode - it doesn't work.  Try ConfigParameter
                 #error_list.append(controller.setIdleMode(rev.IdleMode.kBrake))
                 controller.setParameter(rev.ConfigParameter.kIdleMode, rev.IdleMode.kBrake)
-                Timer.delay(0.01)
                 error_list.append(controller.setSmartCurrentLimit(self.current_limit))
                 Timer.delay(0.01)
             err_1 = self.spark_neo_l2.follow(self.spark_neo_l1)
@@ -200,6 +214,8 @@ class DriveTrain(Subsystem):
             error_list.append(controller.setParameter(rev.ConfigParameter.kOutputMax_1, self.PID_dict_vel['kMaxOutput']))
             error_list.append(controller.setParameter(rev.ConfigParameter.kOutputMin_0, self.PID_dict_pos['kMinOutput']))
             error_list.append(controller.setParameter(rev.ConfigParameter.kOutputMin_1, self.PID_dict_vel['kMinOutput']))
+            controller.burnFlash()
+            Timer.delay(0.02)
 
         # if 1 in error_list or 2 in error_list:
         #    print(f'Issue in configuring controllers: {error_list}')
@@ -260,7 +276,11 @@ class DriveTrain(Subsystem):
             SmartDashboard.putNumber("Velocity Enc1", round(self.sparkneo_encoder_1.getVelocity(), 2))
             SmartDashboard.putNumber("Velocity Enc3", round(self.sparkneo_encoder_3.getVelocity(), 2))
             SmartDashboard.putNumber("Power M1", round(self.spark_neo_l1.getAppliedOutput(), 2))
-            SmartDashboard.putNumber("Power M2", round(self.spark_neo_l2.getAppliedOutput(), 2))
+            SmartDashboard.putNumber("Power M3", round(self.spark_neo_r3.getAppliedOutput(), 2))
+            SmartDashboard.putNumber("Current M1", round(self.spark_neo_l1.getOutputCurrent(), 2))
+            SmartDashboard.putNumber("Current M3", round(self.spark_neo_r3.getOutputCurrent(), 2))
+            SmartDashboard.putBoolean('AccLimit', self.is_limited)
+
         if self.counter % 1000 == 0:
             self.display_PIDs()
             SmartDashboard.putString("alert",

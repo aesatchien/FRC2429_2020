@@ -26,7 +26,7 @@ class AutonomousRotate(Command):
         self.kp = 0.05
         self.kd = 0.01
         self.kf = 0.0
-        self.start_yaw =0
+        self.start_angle =0
         self.error = 0
         self.power = 0
         self.max_power = 0.2
@@ -52,11 +52,16 @@ class AutonomousRotate(Command):
         self.prev_error = self.error
         self.power = min(self.max_power, self.power)
         self.robot.drivetrain.smooth_drive(0,-self.power)
+        SmartDashboard.putNumber("error", self.error)
 
     def isFinished(self):
         """Make this return true when this Command no longer needs to run execute()"""
         # somehow need to wait for the error level to get to a tolerance... request from drivetrain?
-        return abs(self.setpoint - (self.robot.navigation.get_angle()-self.start_angle)) <= self.tolerance or self.isTimedOut()
+        # I know I could do this with a math.copysign, but this is more readable
+        if self.setpoint > 0:
+            return (self.setpoint - (self.robot.navigation.get_angle()-self.start_angle)) <= self.tolerance or self.isTimedOut()
+        else:
+            return (self.setpoint - (self.robot.navigation.get_angle() - self.start_angle)) >= -self.tolerance or self.isTimedOut()
 
 
     def end(self):
