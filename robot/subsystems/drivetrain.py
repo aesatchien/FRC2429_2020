@@ -203,7 +203,7 @@ class DriveTrain(Subsystem):
                 controller.setParameter(rev.ConfigParameter.kSmartMotionMaxVelocity_0, self.maxvel)
                 controller.setParameter(rev.ConfigParameter.kSmartMotionMaxVelocity_1, self.maxvel)
                 Timer.delay(0.01)
-                controller.burnFlash()
+                #controller.burnFlash()
             err_1 = self.spark_neo_l2.follow(self.spark_neo_l1)
             err_2 = self.spark_neo_r4.follow(self.spark_neo_r3)
             if err_1 != rev.CANError.kOK or err_2 != rev.CANError.kOK:
