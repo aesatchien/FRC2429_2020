@@ -2,6 +2,8 @@
 
 #pycharm directory
 .idea/
+#jupyter stuff
+.ipynb_checkpoints
 
 #pycache stuff
 __pycache__/

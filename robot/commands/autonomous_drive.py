@@ -13,7 +13,7 @@ class AutonomousDrive(Command):
     3) actuate some mechanism
     """
     # may need to use variables at some point ... leftover from pacgoat example
-    tolerance = 0.5
+    tolerance = 0.1
     KP = -1.0 / 5.0
 
 
@@ -34,6 +34,7 @@ class AutonomousDrive(Command):
         self.button = button
         strip_name = lambda x: str(x)[1 + str(x).rfind('.'):-2]
         self.name = strip_name(self.__class__)
+        self.telemetry = {'time':[], 'position':[], 'velocity':[], 'current':[]}
 
 
     def initialize(self):
@@ -49,10 +50,16 @@ class AutonomousDrive(Command):
             self.robot.drivetrain.set_velocity(self.setpoint)
         else:
             pass
+        self.telemetry = {'time':[], 'position':[], 'velocity':[], 'current':[]}
 
     def execute(self):
         """Called repeatedly when this Command is scheduled to run"""
         self.robot.drivetrain.differential_drive.feed()
+        self.telemetry['time'].append(Timer.getFPGATimestamp() - self.robot.enabled_time)
+        self.telemetry['position'].append(self.robot.drivetrain.get_position())
+        self.telemetry['velocity'].append(self.robot.drivetrain.sparkneo_encoder_1.getVelocity()/10.0)
+        self.telemetry['current'].append(self.robot.drivetrain.spark_neo_l1.getOutputCurrent())
+
 
     def isFinished(self):
         """Make this return true when this Command no longer needs to run execute()"""
@@ -72,6 +79,8 @@ class AutonomousDrive(Command):
         end_time = round(Timer.getFPGATimestamp() - self.robot.enabled_time, 1)
         print("\n" + f"** Ended {self.name} at {end_time} s with a duration of {round(end_time-self.start_time,1)} s **")
         SmartDashboard.putString("alert", f"** Ended {self.name} at {end_time} s with a duration of {round(end_time-self.start_time,1)} s **")
+        for key in self.telemetry:
+            SmartDashboard.putNumberArray("telemetry_"+ str(key), self.telemetry[key])
         self.robot.drivetrain.stop()
 
     def interrupted(self):
