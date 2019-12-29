@@ -50,7 +50,10 @@ class AutonomousRotate(Command):
         self.error = self.setpoint - (self.robot.navigation.get_angle()-self.start_angle)
         self.power = self.kp * self.error + self.kf * math.copysign(1, self.error) + self.kd * (self.error - self.prev_error) / 0.02
         self.prev_error = self.error
-        self.power = min(self.max_power, self.power)
+        if self.power >0:
+            self.power = min(self.max_power, self.power)
+        else:
+            self.power = max(-self.max_power, self.power)
         self.robot.drivetrain.smooth_drive(0,-self.power)
         SmartDashboard.putNumber("error", self.error)
 

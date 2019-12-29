@@ -17,6 +17,7 @@ class DriveByJoystick(Command):
 
     def initialize(self):
         """Called just before this Command runs the first time."""
+        # perhaps here we need to set the contol mode for the controllers ... not sure about this
         pass
 
     def execute(self):

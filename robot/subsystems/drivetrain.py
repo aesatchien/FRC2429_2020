@@ -30,8 +30,11 @@ class DriveTrain(Subsystem):
         self.PID_multiplier = 1000.
         self.PID_dict_pos = {'kP': 0.010, 'kI': 5.0e-7, 'kD': 0.40, 'kIz': 0, 'kFF': 0.002, 'kMaxOutput': 0.99,
                              'kMinOutput': -0.99}
-        self.PID_dict_vel = {'kP': 0.0002, 'kI': 1.0e-6, 'kD': 0.00, 'kIz': 0, 'kFF': 0.00022, 'kMaxOutput': 0.99,
+        self.PID_dict_vel = {'kP': 0.00015, 'kI': 8.0e-7, 'kD': 0.00, 'kIz': 0, 'kFF': 0.00022, 'kMaxOutput': 0.99,
                              'kMinOutput': -0.99}
+        # Smart Motion Coefficients - these don't seem to be writing for some reason... python is old?  just set with rev's program for now
+        self.maxvel = 2000 # rpm
+        self.maxacc = 1000
         self.current_limit = 40
         self.x = 0
         self.y = 0
@@ -114,7 +117,7 @@ class DriveTrain(Subsystem):
         TODO: Should be ok to slow down quickly, but not speed up - check this code
         TODO: Set a smartdash to see if we are in software limit mode - like with a boolean
         '''
-        deadzone = 0.02
+        deadzone = 0.05
         self.is_limited = False
         # thrust section
         if math.fabs(thrust) < deadzone:
@@ -168,8 +171,10 @@ class DriveTrain(Subsystem):
     def goToSetPoint(self, set_point):
         multiplier = -1.0
         self.reset()
-        self.spark_PID_controller_left.setReference(multiplier * set_point, rev.ControlType.kPosition)
-        self.spark_PID_controller_right.setReference(-multiplier * set_point, rev.ControlType.kPosition)
+        #self.spark_PID_controller_left.setReference(multiplier * set_point, rev.ControlType.kPosition)
+        #self.spark_PID_controller_right.setReference(-multiplier * set_point, rev.ControlType.kPosition)
+        self.spark_PID_controller_left.setReference(multiplier* set_point, rev.ControlType.kSmartMotion, pidSlot=1)
+        self.spark_PID_controller_right.setReference(-multiplier * set_point, rev.ControlType.kSmartMotion, pidSlot=1)
 
     def reset(self):
         if self.robot.isReal():
@@ -193,7 +198,12 @@ class DriveTrain(Subsystem):
                 #error_list.append(controller.setIdleMode(rev.IdleMode.kBrake))
                 controller.setParameter(rev.ConfigParameter.kIdleMode, rev.IdleMode.kBrake)
                 error_list.append(controller.setSmartCurrentLimit(self.current_limit))
+                controller.setParameter(rev.ConfigParameter.kSmartMotionMaxAccel_0, self.maxacc)
+                controller.setParameter(rev.ConfigParameter.kSmartMotionMaxAccel_1, self.maxacc)
+                controller.setParameter(rev.ConfigParameter.kSmartMotionMaxVelocity_0, self.maxvel)
+                controller.setParameter(rev.ConfigParameter.kSmartMotionMaxVelocity_1, self.maxvel)
                 Timer.delay(0.01)
+                controller.burnFlash()
             err_1 = self.spark_neo_l2.follow(self.spark_neo_l1)
             err_2 = self.spark_neo_r4.follow(self.spark_neo_r3)
             if err_1 != rev.CANError.kOK or err_2 != rev.CANError.kOK:
@@ -214,6 +224,7 @@ class DriveTrain(Subsystem):
             error_list.append(controller.setParameter(rev.ConfigParameter.kOutputMax_1, self.PID_dict_vel['kMaxOutput']))
             error_list.append(controller.setParameter(rev.ConfigParameter.kOutputMin_0, self.PID_dict_pos['kMinOutput']))
             error_list.append(controller.setParameter(rev.ConfigParameter.kOutputMin_1, self.PID_dict_vel['kMinOutput']))
+
             controller.burnFlash()
             Timer.delay(0.02)
 
