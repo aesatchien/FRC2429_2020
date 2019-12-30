@@ -14,7 +14,7 @@ class AutonomousDrive(Command):
     3) actuate some mechanism
     """
     # may need to use variables at some point ...
-    tolerance = 0.25
+    tolerance = 0.5
 
     def __init__(self, robot, setpoint=None, control_type='position', button = 'None', timeout=None, from_dashboard = True):
         """The constructor"""
@@ -52,7 +52,7 @@ class AutonomousDrive(Command):
         self.has_arrived = False
         self.telemetry = {'time':[], 'position':[], 'velocity':[], 'current':[], 'output':[]}
         self.counter = 0
-        self.extra_time = 0.3 # amount of time to give it to slow down after we reach setpoint
+        self.extra_time = 0.5 # amount of time to give it to slow down after we reach setpoint
         self.setTimeout(self.initial_timeout) # needs to be in initialize because we modify it in execute - dashboard instance keeps getting reused
 
     def execute(self):
@@ -75,11 +75,12 @@ class AutonomousDrive(Command):
                 if self.setpoint - self.robot.drivetrain.get_position() <= self.tolerance:
                     self.has_arrived = True
                     self.timeout = self.timeSinceInitialized() + self.extra_time
-                    #print(f"We have arrived! (at {round(self.timeSinceInitialized(), 1)})")
+                    print(f"** We have arrived at setpoint! (at {round(self.timeSinceInitialized(), 1)})")
             else:
                 if self.setpoint - self.robot.drivetrain.get_position() >= self.tolerance:
                     self.has_arrived = True
                     self.timeout = self.timeSinceInitialized() + self.extra_time
+                    print(f"** We have arrived at setpoint! (at {round(self.timeSinceInitialized(), 1)})")
 
     def isFinished(self):
         """Make this return true when this Command no longer needs to run execute()"""
