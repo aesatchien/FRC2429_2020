@@ -33,8 +33,8 @@ class DriveTrain(Subsystem):
         self.PID_dict_vel = {'kP': 0.00015, 'kI': 8.0e-7, 'kD': 0.00, 'kIz': 0, 'kFF': 0.00022, 'kMaxOutput': 0.99,
                              'kMinOutput': -0.99}
         # Smart Motion Coefficients - these don't seem to be writing for some reason... python is old?  just set with rev's program for now
-        self.maxvel = 2000 # rpm
-        self.maxacc = 1000
+        self.maxvel = 1000 # rpm
+        self.maxacc = 500
         self.current_limit = 40
         self.x = 0
         self.y = 0
@@ -175,7 +175,6 @@ class DriveTrain(Subsystem):
         #self.spark_PID_controller_right.setReference(-multiplier * set_point, rev.ControlType.kPosition)
         self.spark_PID_controller_left.setReference(multiplier* set_point, rev.ControlType.kSmartMotion, pidSlot=1)
         self.spark_PID_controller_right.setReference(-multiplier * set_point, rev.ControlType.kSmartMotion, pidSlot=1)
-
     def reset(self):
         if self.robot.isReal():
             err_1 = self.sparkneo_encoder_1.setPosition(0)
@@ -225,7 +224,7 @@ class DriveTrain(Subsystem):
             error_list.append(controller.setParameter(rev.ConfigParameter.kOutputMin_0, self.PID_dict_pos['kMinOutput']))
             error_list.append(controller.setParameter(rev.ConfigParameter.kOutputMin_1, self.PID_dict_vel['kMinOutput']))
 
-            controller.burnFlash()
+            #controller.burnFlash()
             Timer.delay(0.02)
 
         # if 1 in error_list or 2 in error_list:
@@ -299,5 +298,4 @@ class DriveTrain(Subsystem):
                                      f"Position: ({round(self.x, 1)},{round(self.y, 1)})  Time: {round(Timer.getFPGATimestamp() - self.robot.enabled_time, 1)}")
             SmartDashboard.putString("Controller1 Idle", str(self.spark_neo_l1.getIdleMode()))
             SmartDashboard.putNumber("Enc1 Conversion", self.sparkneo_encoder_1.getPositionConversionFactor())
-            #SmartDashboard.putNumber("Auto Distance", 10)
-            #SmartDashboard.putNumber("Auto Rotation", 10)
+

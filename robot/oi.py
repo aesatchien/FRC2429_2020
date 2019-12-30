@@ -10,6 +10,7 @@ from commands.update_PIDs import UpdatePIDs
 from commands.autonomous_drive import AutonomousDrive
 from commands.autonomous_rotate import AutonomousRotate
 from commands.pneumatic_piston import PneumaticPiston
+from commands.autonomous_group import AutonomousGroup
 
 class OI(object):
     """
@@ -27,7 +28,7 @@ class OI(object):
         # SmartDashboard Buttons - test some autonomous commands here
         SmartDashboard.putNumber("Auto Distance", 10)
         SmartDashboard.putNumber("Auto Rotation", 10)
-        SmartDashboard.putData("Drive Forward", AutonomousDrive(robot, setpoint=None, control_type='position', timeout=4))
+        SmartDashboard.putData("Drive Forward", AutonomousDrive(robot, setpoint=None, control_type='position', timeout=6))
         SmartDashboard.putData("Rotate X", AutonomousRotate(robot, setpoint=None, timeout=6))
         SmartDashboard.putData("Update Pos PIDs", (UpdatePIDs(robot, factor=1, from_dashboard='position')))
         SmartDashboard.putData("Update Vel PIDs", (UpdatePIDs(robot, factor=1, from_dashboard='velocity')))

@@ -1,27 +1,17 @@
 # just leaving this from pacgoat as an example for now
 from wpilib.command import CommandGroup
 
-from commands.close_claw import CloseClaw
-from commands.wait_for_pressure import WaitForPressure
-from commands.check_for_hot_goal import CheckForHotGoal
-from commands.set_pivot_setpoint import SetPivotSetpoint
-from commands.drive_forward import DriveForward
-from commands.shoot import Shoot
+from commands.autonomous_drive import AutonomousDrive
+from commands.track_telemetry import TrackTelemetry
 
-
-class DriveAndShootAutonomous(CommandGroup):
+class AutonomousGroup(CommandGroup):
     """
-    Drive over the line and then shoot the ball. If the hot goal is not detected,
-    it will wait briefly.
+    Trying to figure out how to track telemetry separately (as apposed to all the time)
     """
 
-    def __init__(self, robot):
+    def __init__(self, robot, setpoint=None, control_type='position', button='None', timeout=None, from_dashboard=True):
         super().__init__()
-        self.addSequential(CloseClaw(robot))
-        self.addSequential(WaitForPressure(robot), 2)
-        if robot.isReal():
-            # NOTE: Simulation doesn't currently have the concept of hot.
-            self.addSequential(CheckForHotGoal(robot, 2))
-        self.addSequential(SetPivotSetpoint(robot, 45))
-        self.addSequential(DriveForward(robot, 8, 0.3))
-        self.addSequential(Shoot(robot))
+        self.addParallel(TrackTelemetry(robot, timeout=timeout))
+        self.addParallel(AutonomousDrive(robot, setpoint=setpoint, control_type=control_type, button=button, timeout=timeout, from_dashboard=from_dashboard))
+
+
