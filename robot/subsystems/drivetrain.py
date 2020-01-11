@@ -5,6 +5,7 @@ from wpilib.smartdashboard import SmartDashboard
 from wpilib.command import Subsystem
 from wpilib.speedcontrollergroup import SpeedControllerGroup
 from wpilib.drive import DifferentialDrive
+from wpilib.drive import MecanumDrive
 import rev
 from wpilib import Timer
 from commands.drive_by_joystick import DriveByJoystick
@@ -53,19 +54,29 @@ class DriveTrain(Subsystem):
                 wpilib.Timer.delay(0.02)
 
                 # swap encoders to get sign right
-                self.sparkneo_encoder_1 = rev.CANSparkMax.getEncoder(self.spark_neo_r3)
-                self.sparkneo_encoder_3 = rev.CANSparkMax.getEncoder(self.spark_neo_l1)
+                # changing them up for mechanum vs WCD
+                self.sparkneo_encoder_1 = rev.CANSparkMax.getEncoder(self.spark_neo_l1)
+                self.sparkneo_encoder_2 = rev.CANSparkMax.getEncoder(self.spark_neo_l2)
+                self.sparkneo_encoder_3 = rev.CANSparkMax.getEncoder(self.spark_neo_r3)
+                self.sparkneo_encoder_4 = rev.CANSparkMax.getEncoder(self.spark_neo_r4)
                 wpilib.Timer.delay(0.02)
 
                 # Configure encoders and controllers
                 # should be wheel_diameter * pi / gear_ratio - and for the old double reduction gear box
                 # the gear ratio was either  5.67:1 or 4.17:1.  With the shifter (low gear) I think it was a 12.26.
-                err_1 = self.sparkneo_encoder_1.setPositionConversionFactor(6.0 * 3.141 / 4.17)
-                err_2 = self.sparkneo_encoder_3.setPositionConversionFactor(6.0 * 3.141 / 4.17)
+                conversion_factor = 6.0 * 3.141 / 4.17
+                err_1 = self.sparkneo_encoder_1.setPositionConversionFactor(conversion_factor)
+                err_2 = self.sparkneo_encoder_2.setPositionConversionFactor(conversion_factor)
+                err_3 = self.sparkneo_encoder_3.setPositionConversionFactor(conversion_factor)
+                err_4 = self.sparkneo_encoder_4.setPositionConversionFactor(conversion_factor)
+
                 wpilib.Timer.delay(0.02)
                 # TODO - figure out if I want to invert the motors or the encoders
-                self.spark_neo_l1.setInverted(True)
-                self.spark_neo_r3.setInverted(True)
+                self.spark_neo_l1.setInverted(False)
+                self.spark_neo_l2.setInverted(False)
+                self.spark_neo_r3.setInverted(False)
+                self.spark_neo_r4.setInverted(False)
+
                 if err_1 != rev.CANError.kOK or err_2 != rev.CANError.kOK:
                     print(f"Warning: drivetrain encoder issue with neo1 returning {err_1} and neo3 returning {err_2}")
                 self.configure_controllers()
@@ -79,20 +90,35 @@ class DriveTrain(Subsystem):
                 #self.spark_neo_r4 = wpilib.Talon(4)
 
             # Not sure if speedcontrollergroups work with the single sparkmax in python - seems to complain
-            self.speedgroup_left = SpeedControllerGroup(self.spark_neo_l1)
-            self.speedgroup_right = SpeedControllerGroup(self.spark_neo_r3)
-            self.differential_drive = DifferentialDrive(self.speedgroup_left, self.speedgroup_right)
+            drive_type = 'mechanum'
+            if drive_type == 'wcd':
+                # WCD
+                self.speedgroup_left = SpeedControllerGroup(self.spark_neo_l1)
+                self.speedgroup_right = SpeedControllerGroup(self.spark_neo_r3)
+                self.differential_drive = DifferentialDrive(self.speedgroup_left, self.speedgroup_right)
+                self.drive = self.differential_drive
+
+            self.differential_drive.setMaxOutput(1.0)
+            if drive_type == 'mechanum':
+                # Mechanum
+                self.speedgroup_l1 = SpeedControllerGroup(self.spark_neo_l1)
+                self.speedgroup_l2 = SpeedControllerGroup(self.spark_neo_l2)
+                self.speedgroup_r3 = SpeedControllerGroup(self.spark_neo_r3)
+                self.speedgroup_r4 = SpeedControllerGroup(self.spark_neo_r4)
+                self.mechanum_drive = MecanumDrive(self.speedgroup_l1, self.speedgroup_l2,self.speedgroup_r3,self.speedgroup_r4)
+                self.mechanum_drive.setMaxOutput(0.9)
+                self.drive = self.mechanum_drive
+
+            self.drive.setSafetyEnabled(True)
+            self.drive.setExpiration(0.1)
+            # self.differential_drive.setSensitivity(0.5)
 
             # wpilib.LiveWindow.addActuator("DriveTrain", "spark_neo_l1", self.spark_neo_l1)
             # wpilib.LiveWindow.addActuator("DriveTrain", "spark_neo_r3", self.spark_neo_r3)
             # wpilib.LiveWindow.addActuator("DriveTrain", "spark_neo_l2", self.spark_neo_l2)
             # wpilib.LiveWindow.addActuator("DriveTrain", "spark_neo_r4", self.spark_neo_r4)
 
-            # Configure the RobotDrive
-            self.differential_drive.setSafetyEnabled(True)
-            self.differential_drive.setExpiration(0.1)
-            # self.differential_drive.setSensitivity(0.5)
-            self.differential_drive.setMaxOutput(1.0)
+
 
         except rev.CANError:
             print('Buncha CAN errors)')
@@ -104,12 +130,14 @@ class DriveTrain(Subsystem):
         """
         self.setDefaultCommand(DriveByJoystick(self.robot))
 
-    def spark_with_stick(self, x_speed, z_rotation):
+    def spark_with_stick(self, y_speed, x_speed, z_rotation):
         '''Simplest way to drive with a joystick'''
-        self.differential_drive.arcadeDrive(x_speed, self.twist_sensitivity * z_rotation, False)
+        #self.differential_drive.arcadeDrive(x_speed, self.twist_sensitivity * z_rotation, False)
+        self.mechanum_drive.driveCartesian(ySpeed=y_speed, xSpeed=x_speed,zRotation=z_rotation)
 
     def stop(self):
-        self.differential_drive.arcadeDrive(0, 0)
+        #self.differential_drive.arcadeDrive(0, 0)
+        self.mechanum_drive.driveCartesian(0,0,0)
 
     def smooth_drive(self, thrust, twist):
         '''A less jittery way to drive with a joystick
@@ -152,11 +180,14 @@ class DriveTrain(Subsystem):
                     self.current_twist = self.current_twist + self.acceleration_limit
                 else:
                     self.current_twist = self.current_twist - self.acceleration_limit
-        self.differential_drive.arcadeDrive(self.current_thrust, self.current_twist, True)
+        #self.differential_drive.arcadeDrive(self.current_thrust, self.current_twist, True)
+        # TODO - fix this for mechanum x and y
+        self.mechanum_drive.driveCartesian(self.current_thrust, self.current_thrust, self.current_twist)
 
     def tank_drive(self, left, right):
         '''Not sure why we would ever need this, but it's here if we do'''
-        self.differential_drive.tankDrive(left, right)
+        pass
+        #self.differential_drive.tankDrive(left, right)
 
     def get_position(self):
         ''':returns: The encoder position of one of the Neos'''
