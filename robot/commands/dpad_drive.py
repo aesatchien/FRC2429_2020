@@ -13,8 +13,8 @@ class DpadDrive(Command):
         self.robot = robot
         self.state = state
         self.button = button
-        self.drive_power = 0.15
-        self.strafe_power = 0.1
+        self.drive_power = 0.25
+        self.strafe_power = 0.2
         self.direction = 1 # change this to -1 change all directions quickly
         strip_name = lambda x: str(x)[1 + str(x).rfind('.'):-2]
         self.name = strip_name(self.__class__)

@@ -108,7 +108,8 @@ class DriveTrain(Subsystem):
                 self.speedgroup_lrear = SpeedControllerGroup(self.spark_neo_lrear)
                 self.speedgroup_rfront = SpeedControllerGroup(self.spark_neo_rfront)
                 self.speedgroup_rrear = SpeedControllerGroup(self.spark_neo_rrear)
-                self.mechanum_drive = MecanumDrive(self.speedgroup_lfront, self.speedgroup_lrear, self.speedgroup_rfront, self.speedgroup_rrear)
+                #self.mechanum_drive = MecanumDrive(self.speedgroup_lfront, self.speedgroup_lrear, self.speedgroup_rfront, self.speedgroup_rrear)
+                self.mechanum_drive = MecanumDrive(self.spark_neo_lfront, self.spark_neo_lrear, self.spark_neo_rfront, self.spark_neo_rrear)
                 self.mechanum_drive.setMaxOutput(0.1)
                 self.drive = self.mechanum_drive
 
@@ -237,10 +238,10 @@ class DriveTrain(Subsystem):
                 controller.setParameter(rev.ConfigParameter.kSmartMotionMaxVelocity_1, self.maxvel)
                 Timer.delay(0.01)
                 #controller.burnFlash()
-            err_1 = self.spark_neo_lrear.follow(self.spark_neo_lfront)
-            err_2 = self.spark_neo_rrear.follow(self.spark_neo_rfront)
-            if err_1 != rev.CANError.kOK or err_2 != rev.CANError.kOK:
-                print(f"Warning: drivetrain follower issue with neo2 returning {err_1} and neo4 returning {err_2}")
+            #err_1 = self.spark_neo_lrear.follow(self.spark_neo_lfront)
+            #err_2 = self.spark_neo_rrear.follow(self.spark_neo_rfront)
+            #if err_1 != rev.CANError.kOK or err_2 != rev.CANError.kOK:
+            #    print(f"Warning: drivetrain follower issue with neo2 returning {err_1} and neo4 returning {err_2}")
         controllers = [self.spark_neo_lfront, self.spark_neo_rfront]
         for controller in controllers:
             error_list.append(controller.setParameter(rev.ConfigParameter.kP_0, self.PID_dict_pos['kP']))
