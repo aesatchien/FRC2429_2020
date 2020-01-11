@@ -45,10 +45,10 @@ class DriveTrain(Subsystem):
         # Configure drive motors
         try:
             if robot.isReal():
-                self.spark_neo_l1 = rev.CANSparkMax(1, rev.MotorType.kBrushless)
-                self.spark_neo_l2 = rev.CANSparkMax(2, rev.MotorType.kBrushless)
-                self.spark_neo_r3 = rev.CANSparkMax(3, rev.MotorType.kBrushless)
-                self.spark_neo_r4 = rev.CANSparkMax(4, rev.MotorType.kBrushless)
+                self.spark_neo_r3 = rev.CANSparkMax(1, rev.MotorType.kBrushless)
+                self.spark_neo_r4 = rev.CANSparkMax(2, rev.MotorType.kBrushless)
+                self.spark_neo_l1 = rev.CANSparkMax(3, rev.MotorType.kBrushless)
+                self.spark_neo_l2 = rev.CANSparkMax(4, rev.MotorType.kBrushless)
                 self.spark_PID_controller_right = self.spark_neo_r3.getPIDController()
                 self.spark_PID_controller_left = self.spark_neo_l1.getPIDController()
                 wpilib.Timer.delay(0.02)
@@ -72,8 +72,8 @@ class DriveTrain(Subsystem):
 
                 wpilib.Timer.delay(0.02)
                 # TODO - figure out if I want to invert the motors or the encoders
-                self.spark_neo_l1.setInverted(False)
-                self.spark_neo_l2.setInverted(False)
+                self.spark_neo_l1.setInverted(True)
+                self.spark_neo_l2.setInverted(True)
                 self.spark_neo_r3.setInverted(False)
                 self.spark_neo_r4.setInverted(False)
 
@@ -97,8 +97,7 @@ class DriveTrain(Subsystem):
                 self.speedgroup_right = SpeedControllerGroup(self.spark_neo_r3)
                 self.differential_drive = DifferentialDrive(self.speedgroup_left, self.speedgroup_right)
                 self.drive = self.differential_drive
-
-            self.differential_drive.setMaxOutput(1.0)
+                self.differential_drive.setMaxOutput(1.0)
             if drive_type == 'mechanum':
                 # Mechanum
                 self.speedgroup_l1 = SpeedControllerGroup(self.spark_neo_l1)
@@ -106,7 +105,7 @@ class DriveTrain(Subsystem):
                 self.speedgroup_r3 = SpeedControllerGroup(self.spark_neo_r3)
                 self.speedgroup_r4 = SpeedControllerGroup(self.spark_neo_r4)
                 self.mechanum_drive = MecanumDrive(self.speedgroup_l1, self.speedgroup_l2,self.speedgroup_r3,self.speedgroup_r4)
-                self.mechanum_drive.setMaxOutput(0.9)
+                self.mechanum_drive.setMaxOutput(0.1)
                 self.drive = self.mechanum_drive
 
             self.drive.setSafetyEnabled(True)
@@ -130,10 +129,10 @@ class DriveTrain(Subsystem):
         """
         self.setDefaultCommand(DriveByJoystick(self.robot))
 
-    def spark_with_stick(self, y_speed, x_speed, z_rotation):
+    def spark_with_stick(self, y_speed=0, x_speed=0, z_rotation=0):
         '''Simplest way to drive with a joystick'''
         #self.differential_drive.arcadeDrive(x_speed, self.twist_sensitivity * z_rotation, False)
-        self.mechanum_drive.driveCartesian(ySpeed=y_speed, xSpeed=x_speed,zRotation=z_rotation)
+        self.mechanum_drive.driveCartesian(ySpeed=y_speed, xSpeed=x_speed,zRotation=z_rotation,gyroAngle=0)
 
     def stop(self):
         #self.differential_drive.arcadeDrive(0, 0)
