@@ -9,6 +9,9 @@ from wpilib.drive import MecanumDrive
 import rev
 from wpilib import Timer
 from commands.drive_by_joystick import DriveByJoystick
+from wpilib.drive import RobotDriveBase
+from wpilib.drive.vector2d import Vector2d
+import hal
 
 
 class DriveTrain(Subsystem):
@@ -41,24 +44,25 @@ class DriveTrain(Subsystem):
         self.y = 0
         self.previous_distance = 0
         self.is_limited = False
+        self.deadband = 0.05
 
         # Configure drive motors
         try:
             if robot.isReal():
-                self.spark_neo_r3 = rev.CANSparkMax(1, rev.MotorType.kBrushless)
-                self.spark_neo_r4 = rev.CANSparkMax(2, rev.MotorType.kBrushless)
-                self.spark_neo_l1 = rev.CANSparkMax(3, rev.MotorType.kBrushless)
-                self.spark_neo_l2 = rev.CANSparkMax(4, rev.MotorType.kBrushless)
-                self.spark_PID_controller_right = self.spark_neo_r3.getPIDController()
-                self.spark_PID_controller_left = self.spark_neo_l1.getPIDController()
+                self.spark_neo_rfront = rev.CANSparkMax(1, rev.MotorType.kBrushless)
+                self.spark_neo_rrear = rev.CANSparkMax(2, rev.MotorType.kBrushless)
+                self.spark_neo_lfront = rev.CANSparkMax(3, rev.MotorType.kBrushless)
+                self.spark_neo_lrear = rev.CANSparkMax(4, rev.MotorType.kBrushless)
+                self.spark_PID_controller_right = self.spark_neo_rfront.getPIDController()
+                self.spark_PID_controller_left = self.spark_neo_lfront.getPIDController()
                 wpilib.Timer.delay(0.02)
 
                 # swap encoders to get sign right
                 # changing them up for mechanum vs WCD
-                self.sparkneo_encoder_1 = rev.CANSparkMax.getEncoder(self.spark_neo_l1)
-                self.sparkneo_encoder_2 = rev.CANSparkMax.getEncoder(self.spark_neo_l2)
-                self.sparkneo_encoder_3 = rev.CANSparkMax.getEncoder(self.spark_neo_r3)
-                self.sparkneo_encoder_4 = rev.CANSparkMax.getEncoder(self.spark_neo_r4)
+                self.sparkneo_encoder_1 = rev.CANSparkMax.getEncoder(self.spark_neo_lfront)
+                self.sparkneo_encoder_2 = rev.CANSparkMax.getEncoder(self.spark_neo_lrear)
+                self.sparkneo_encoder_3 = rev.CANSparkMax.getEncoder(self.spark_neo_rfront)
+                self.sparkneo_encoder_4 = rev.CANSparkMax.getEncoder(self.spark_neo_rrear)
                 wpilib.Timer.delay(0.02)
 
                 # Configure encoders and controllers
@@ -72,10 +76,10 @@ class DriveTrain(Subsystem):
 
                 wpilib.Timer.delay(0.02)
                 # TODO - figure out if I want to invert the motors or the encoders
-                self.spark_neo_l1.setInverted(True)
-                self.spark_neo_l2.setInverted(True)
-                self.spark_neo_r3.setInverted(False)
-                self.spark_neo_r4.setInverted(False)
+                self.spark_neo_lfront.setInverted(False)
+                self.spark_neo_lrear.setInverted(False)
+                self.spark_neo_rfront.setInverted(False)
+                self.spark_neo_rrear.setInverted(False)
 
                 if err_1 != rev.CANError.kOK or err_2 != rev.CANError.kOK:
                     print(f"Warning: drivetrain encoder issue with neo1 returning {err_1} and neo3 returning {err_2}")
@@ -93,18 +97,18 @@ class DriveTrain(Subsystem):
             drive_type = 'mechanum'
             if drive_type == 'wcd':
                 # WCD
-                self.speedgroup_left = SpeedControllerGroup(self.spark_neo_l1)
-                self.speedgroup_right = SpeedControllerGroup(self.spark_neo_r3)
+                self.speedgroup_left = SpeedControllerGroup(self.spark_neo_lfront)
+                self.speedgroup_right = SpeedControllerGroup(self.spark_neo_rfront)
                 self.differential_drive = DifferentialDrive(self.speedgroup_left, self.speedgroup_right)
                 self.drive = self.differential_drive
                 self.differential_drive.setMaxOutput(1.0)
             if drive_type == 'mechanum':
                 # Mechanum
-                self.speedgroup_l1 = SpeedControllerGroup(self.spark_neo_l1)
-                self.speedgroup_l2 = SpeedControllerGroup(self.spark_neo_l2)
-                self.speedgroup_r3 = SpeedControllerGroup(self.spark_neo_r3)
-                self.speedgroup_r4 = SpeedControllerGroup(self.spark_neo_r4)
-                self.mechanum_drive = MecanumDrive(self.speedgroup_l1, self.speedgroup_l2,self.speedgroup_r3,self.speedgroup_r4)
+                self.speedgroup_lfront = SpeedControllerGroup(self.spark_neo_lfront)
+                self.speedgroup_lrear = SpeedControllerGroup(self.spark_neo_lrear)
+                self.speedgroup_rfront = SpeedControllerGroup(self.spark_neo_rfront)
+                self.speedgroup_rrear = SpeedControllerGroup(self.spark_neo_rrear)
+                self.mechanum_drive = MecanumDrive(self.speedgroup_lfront, self.speedgroup_lrear, self.speedgroup_rfront, self.speedgroup_rrear)
                 self.mechanum_drive.setMaxOutput(0.1)
                 self.drive = self.mechanum_drive
 
@@ -129,10 +133,10 @@ class DriveTrain(Subsystem):
         """
         self.setDefaultCommand(DriveByJoystick(self.robot))
 
-    def spark_with_stick(self, y_speed=0, x_speed=0, z_rotation=0):
+    def spark_with_stick(self, y_speed=0, x_speed=0, z_rotation=0, gyroAngle=0):
         '''Simplest way to drive with a joystick'''
         #self.differential_drive.arcadeDrive(x_speed, self.twist_sensitivity * z_rotation, False)
-        self.mechanum_drive.driveCartesian(ySpeed=y_speed, xSpeed=x_speed,zRotation=z_rotation,gyroAngle=0)
+        self.mechanum_drive.driveCartesian(ySpeed=y_speed, xSpeed=x_speed,zRotation=z_rotation)
 
     def stop(self):
         #self.differential_drive.arcadeDrive(0, 0)
@@ -219,7 +223,7 @@ class DriveTrain(Subsystem):
         '''Set the PIDs, etc for the controllers, slot 0 is position and slot 1 is velocity'''
         error_list = []
         if not pid_only:
-            controllers = [self.spark_neo_l1, self.spark_neo_l2, self.spark_neo_r3, self.spark_neo_r4]
+            controllers = [self.spark_neo_lfront, self.spark_neo_lrear, self.spark_neo_rfront, self.spark_neo_rrear]
             for controller in controllers:
                 #error_list.append(controller.restoreFactoryDefaults())
                 #Timer.delay(0.01)
@@ -233,11 +237,11 @@ class DriveTrain(Subsystem):
                 controller.setParameter(rev.ConfigParameter.kSmartMotionMaxVelocity_1, self.maxvel)
                 Timer.delay(0.01)
                 #controller.burnFlash()
-            err_1 = self.spark_neo_l2.follow(self.spark_neo_l1)
-            err_2 = self.spark_neo_r4.follow(self.spark_neo_r3)
+            err_1 = self.spark_neo_lrear.follow(self.spark_neo_lfront)
+            err_2 = self.spark_neo_rrear.follow(self.spark_neo_rfront)
             if err_1 != rev.CANError.kOK or err_2 != rev.CANError.kOK:
                 print(f"Warning: drivetrain follower issue with neo2 returning {err_1} and neo4 returning {err_2}")
-        controllers = [self.spark_neo_l1, self.spark_neo_r3]
+        controllers = [self.spark_neo_lfront, self.spark_neo_rfront]
         for controller in controllers:
             error_list.append(controller.setParameter(rev.ConfigParameter.kP_0, self.PID_dict_pos['kP']))
             error_list.append(controller.setParameter(rev.ConfigParameter.kP_1, self.PID_dict_vel['kP']))
@@ -315,10 +319,10 @@ class DriveTrain(Subsystem):
             SmartDashboard.putNumber("Position Enc3", round(self.sparkneo_encoder_3.getPosition(), 2))
             SmartDashboard.putNumber("Velocity Enc1", round(self.sparkneo_encoder_1.getVelocity(), 2))
             SmartDashboard.putNumber("Velocity Enc3", round(self.sparkneo_encoder_3.getVelocity(), 2))
-            SmartDashboard.putNumber("Power M1", round(self.spark_neo_l1.getAppliedOutput(), 2))
-            SmartDashboard.putNumber("Power M3", round(self.spark_neo_r3.getAppliedOutput(), 2))
-            SmartDashboard.putNumber("Current M1", round(self.spark_neo_l1.getOutputCurrent(), 2))
-            SmartDashboard.putNumber("Current M3", round(self.spark_neo_r3.getOutputCurrent(), 2))
+            SmartDashboard.putNumber("Power M1", round(self.spark_neo_lfront.getAppliedOutput(), 2))
+            SmartDashboard.putNumber("Power M3", round(self.spark_neo_rfront.getAppliedOutput(), 2))
+            SmartDashboard.putNumber("Current M1", round(self.spark_neo_lfront.getOutputCurrent(), 2))
+            SmartDashboard.putNumber("Current M3", round(self.spark_neo_rfront.getOutputCurrent(), 2))
             SmartDashboard.putBoolean('AccLimit', self.is_limited)
 
 
@@ -326,6 +330,6 @@ class DriveTrain(Subsystem):
             self.display_PIDs()
             SmartDashboard.putString("alert",
                                      f"Position: ({round(self.x, 1)},{round(self.y, 1)})  Time: {round(Timer.getFPGATimestamp() - self.robot.enabled_time, 1)}")
-            SmartDashboard.putString("Controller1 Idle", str(self.spark_neo_l1.getIdleMode()))
+            SmartDashboard.putString("Controller1 Idle", str(self.spark_neo_lfront.getIdleMode()))
             SmartDashboard.putNumber("Enc1 Conversion", self.sparkneo_encoder_1.getPositionConversionFactor())
 
