@@ -72,7 +72,7 @@ class DriveByJoystick(Command):
                 print('Unanticipated case in mechanum drive correction')
                 self.corrected_twist = current_twist
             self.execution_count += 1
-            self.robot.drivetrain.spark_with_stick(thrust=thrust, strafe=strafe, z_rotation=self.corrected_twist)
+            self.robot.drivetrain.smooth_drive(thrust=thrust, strafe=strafe, twist = self.corrected_twist)
             self.previous_twist_error = self.heading - self.robot.navigation.get_angle()
 
         else:

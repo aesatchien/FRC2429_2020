@@ -34,13 +34,15 @@ class DpadDrive(Command):
         # easy to correct for heading drift - we know we're driving straight
         twist_correction = self.kp_twist*(self.heading-self.robot.navigation.get_angle())
         if self.state.lower() == "up":
-            self.robot.drivetrain.spark_with_stick(thrust=self.drive_power*self.direction, strafe=0, z_rotation=twist_correction)
+            thrust=self.drive_power*self.direction; strafe=0; twist=twist_correction
         if self.state.lower() == "down":
-            self.robot.drivetrain.spark_with_stick(thrust=-self.drive_power*self.direction, strafe=0, z_rotation=twist_correction)
+            thrust=-self.drive_power*self.direction; strafe=0; twist=twist_correction
         if self.state.lower() == "right":
-            self.robot.drivetrain.spark_with_stick(thrust=0, strafe=-self.strafe_power * self.direction, z_rotation=twist_correction)
+            thrust=0; strafe=-self.strafe_power * self.direction; twist=twist_correction
         if self.state.lower() == "left":
-            self.robot.drivetrain.spark_with_stick(thrust=0, strafe=self.strafe_power * self.direction, z_rotation=twist_correction)
+            thrust=0; strafe=self.strafe_power * self.direction; twist=twist_correction
+        #self.robot.drivetrain.spark_with_stick(thrust=thrust, strafe=strafe, z_rotation=z_rotation)
+        self.robot.drivetrain.smooth_drive(thrust=thrust, strafe=strafe, twist=twist)
 
     def isFinished(self):
         """Make this return true when this Command no longer needs to run execute()"""

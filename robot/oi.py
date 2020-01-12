@@ -55,8 +55,8 @@ class OI(object):
         self.buttonB.whenPressed(UpdatePIDs(robot,0.66, from_dashboard=False))
         self.buttonX.whenPressed(PneumaticPiston(robot, 'open'))
         self.buttonY.whenPressed(PneumaticPiston(robot, 'close'))
-        self.buttonLB.whenPressed(AutonomousDrive(robot, setpoint=2000, control_type='velocity', button=self.buttonLB, from_dashboard=False))
-        self.buttonRB.whenPressed(AutonomousDrive(robot, setpoint=500, control_type='velocity', button=self.buttonRB, from_dashboard=False))
+        # self.buttonLB.whenPressed(AutonomousDrive(robot, setpoint=1000, control_type='velocity', button=self.buttonLB, from_dashboard=False))
+        # self.buttonRB.whenPressed(AutonomousDrive(robot, setpoint=500, control_type='velocity', button=self.buttonRB, from_dashboard=False))
         # self.buttonBack.whenPressed
         # self.buttonStart.whenPressed
         # self.axisButtonLT.whenPressed

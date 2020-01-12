@@ -86,7 +86,7 @@ class DriveTrain(Subsystem):
                 self.display_PIDs()
 
             else:
-                #pass
+                # get a pretend drivetrain for the simulator
                 self.spark_neo_left_front = wpilib.Talon(1)
                 self.spark_neo_left_rear = wpilib.Talon(2)
                 self.spark_neo_right_front = wpilib.Talon(3)
@@ -107,6 +107,7 @@ class DriveTrain(Subsystem):
                 self.differential_drive.setMaxOutput(1.0)
             if drive_type == 'mechanum':
                 # Mechanum
+                #TODO: Reset followers in software
                 self.speedgroup_lfront = SpeedControllerGroup(self.spark_neo_left_front)
                 self.speedgroup_lrear = SpeedControllerGroup(self.spark_neo_left_rear)
                 self.speedgroup_rfront = SpeedControllerGroup(self.spark_neo_right_front)
@@ -138,7 +139,7 @@ class DriveTrain(Subsystem):
     def spark_with_stick(self, thrust=0, strafe=0, z_rotation=0, gyroAngle=0):
         '''Simplest way to drive with a joystick'''
         #self.differential_drive.arcadeDrive(x_speed, self.twist_sensitivity * z_rotation, False)
-        self.mechanum_drive.driveCartesian(ySpeed=thrust, xSpeed=strafe,zRotation=z_rotation)
+        self.mechanum_drive.driveCartesian(xSpeed=thrust, ySpeed=strafe, zRotation=z_rotation)
 
     def stop(self):
         #self.differential_drive.arcadeDrive(0, 0)
@@ -197,7 +198,7 @@ class DriveTrain(Subsystem):
                     self.current_twist = self.current_twist - self.acceleration_limit
         #self.differential_drive.arcadeDrive(self.current_thrust, self.current_twist, True)
         # TODO - fix this for mechanum x and y
-        self.mechanum_drive.driveCartesian(self.current_thrust, self.current_strafe, self.current_twist)
+        self.mechanum_drive.driveCartesian(xSpeed=self.current_thrust, ySpeed=self.current_strafe, zRotation=self.current_twist)
 
     def tank_drive(self, left, right):
         '''Not sure why we would ever need this, but it's here if we do'''
