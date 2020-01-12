@@ -85,11 +85,11 @@ class DriveTrain(Subsystem):
                 self.display_PIDs()
 
             else:
-                pass
-                #self.spark_neo_l1 = wpilib.Talon(1)
-                #self.spark_neo_l2 = wpilib.Talon(2)
-                #self.spark_neo_r3 = wpilib.Talon(3)
-                #self.spark_neo_r4 = wpilib.Talon(4)
+                #pass
+                self.spark_neo_left_front = wpilib.Talon(1)
+                self.spark_neo_left_rear = wpilib.Talon(2)
+                self.spark_neo_right_front = wpilib.Talon(3)
+                self.spark_neo_right_rear = wpilib.Talon(4)
 
             # Not sure if speedcontrollergroups work with the single sparkmax in python - seems to complain
             drive_type = 'mechanum'
@@ -112,7 +112,7 @@ class DriveTrain(Subsystem):
                 self.speedgroup_rrear = SpeedControllerGroup(self.spark_neo_right_rear)
                 self.mechanum_drive = MecanumDrive(self.speedgroup_lfront, self.speedgroup_lrear, self.speedgroup_rfront, self.speedgroup_rrear)
                 #self.mechanum_drive = MecanumDrive(self.spark_neo_left_front, self.spark_neo_left_rear, self.spark_neo_right_front, self.spark_neo_right_rear)
-                self.mechanum_drive.setMaxOutput(0.1)
+                self.mechanum_drive.setMaxOutput(0.25)
                 self.drive = self.mechanum_drive
 
             self.drive.setSafetyEnabled(True)
