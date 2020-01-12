@@ -20,10 +20,11 @@ class DriveTrain(Subsystem):
         super().__init__()
         self.robot = robot
 
-        # Add constants
+        # Add constants and helper variables
         self.twist_sensitivity = 0.99
         self.current_thrust = 0
         self.current_twist = 0
+        self.current_strafe = 0
         self.acceleration_limit = 0.05
         self.counter = 0
         # due to limitations in displaying digits in the Shuffleboard, we'll multiply these by 1000 and divide when updating the controllers
@@ -134,16 +135,16 @@ class DriveTrain(Subsystem):
         """
         self.setDefaultCommand(DriveByJoystick(self.robot))
 
-    def spark_with_stick(self, y_speed=0, x_speed=0, z_rotation=0, gyroAngle=0):
+    def spark_with_stick(self, thrust=0, strafe=0, z_rotation=0, gyroAngle=0):
         '''Simplest way to drive with a joystick'''
         #self.differential_drive.arcadeDrive(x_speed, self.twist_sensitivity * z_rotation, False)
-        self.mechanum_drive.driveCartesian(ySpeed=y_speed, xSpeed=x_speed,zRotation=z_rotation)
+        self.mechanum_drive.driveCartesian(ySpeed=thrust, xSpeed=strafe,zRotation=z_rotation)
 
     def stop(self):
         #self.differential_drive.arcadeDrive(0, 0)
-        self.mechanum_drive.driveCartesian(0,0,0)
+        self.mechanum_drive.driveCartesian(0, 0, 0)
 
-    def smooth_drive(self, thrust, twist):
+    def smooth_drive(self, thrust, strafe, twist):
         '''A less jittery way to drive with a joystick
         TODO: See if this can be implemented in hardware - seems like the acceleration limit can be set there
         TODO: Should be ok to slow down quickly, but not speed up - check this code
@@ -156,7 +157,6 @@ class DriveTrain(Subsystem):
             self.current_thrust = 0
         else:
             if math.fabs(thrust - self.current_thrust) < self.acceleration_limit:
-                self.current_thrust = thrust
                 self.current_thrust = thrust
             else:
                 if thrust - self.current_thrust > 0:
@@ -173,6 +173,17 @@ class DriveTrain(Subsystem):
                     # accelerating backward
                     self.current_thrust = self.current_thrust - self.acceleration_limit
                     self.is_limited = True
+        #strafe section
+        if math.fabs(strafe) < deadzone:
+            self.current_strafe = 0
+        else:
+            if math.fabs(strafe - self.current_strafe) < self.acceleration_limit:
+                self.current_strafe = strafe
+            else:
+                if strafe - self.current_strafe > 0:
+                    self.current_strafe = self.current_strafe + self.acceleration_limit
+                else:
+                    self.current_strafe = self.current_strafe - self.acceleration_limit
         # twist section
         if math.fabs(twist) < deadzone:
             self.current_twist = 0
@@ -186,7 +197,7 @@ class DriveTrain(Subsystem):
                     self.current_twist = self.current_twist - self.acceleration_limit
         #self.differential_drive.arcadeDrive(self.current_thrust, self.current_twist, True)
         # TODO - fix this for mechanum x and y
-        self.mechanum_drive.driveCartesian(self.current_thrust, self.current_thrust, self.current_twist)
+        self.mechanum_drive.driveCartesian(self.current_thrust, self.current_strafe, self.current_twist)
 
     def tank_drive(self, left, right):
         '''Not sure why we would ever need this, but it's here if we do'''
@@ -203,7 +214,6 @@ class DriveTrain(Subsystem):
         multipliers = [1.0, 1.0, -1.0, -1.0]
         for multiplier, controller in zip(multipliers, controllers):
             controller.setReference(multiplier * velocity, rev.ControlType.kVelocity, 1)
-        # self.differential_drive.feed()
 
     def goToSetPoint(self, set_point):
         self.reset()

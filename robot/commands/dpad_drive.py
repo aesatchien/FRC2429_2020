@@ -13,8 +13,9 @@ class DpadDrive(Command):
         self.robot = robot
         self.state = state
         self.button = button
-        self.drive_power = 0.25
+        self.drive_power = 0.19
         self.strafe_power = 0.2
+        self.kp_twist = 0.03
         self.direction = 1 # change this to -1 change all directions quickly
         strip_name = lambda x: str(x)[1 + str(x).rfind('.'):-2]
         self.name = strip_name(self.__class__)
@@ -24,19 +25,22 @@ class DpadDrive(Command):
         self.start_time = round(Timer.getFPGATimestamp() - self.robot.enabled_time,1)
         print("\n" + f"** Started {self.name} with input {self.state} at {self.start_time} s **", flush=True)
         SmartDashboard.putString("alert", f"** Started {self.name} with input {self.state} at {self.start_time} s **")
+        self.heading = self.robot.navigation.get_angle()
     def execute(self):
         """
         Called repeatedly when this Command is scheduled to run
         Should not have to change this if it works - just change variables above
         """
+        # easy to correct for heading drift - we know we're driving straight
+        twist_correction = self.kp_twist*(self.heading-self.robot.navigation.get_angle())
         if self.state.lower() == "up":
-            self.robot.drivetrain.spark_with_stick(self.drive_power*self.direction, 0)
+            self.robot.drivetrain.spark_with_stick(thrust=self.drive_power*self.direction, strafe=0, z_rotation=twist_correction)
         if self.state.lower() == "down":
-            self.robot.drivetrain.spark_with_stick(-self.drive_power*self.direction, 0)
+            self.robot.drivetrain.spark_with_stick(thrust=-self.drive_power*self.direction, strafe=0, z_rotation=twist_correction)
         if self.state.lower() == "right":
-            self.robot.drivetrain.spark_with_stick(0, -self.strafe_power * self.direction)
+            self.robot.drivetrain.spark_with_stick(thrust=0, strafe=-self.strafe_power * self.direction, z_rotation=twist_correction)
         if self.state.lower() == "left":
-            self.robot.drivetrain.spark_with_stick(0, self.strafe_power * self.direction)
+            self.robot.drivetrain.spark_with_stick(thrust=0, strafe=self.strafe_power * self.direction, z_rotation=twist_correction)
 
     def isFinished(self):
         """Make this return true when this Command no longer needs to run execute()"""
