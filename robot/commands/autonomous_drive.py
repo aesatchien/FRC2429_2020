@@ -57,15 +57,15 @@ class AutonomousDrive(Command):
 
     def execute(self):
         """Called repeatedly when this Command is scheduled to run"""
-        self.robot.drivetrain.differential_drive.feed()
+        self.robot.drivetrain.drive.feed()
 
         if self.counter % 2 == 0:
             #self.telemetry['time'].append(Timer.getFPGATimestamp() - self.robot.enabled_time)
             self.telemetry['time'].append(self.timeSinceInitialized())
             self.telemetry['position'].append(self.robot.drivetrain.get_position())
             self.telemetry['velocity'].append(self.robot.drivetrain.sparkneo_encoder_1.getVelocity())
-            self.telemetry['current'].append(self.robot.drivetrain.spark_neo_r3.getOutputCurrent())
-            self.telemetry['output'].append(self.robot.drivetrain.spark_neo_r3.getAppliedOutput())
+            self.telemetry['current'].append(self.robot.drivetrain.spark_neo_left_front.getOutputCurrent())
+            self.telemetry['output'].append(self.robot.drivetrain.spark_neo_left_front.getAppliedOutput())
 
         self.counter += 1
 

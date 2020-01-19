@@ -34,7 +34,7 @@ class DriveTrain(Subsystem):
         self.PID_dict_vel = {'kP': 0.00015, 'kI': 8.0e-7, 'kD': 0.00, 'kIz': 0, 'kFF': 0.00022, 'kMaxOutput': 0.99,
                              'kMinOutput': -0.99}
         # Smart Motion Coefficients - these don't seem to be writing for some reason... python is old?  just set with rev's program for now
-        self.maxvel = 1000 # rpm
+        self.maxvel = 500 # rpm
         self.maxacc = 500
         self.current_limit = 40
         self.x = 0
@@ -67,7 +67,7 @@ class DriveTrain(Subsystem):
                 # Configure encoders and controllers
                 # should be wheel_diameter * pi / gear_ratio - and for the old double reduction gear box
                 # the gear ratio was either  5.67:1 or 4.17:1.  With the shifter (low gear) I think it was a 12.26.
-                conversion_factor = 6.0 * 3.141 / 4.17
+                conversion_factor = 8.0 * 3.141 / 4.17
                 err_1 = self.sparkneo_encoder_1.setPositionConversionFactor(conversion_factor)
                 err_2 = self.sparkneo_encoder_2.setPositionConversionFactor(conversion_factor)
                 err_3 = self.sparkneo_encoder_3.setPositionConversionFactor(conversion_factor)
@@ -228,8 +228,10 @@ class DriveTrain(Subsystem):
     def reset(self):
         if self.robot.isReal():
             err_1 = self.sparkneo_encoder_1.setPosition(0)
-            err_2 = self.sparkneo_encoder_3.setPosition(0)
-            if err_1 != rev.CANError.kOK or err_2 != rev.CANError.kOK:
+            err_2 = self.sparkneo_encoder_2.setPosition(0)
+            err_3 = self.sparkneo_encoder_3.setPosition(0)
+            err_4 = self.sparkneo_encoder_4.setPosition(0)
+            if err_1 != rev.CANError.kOK or err_2 != rev.CANError.kOK or err_3 != rev.CANError.kOK or err_4 != rev.CANError.kOK:
                 print(f"Warning: drivetrain reset issue with neo1 returning {err_1} and neo3 returning {err_2}")
         self.x = 0
         self.y = 0
@@ -328,11 +330,15 @@ class DriveTrain(Subsystem):
             SmartDashboard.putNumber("Robot X", round(self.x, 2))
             SmartDashboard.putNumber("Robot Y", round(self.y, 2))
             SmartDashboard.putNumber("Position Enc1", round(self.sparkneo_encoder_1.getPosition(), 2))
+            SmartDashboard.putNumber("Position Enc2", round(self.sparkneo_encoder_2.getPosition(), 2))
             SmartDashboard.putNumber("Position Enc3", round(self.sparkneo_encoder_3.getPosition(), 2))
+            SmartDashboard.putNumber("Position Enc4", round(self.sparkneo_encoder_4.getPosition(), 2))
             SmartDashboard.putNumber("Velocity Enc1", round(self.sparkneo_encoder_1.getVelocity(), 2))
+            SmartDashboard.putNumber("Velocity Enc2", round(self.sparkneo_encoder_2.getVelocity(), 2))
             SmartDashboard.putNumber("Velocity Enc3", round(self.sparkneo_encoder_3.getVelocity(), 2))
-            SmartDashboard.putNumber("Power M1", round(self.spark_neo_left_front.getAppliedOutput(), 2))
-            SmartDashboard.putNumber("Power M3", round(self.spark_neo_right_front.getAppliedOutput(), 2))
+            SmartDashboard.putNumber("Velocity Enc4", round(self.sparkneo_encoder_4.getVelocity(), 2))
+            #SmartDashboard.putNumber("Power M1", round(self.spark_neo_left_front.getAppliedOutput(), 2))
+            #SmartDashboard.putNumber("Power M3", round(self.spark_neo_right_front.getAppliedOutput(), 2))
             SmartDashboard.putNumber("Current M1", round(self.spark_neo_left_front.getOutputCurrent(), 2))
             SmartDashboard.putNumber("Current M3", round(self.spark_neo_right_front.getOutputCurrent(), 2))
             SmartDashboard.putBoolean('AccLimit', self.is_limited)
