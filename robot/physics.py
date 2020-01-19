@@ -25,14 +25,14 @@ class PhysicsEngine(object):
 
         # fmt: off
         self.drivetrain = tankmodel.TankModel.theory(
-            motor_cfgs.MOTOR_CFG_CIM,           # motor configuration
-            110 * units.lbs,                    # robot mass
-            10.71,                              # drivetrain gear ratio
-            2,                                  # motors per side
-            22 * units.inch,                    # robot wheelbase
-            23 * units.inch + bumper_width * 2, # robot width
-            32 * units.inch + bumper_width * 2, # robot length
-            6 * units.inch,                     # wheel diameter
+            motor_cfgs.MOTOR_CFG_CIM,  # motor configuration
+            110 * units.lbs,  # robot mass
+            5,  # drivetrain gear ratio
+            2,  # motors per side
+            22 * units.inch,  # robot wheelbase
+            23 * units.inch + bumper_width * 2,  # robot width
+            32 * units.inch + bumper_width * 2,  # robot length
+            8 * units.inch,  # wheel diameter
         )
         # fmt: on
 
@@ -40,7 +40,7 @@ class PhysicsEngine(object):
         """
             Called when the simulation parameters for the program need to be
             updated.
-            
+
             :param now: The current time as a float
             :param tm_diff: The amount of time that has passed since the last
                             time that this function was called
