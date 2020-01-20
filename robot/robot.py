@@ -9,6 +9,7 @@ from oi import OI
 from subsystems.drivetrain import DriveTrain
 from subsystems.navigation import Navigation
 from subsystems.pneumatics import Pneumatics
+from subsystems.peripherals import Peripherals
 
 
 class Robot(CommandBasedRobot):
@@ -27,6 +28,7 @@ class Robot(CommandBasedRobot):
         self.drivetrain = DriveTrain(self)
         self.navigation = Navigation(self)
         self.pneumatics = Pneumatics(self)
+        self.peripherals = Peripherals(self)
         #wpilib.SmartDashboard.putData(self.drivetrain)
 
         # This MUST be here. If the OI creates Commands (which it very likely

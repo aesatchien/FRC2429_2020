@@ -21,7 +21,7 @@ class DriveTrain(Subsystem):
         self.robot = robot
 
         # Add constants and helper variables
-        self.twist_sensitivity = 0.99
+        self.twist_sensitivity = 0.5
         self.current_thrust = 0
         self.current_twist = 0
         self.current_strafe = 0
@@ -140,7 +140,7 @@ class DriveTrain(Subsystem):
     def spark_with_stick(self, thrust=0, strafe=0, z_rotation=0, gyroAngle=0):
         '''Simplest way to drive with a joystick'''
         #self.differential_drive.arcadeDrive(x_speed, self.twist_sensitivity * z_rotation, False)
-        self.mechanum_drive.driveCartesian(xSpeed=thrust, ySpeed=strafe, zRotation=z_rotation)
+        self.mechanum_drive.driveCartesian(xSpeed=thrust, ySpeed=strafe, zRotation=self.twist_sensitivity*z_rotation)
 
     def stop(self):
         #self.differential_drive.arcadeDrive(0, 0)

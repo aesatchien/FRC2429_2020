@@ -10,6 +10,7 @@ from commands.update_PIDs import UpdatePIDs
 from commands.autonomous_drive import AutonomousDrive
 from commands.autonomous_rotate import AutonomousRotate
 from commands.pneumatic_piston import PneumaticPiston
+from commands.intake import Intake
 from commands.autonomous_group import AutonomousGroup
 
 class OI(object):
@@ -51,6 +52,9 @@ class OI(object):
         self.axisButtonLT = AxisButton(self.stick, 2)
         self.axisButtonRT = AxisButton(self.stick, 3)
 
+        # binding button to commands
+        self.axisButtonRT.whenPressed(Intake(robot, power=0, button=self.axisButtonRT))
+        self.axisButtonLT.whenPressed(Intake(robot, power=0, button=self.axisButtonLT))
         self.buttonA.whenPressed(UpdatePIDs(robot,1.5, from_dashboard=False))
         self.buttonB.whenPressed(UpdatePIDs(robot,0.66, from_dashboard=False))
         self.buttonX.whenPressed(PneumaticPiston(robot, 'open'))
