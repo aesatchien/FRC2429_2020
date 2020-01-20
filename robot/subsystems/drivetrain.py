@@ -27,6 +27,7 @@ class DriveTrain(Subsystem):
         self.current_strafe = 0
         self.acceleration_limit = 0.05
         self.counter = 0
+        self.mecanum_power_limit = 0.6
         # due to limitations in displaying digits in the Shuffleboard, we'll multiply these by 1000 and divide when updating the controllers
         self.PID_multiplier = 1000.
         self.PID_dict_pos = {'kP': 0.010, 'kI': 5.0e-7, 'kD': 0.40, 'kIz': 0, 'kFF': 0.002, 'kMaxOutput': 0.99,
@@ -114,7 +115,7 @@ class DriveTrain(Subsystem):
                 self.speedgroup_rrear = SpeedControllerGroup(self.spark_neo_right_rear)
                 self.mechanum_drive = MecanumDrive(self.speedgroup_lfront, self.speedgroup_lrear, self.speedgroup_rfront, self.speedgroup_rrear)
                 #self.mechanum_drive = MecanumDrive(self.spark_neo_left_front, self.spark_neo_left_rear, self.spark_neo_right_front, self.spark_neo_right_rear)
-                self.mechanum_drive.setMaxOutput(0.25)
+                self.mechanum_drive.setMaxOutput(self.mecanum_power_limit)
                 self.drive = self.mechanum_drive
 
             self.drive.setSafetyEnabled(True)

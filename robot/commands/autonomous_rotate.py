@@ -18,7 +18,7 @@ class AutonomousRotate(Command):
         self.from_dashboard = from_dashboard
         self.setpoint = setpoint
         if timeout is None:
-            self.setTimeout(5)
+            self.setTimeout(3)
         else:
             self.setTimeout(timeout)
         self.robot = robot
@@ -29,7 +29,7 @@ class AutonomousRotate(Command):
         self.start_angle =0
         self.error = 0
         self.power = 0
-        self.max_power = 0.2
+        self.max_power = 0.25
         self.prev_error = 0
         strip_name = lambda x: str(x)[1 + str(x).rfind('.'):-2]
         self.name = strip_name(self.__class__)
@@ -54,7 +54,8 @@ class AutonomousRotate(Command):
             self.power = min(self.max_power, self.power)
         else:
             self.power = max(-self.max_power, self.power)
-        self.robot.drivetrain.smooth_drive(0,-self.power)
+        #self.robot.drivetrain.smooth_drive(0,-self.power)
+        self.robot.drivetrain.smooth_drive(thrust=0, strafe=0, twist=self.power)
         SmartDashboard.putNumber("error", self.error)
 
     def isFinished(self):

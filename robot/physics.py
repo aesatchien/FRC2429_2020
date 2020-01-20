@@ -5,6 +5,7 @@
 
 from pyfrc.physics import motor_cfgs, tankmodel
 from pyfrc.physics.units import units
+from pyfrc.physics import drivetrains
 
 
 class PhysicsEngine(object):
@@ -27,11 +28,11 @@ class PhysicsEngine(object):
         self.drivetrain = tankmodel.TankModel.theory(
             motor_cfgs.MOTOR_CFG_CIM,  # motor configuration
             110 * units.lbs,  # robot mass
-            5,  # drivetrain gear ratio
+            2,  # drivetrain gear ratio
             2,  # motors per side
             22 * units.inch,  # robot wheelbase
-            23 * units.inch + bumper_width * 2,  # robot width
-            32 * units.inch + bumper_width * 2,  # robot length
+            28 * units.inch + bumper_width * 2,  # robot width
+            30 * units.inch + bumper_width * 2,  # robot length
             8 * units.inch,  # wheel diameter
         )
         # fmt: on
@@ -47,12 +48,28 @@ class PhysicsEngine(object):
         """
 
         # Simulate the drivetrain
-        lr_motor = hal_data["pwm"][1]["value"]
-        rr_motor = hal_data["pwm"][3]["value"]
+        #lr_motor = hal_data["pwm"][1]["value"]
+        #rr_motor = hal_data["pwm"][3]["value"]
 
         # Not needed because front and rear should be in sync
         # lf_motor = hal_data['pwm'][3]['value']
         # rf_motor = hal_data['pwm'][4]['value']
 
-        x, y, angle = self.drivetrain.get_distance(lr_motor, rr_motor, tm_diff)
-        self.physics_controller.distance_drive(x, y, angle)
+        #x, y, angle = self.drivetrain.get_distance(lr_motor, rr_motor, tm_diff)
+        #self.physics_controller.distance_drive(x, y, angle)
+
+        # Simulate the drivetrain
+        # -> Remember, in the constructor we inverted the left motors, so
+        #    invert the motor values here too!
+        lf_motor = hal_data["pwm"][1]["value"]
+        lr_motor = hal_data["pwm"][2]["value"]
+        rf_motor = -hal_data["pwm"][3]["value"]
+        rr_motor = -hal_data["pwm"][4]["value"]
+
+        vx, vy, vw = drivetrains.mecanum_drivetrain(
+            lr_motor, rr_motor, lf_motor, rf_motor
+        )
+        #self.physics_controller.vector_drive(vx, vy, vw, tm_diff)
+        speed_factor = 4.0
+        strafe_factor = 1.5
+        self.physics_controller.vector_drive(strafe_factor*vx, speed_factor*vy, speed_factor*vw, tm_diff)
