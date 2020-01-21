@@ -7,8 +7,8 @@ from wpilib.smartdashboard import SmartDashboard
 class Peripherals(Subsystem):
     def __init__(self, robot):
         super().__init__()
-        self.intake_spark = Spark(1)
-        self.control_panel_spark = Spark(0)
+        self.intake_spark = Spark(6)
+        self.control_panel_spark = Spark(5)
 
     def run_intake(self, power=0):
         self.intake_spark.set(power)

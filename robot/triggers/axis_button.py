@@ -9,7 +9,7 @@ class AxisButton(Button):
     def __init__(self, joystick, axis):
         self.joystick = joystick
         self.axis = axis
-        self.threshold = 0.01
+        self.threshold = 0.03
 
     def get(self):
         return self.joystick.getRawAxis(self.axis) > self.threshold

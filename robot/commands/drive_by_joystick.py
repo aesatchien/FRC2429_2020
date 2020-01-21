@@ -38,6 +38,8 @@ class DriveByJoystick(Command):
         self.previous_twist_error = 0
         self.gyro_error = 0
         self.heading = self.robot.navigation.get_angle()
+        self.start_time = round(Timer.getFPGATimestamp() - self.robot.enabled_time,1)
+        print("\n" + f"** Started {self.name} at {self.start_time} s **", flush=True)
 
     def execute(self):
         """Called repeatedly when this Command is scheduled to run"""
