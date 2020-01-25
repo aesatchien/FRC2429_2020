@@ -11,7 +11,9 @@ from commands.autonomous_drive import AutonomousDrive
 from commands.autonomous_rotate import AutonomousRotate
 from commands.pneumatic_piston import PneumaticPiston
 from commands.intake import Intake
-from commands.autonomous_group import AutonomousGroup
+from commands.panel_spinner import PanelSpinner
+from commands.actuate_gate import ActuateGate
+#from commands.autonomous_group import AutonomousGroup
 
 class OI(object):
     """
@@ -55,12 +57,14 @@ class OI(object):
         # binding button to commands
         self.axisButtonRT.whenPressed(Intake(robot, power=0, button=self.axisButtonRT))
         self.axisButtonLT.whenPressed(Intake(robot, power=0, button=self.axisButtonLT))
+        self.buttonRB.whenPressed(ActuateGate(robot, direction="open"))
+        self.buttonLB.whenPressed(ActuateGate(robot, direction="close"))
         self.buttonA.whenPressed(UpdatePIDs(robot,1.5, from_dashboard=False))
         self.buttonB.whenPressed(UpdatePIDs(robot,0.66, from_dashboard=False))
         self.buttonX.whenPressed(PneumaticPiston(robot, 'open'))
         self.buttonY.whenPressed(PneumaticPiston(robot, 'close'))
-        self.buttonLB.whenPressed(AutonomousDrive(robot, setpoint=250, control_type='velocity', button=self.buttonLB, from_dashboard=False))
-        self.buttonRB.whenPressed(AutonomousDrive(robot, setpoint=500, control_type='velocity', button=self.buttonRB, from_dashboard=False))
+        #self.buttonLB.whenPressed(AutonomousDrive(robot, setpoint=250, control_type='velocity', button=self.buttonLB, from_dashboard=False))
+        #self.buttonRB.whenPressed(AutonomousDrive(robot, setpoint=500, control_type='velocity', button=self.buttonRB, from_dashboard=False))
         # self.buttonBack.whenPressed
         # self.buttonStart.whenPressed
         # self.axisButtonLT.whenPressed
@@ -71,7 +75,7 @@ class OI(object):
         self.povButtonLeft.whenPressed(DpadDrive(robot, "left", self.povButtonLeft))
 
         # add/change bindings if we are using more than one joystick
-        self.competition_mode = False
+        self.competition_mode = True
         if self.competition_mode:
             self.co_stick = wpilib.Joystick(1)
             self.co_buttonA = JoystickButton(self.co_stick, 1)
@@ -88,6 +92,17 @@ class OI(object):
             self.co_povButtonLeft = POVButton(self.co_stick, 270)
             self.co_axisButtonLT = AxisButton(self.co_stick, 2)
             self.co_axisButtonRT = AxisButton(self.co_stick, 3)
+
+            self.co_axisButtonRT.whenPressed(Intake(robot, power=0, button=self.co_axisButtonRT))
+            self.co_axisButtonLT.whenPressed(Intake(robot, power=0, button=self.co_axisButtonLT))
+            self.co_buttonRB.whenPressed(ActuateGate(robot, direction = "open"))
+            self.co_buttonLB.whenPressed(ActuateGate(robot, direction = "close"))
+            self.co_buttonA.whenPressed(PanelSpinner(robot, button=self.co_buttonA, power=0))
+            self.co_povButtonUp.whenPressed(DpadDrive(robot, "up", self.co_povButtonUp))
+            self.co_povButtonDown.whenPressed(DpadDrive(robot, "down", self.co_povButtonDown))
+            self.co_povButtonRight.whenPressed(DpadDrive(robot, "right", self.co_povButtonRight))
+            self.co_povButtonLeft.whenPressed(DpadDrive(robot, "left", self.co_povButtonLeft))
+
 
     def getJoystick(self):
         return self.stick

@@ -14,7 +14,9 @@ class DpadDrive(Command):
         self.state = state
         self.button = button
         self.drive_power = 0.3
+        self.co_drive_power = 0.15
         self.strafe_power = 0.50
+        self.co_strafe_power = 0.25
         self.kp_twist = 0.03
         self.direction = 1 # change this to -1 change all directions quickly
         strip_name = lambda x: str(x)[1 + str(x).rfind('.'):-2]
@@ -33,15 +35,27 @@ class DpadDrive(Command):
         """
         # easy to correct for heading drift - we know we're driving straight
         twist_correction = self.kp_twist*(self.heading-self.robot.navigation.get_angle())
-        if self.state.lower() == "up":
+        if self.button == self.robot.oi.povButtonUp:
             thrust=self.drive_power*self.direction; strafe=0; twist=twist_correction
-        if self.state.lower() == "down":
+        if self.button == self.robot.oi.povButtonDown:
             thrust=-self.drive_power*self.direction; strafe=0; twist=twist_correction
-        if self.state.lower() == "right":
+        if self.button == self.robot.oi.povButtonLeft:
             thrust=0; strafe=-self.strafe_power * self.direction; twist=twist_correction
-        if self.state.lower() == "left":
+        if self.button == self.robot.oi.povButtonRight:
             thrust=0; strafe=self.strafe_power * self.direction; twist=twist_correction
+
+        if self.button == self.robot.oi.co_povButtonUp:
+            thrust=self.co_drive_power*self.direction; strafe=0; twist=twist_correction
+        if self.button == self.robot.oi.co_povButtonDown:
+            thrust=-self.co_drive_power*self.direction; strafe=0; twist=twist_correction
+        if self.button == self.robot.oi.co_povButtonLeft:
+            thrust=0; strafe=-self.co_strafe_power * self.direction; twist=twist_correction
+        if self.button == self.robot.oi.co_povButtonRight:
+            thrust=0; strafe=self.co_strafe_power * self.direction; twist=twist_correction
+
+
         #self.robot.drivetrain.spark_with_stick(thrust=thrust, strafe=strafe, z_rotation=z_rotation)
+
         self.robot.drivetrain.smooth_drive(thrust=thrust, strafe=strafe, twist=twist)
 
     def isFinished(self):
