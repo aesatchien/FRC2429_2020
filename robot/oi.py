@@ -93,10 +93,11 @@ class OI(object):
             self.co_axisButtonLT = AxisButton(self.co_stick, 2)
             self.co_axisButtonRT = AxisButton(self.co_stick, 3)
 
+            # co-pilot joystick to commands
             self.co_axisButtonRT.whenPressed(Intake(robot, power=0, button=self.co_axisButtonRT))
             self.co_axisButtonLT.whenPressed(Intake(robot, power=0, button=self.co_axisButtonLT))
-            self.co_buttonRB.whenPressed(ActuateGate(robot, direction = "open"))
-            self.co_buttonLB.whenPressed(ActuateGate(robot, direction = "close"))
+            self.co_buttonRB.whenPressed(ActuateGate(robot, direction="open"))
+            self.co_buttonLB.whenPressed(ActuateGate(robot, direction="close"))
             self.co_buttonA.whenPressed(PanelSpinner(robot, button=self.co_buttonA, power=0))
             self.co_povButtonUp.whenPressed(DpadDrive(robot, "up", self.co_povButtonUp))
             self.co_povButtonDown.whenPressed(DpadDrive(robot, "down", self.co_povButtonDown))

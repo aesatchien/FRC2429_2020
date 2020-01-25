@@ -1,6 +1,7 @@
 from wpilib.command import Command
 from wpilib import Timer
 
+
 class PneumaticPiston(Command):
     """
     This command opens and cloed the piston
