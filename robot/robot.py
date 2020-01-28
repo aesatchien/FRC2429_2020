@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 # Attempt to convert 2019 Spartan Java to Python - 11/22/2019 CJH
+# Then attempt to convert that to the 2020 wpilib API - 11/27/2020 CJH
 import wpilib
 from wpilib import Timer
 from wpilib.command import Scheduler
@@ -27,7 +28,7 @@ class Robot(CommandBasedRobot):
         # Initialize the subsystems
         self.drivetrain = DriveTrain(self)
         self.navigation = Navigation(self)
-        self.pneumatics = Pneumatics(self)
+        #self.pneumatics = Pneumatics(self)
         self.peripherals = Peripherals(self)
         #wpilib.SmartDashboard.putData(self.drivetrain)
 
@@ -36,9 +37,9 @@ class Robot(CommandBasedRobot):
         # which commands extend), subsystems are not guaranteed to be
         # yet. Thus, their requires() statements may grab null pointers. Bad
         # news. Don't move it.
-        self.oi = OI(self)
+        #self.oi = OI(self)
 
-        wpilib.SmartDashboard.putData(Scheduler.getInstance())
+        #wpilib.SmartDashboard.putData(Scheduler.getInstance())
         # instantiate the command used for the autonomous period
         self.autonomousCommand = None
 

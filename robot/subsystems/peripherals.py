@@ -3,11 +3,11 @@ import wpilib
 from wpilib.command import Subsystem
 from wpilib import Spark
 from wpilib import Servo
-from wpilib.smartdashboard import SmartDashboard
+from wpilib import SmartDashboard
 
 class Peripherals(Subsystem):
     def __init__(self, robot):
-        super().__init__()
+        super().__init__("peripherals")
         self.intake_spark = Spark(6)
         self.control_panel_spark = Spark(5)
         self.left_dispenser_gate = Servo(7)

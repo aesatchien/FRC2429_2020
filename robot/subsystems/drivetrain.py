@@ -1,9 +1,9 @@
 # Attempt to convert 2019 Spartan Java to Python - 11/22/2019 CJH
 import math
 import wpilib
-from wpilib.smartdashboard import SmartDashboard
+from wpilib import SmartDashboard
 from wpilib.command import Subsystem
-from wpilib.speedcontrollergroup import SpeedControllerGroup
+from wpilib import SpeedControllerGroup
 from wpilib.drive import DifferentialDrive
 from wpilib.drive import MecanumDrive
 import rev
@@ -17,7 +17,7 @@ class DriveTrain(Subsystem):
     """
 
     def __init__(self, robot):
-        super().__init__()
+        super().__init__("drivetrain")
         self.robot = robot
 
         # Add constants and helper variables
@@ -55,7 +55,8 @@ class DriveTrain(Subsystem):
                 self.spark_PID_controller_right_rear = self.spark_neo_right_rear.getPIDController()
                 self.spark_PID_controller_left_front = self.spark_neo_left_front.getPIDController()
                 self.spark_PID_controller_left_rear = self.spark_neo_left_rear.getPIDController()
-                wpilib.Timer.delay(0.02)
+                #wpilib.Timer.delay(0.02)
+
 
                 # swap encoders to get sign right
                 # changing them up for mechanum vs WCD
@@ -63,7 +64,7 @@ class DriveTrain(Subsystem):
                 self.sparkneo_encoder_2 = rev.CANSparkMax.getEncoder(self.spark_neo_left_rear)
                 self.sparkneo_encoder_3 = rev.CANSparkMax.getEncoder(self.spark_neo_right_front)
                 self.sparkneo_encoder_4 = rev.CANSparkMax.getEncoder(self.spark_neo_right_rear)
-                wpilib.Timer.delay(0.02)
+                #wpilib.Timer.delay(0.02)
 
                 # Configure encoders and controllers
                 # should be wheel_diameter * pi / gear_ratio - and for the old double reduction gear box
@@ -74,14 +75,14 @@ class DriveTrain(Subsystem):
                 err_3 = self.sparkneo_encoder_3.setPositionConversionFactor(conversion_factor)
                 err_4 = self.sparkneo_encoder_4.setPositionConversionFactor(conversion_factor)
 
-                wpilib.Timer.delay(0.02)
+                #wpilib.Timer.delay(0.02)
                 # TODO - figure out if I want to invert the motors or the encoders
                 self.spark_neo_left_front.setInverted(False)
                 self.spark_neo_left_rear.setInverted(False)
                 self.spark_neo_right_front.setInverted(False)
                 self.spark_neo_right_rear.setInverted(False)
 
-                if err_1 != rev.CANError.kOK or err_2 != rev.CANError.kOK:
+                if err_1 != rev.CANError.kOk or err_2 != rev.CANError.kOk:
                     print(f"Warning: drivetrain encoder issue with neo1 returning {err_1} and neo3 returning {err_2}")
                 self.configure_controllers()
                 self.display_PIDs()
@@ -99,7 +100,7 @@ class DriveTrain(Subsystem):
                 # WCD
                 err_1 = self.spark_neo_left_rear.follow(self.spark_neo_left_front)
                 err_2 = self.spark_neo_right_rear.follow(self.spark_neo_right_front)
-                if err_1 != rev.CANError.kOK or err_2 != rev.CANError.kOK:
+                if err_1 != rev.CANError.kOk or err_2 != rev.CANError.kOk:
                     print(f"Warning: drivetrain follower issue with neo2 returning {err_1} and neo4 returning {err_2}")
                 self.speedgroup_left = SpeedControllerGroup(self.spark_neo_left_front)
                 self.speedgroup_right = SpeedControllerGroup(self.spark_neo_right_front)
@@ -127,7 +128,7 @@ class DriveTrain(Subsystem):
             # wpilib.LiveWindow.addActuator("DriveTrain", "spark_neo_l2", self.spark_neo_l2)
             # wpilib.LiveWindow.addActuator("DriveTrain", "spark_neo_r4", self.spark_neo_r4)
 
-        except rev.CANError:
+        except:
             print('Buncha CAN errors)')
 
 
@@ -232,11 +233,11 @@ class DriveTrain(Subsystem):
             err_2 = self.sparkneo_encoder_2.setPosition(0)
             err_3 = self.sparkneo_encoder_3.setPosition(0)
             err_4 = self.sparkneo_encoder_4.setPosition(0)
-            if err_1 != rev.CANError.kOK or err_2 != rev.CANError.kOK or err_3 != rev.CANError.kOK or err_4 != rev.CANError.kOK:
+            if err_1 != rev.CANError.kOk or err_2 != rev.CANError.kOk or err_3 != rev.CANError.kOk or err_4 != rev.CANError.kOk:
                 print(f"Warning: drivetrain reset issue with neo1 returning {err_1} and neo3 returning {err_2}")
         self.x = 0
         self.y = 0
-        wpilib.Timer.delay(0.02)
+        #wpilib.Timer.delay(0.02)
 
     def configure_controllers(self, pid_only=False):
         '''Set the PIDs, etc for the controllers, slot 0 is position and slot 1 is velocity'''
@@ -248,13 +249,13 @@ class DriveTrain(Subsystem):
                 #Timer.delay(0.01)
                 #looks like they orphaned the setIdleMode - it doesn't work.  Try ConfigParameter
                 #error_list.append(controller.setIdleMode(rev.IdleMode.kBrake))
-                controller.setParameter(rev.ConfigParameter.kIdleMode, rev.IdleMode.kBrake)
+                #controller.setParameter(rev.ConfigParameter.kIdleMode, rev.IdleMode.kBrake)
                 error_list.append(controller.setSmartCurrentLimit(self.current_limit))
                 controller.setParameter(rev.ConfigParameter.kSmartMotionMaxAccel_0, self.maxacc)
                 controller.setParameter(rev.ConfigParameter.kSmartMotionMaxAccel_1, self.maxacc)
                 controller.setParameter(rev.ConfigParameter.kSmartMotionMaxVelocity_0, self.maxvel)
                 controller.setParameter(rev.ConfigParameter.kSmartMotionMaxVelocity_1, self.maxvel)
-                Timer.delay(0.01)
+                #Timer.delay(0.01)
                 #controller.burnFlash()
 
         controllers = [self.spark_neo_left_front, self.spark_neo_left_rear, self.spark_neo_right_front, self.spark_neo_right_rear]
@@ -274,7 +275,7 @@ class DriveTrain(Subsystem):
             error_list.append(controller.setParameter(rev.ConfigParameter.kOutputMin_0, self.PID_dict_pos['kMinOutput']))
             error_list.append(controller.setParameter(rev.ConfigParameter.kOutputMin_1, self.PID_dict_vel['kMinOutput']))
             #controller.burnFlash()
-            Timer.delay(0.02)
+            #Timer.delay(0.02)
 
         # if 1 in error_list or 2 in error_list:
         #    print(f'Issue in configuring controllers: {error_list}')

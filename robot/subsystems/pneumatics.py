@@ -2,11 +2,11 @@
 import wpilib
 from wpilib.command import Subsystem
 from wpilib import DoubleSolenoid, Compressor
-from wpilib.smartdashboard import SmartDashboard
+from wpilib import SmartDashboard
 
 class Pneumatics(Subsystem):
     def __init__(self, robot):
-        super().__init__()
+        super().__init__("pneumatics")
         self.counter = 0
         self.double_solenoid = DoubleSolenoid(0,1)
         self.compressor = Compressor(0)

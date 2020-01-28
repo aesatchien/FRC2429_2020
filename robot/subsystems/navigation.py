@@ -2,7 +2,7 @@
 import wpilib
 import navx
 from wpilib.command import Subsystem
-from wpilib.smartdashboard import SmartDashboard
+from wpilib import SmartDashboard
 
 class Navigation(Subsystem):
     def __init__(self, robot):
@@ -13,7 +13,8 @@ class Navigation(Subsystem):
         if self.connected:
             self.navx = navx.AHRS.create_spi()
             # Analog input, if we ever ned it
-            self.analog = wpilib.AnalogInput(navx.getNavxAnalogInChannel(0))
+           # self.analog = wpilib.AnalogInput(navx.getNavxAnalogInChannel(0))
+            self.analog = None
         else:
             self.navx = None
             self.analog = None
@@ -46,5 +47,5 @@ class Navigation(Subsystem):
                 SmartDashboard.putNumber("Pitch", self.navx.getPitch())
                 SmartDashboard.putNumber("Yaw", self.navx.getYaw())
                 SmartDashboard.putNumber("Roll", self.navx.getRoll())
-                SmartDashboard.putNumber("Analog", round(self.analog.getVoltage(),3))
+                #SmartDashboard.putNumber("Analog", round(self.analog.getVoltage(),3))
                 SmartDashboard.putNumber("Timestamp", self.navx.getLastSensorTimestamp())
