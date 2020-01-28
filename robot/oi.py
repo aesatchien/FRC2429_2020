@@ -1,7 +1,8 @@
 # Attempt to convert 2019 Spartan Java to Python - 11/22/2019 CJH
 import wpilib
 from wpilib import SmartDashboard
-from wpilib.buttons import JoystickButton
+#from wpilib.buttons import JoystickButton
+from wpilib.command import JoystickButton
 # Spartan-specific commands - must import if you plan to use
 from triggers.axis_button import AxisButton
 from triggers.pov_button import POVButton
@@ -57,15 +58,15 @@ class OI(object):
         # binding button to commands
         #self.axisButtonRT.whenPressed(Intake(robot, power=0, button=self.axisButtonRT))
         #self.axisButtonLT.whenPressed(Intake(robot, power=0, button=self.axisButtonLT))
-        #self.buttonRB.whenPressed(ActuateGate(robot, direction="open"))
-        #self.buttonLB.whenPressed(ActuateGate(robot, direction="close"))
+        self.buttonRB.whenPressed(ActuateGate(robot, direction="open"))
+        self.buttonLB.whenPressed(ActuateGate(robot, direction="close"))
         #self.buttonA.whenPressed(UpdatePIDs(robot,1.5, from_dashboard=False))
         #self.buttonB.whenPressed(UpdatePIDs(robot,0.66, from_dashboard=False))
         #self.buttonX.whenPressed(PneumaticPiston(robot, 'open'))
         #self.buttonY.whenPressed(PneumaticPiston(robot, 'close'))
         #self.buttonLB.whenPressed(AutonomousDrive(robot, setpoint=250, control_type='velocity', button=self.buttonLB, from_dashboard=False))
         #self.buttonRB.whenPressed(AutonomousDrive(robot, setpoint=500, control_type='velocity', button=self.buttonRB, from_dashboard=False))
-        # self.buttonBack.whenPressed
+        #self.buttonBack.whenPressed()
         # self.buttonStart.whenPressed
         # self.axisButtonLT.whenPressed
         # self.axisButtonRT.whenPressed

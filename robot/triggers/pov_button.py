@@ -1,4 +1,5 @@
-from wpilib.buttons import Button
+#from wpilib.buttons import Button
+from wpilib.command import Button
 from wpilib import Joystick
 
 class POVButton(Button):
@@ -18,4 +19,3 @@ class POVButton(Button):
 
     def get(self):
         return self.joystick.getPOV(0) == self.angle
-

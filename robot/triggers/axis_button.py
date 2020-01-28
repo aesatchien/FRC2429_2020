@@ -1,4 +1,5 @@
-from wpilib.buttons import Button
+#from wpilib.buttons import Button
+from wpilib.command import Button
 from wpilib import Joystick
 
 class AxisButton(Button):
