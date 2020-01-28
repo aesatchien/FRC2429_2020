@@ -37,7 +37,7 @@ class Robot(CommandBasedRobot):
         # which commands extend), subsystems are not guaranteed to be
         # yet. Thus, their requires() statements may grab null pointers. Bad
         # news. Don't move it.
-        #self.oi = OI(self)
+        self.oi = OI(self)
 
         #wpilib.SmartDashboard.putData(Scheduler.getInstance())
         # instantiate the command used for the autonomous period
@@ -87,6 +87,7 @@ class Robot(CommandBasedRobot):
         if self.isReal():
             self.drivetrain.log()
             self.navigation.log()
+            self.peripherals.log()
 
     def reset(self):
         self.drivetrain.reset()

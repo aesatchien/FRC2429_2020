@@ -20,6 +20,9 @@
               "_source0": "network_table:///SmartDashboard/Robot X",
               "_title": "Robot X",
               "Graph/Visible time": 30.0,
+              "Y-axis/Automatic bounds": true,
+              "Y-axis/Upper bound": 1.0,
+              "Y-axis/Lower bound": -1.0,
               "Visible data/SmartDashboard/Robot X": true
             }
           },
@@ -202,6 +205,9 @@
               "_source0": "network_table:///SmartDashboard/Robot Y",
               "_title": "SmartDashboard/Robot Y",
               "Graph/Visible time": 30.0,
+              "Y-axis/Automatic bounds": true,
+              "Y-axis/Upper bound": 1.0,
+              "Y-axis/Lower bound": -1.0,
               "Visible data/SmartDashboard/Robot Y": true
             }
           },
@@ -354,8 +360,8 @@
             ],
             "content": {
               "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/Velocity Enc2",
-              "_title": "Velocity Enc2"
+              "_source0": "network_table:///SmartDashboard/Detected Color",
+              "_title": "Detected Color"
             }
           },
           "12,1": {
@@ -365,8 +371,63 @@
             ],
             "content": {
               "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/Velocity Enc4",
-              "_title": "Velocity Enc4"
+              "_source0": "network_table:///SmartDashboard/Red",
+              "_title": "Red"
+            }
+          },
+          "0,4": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Green",
+              "_title": "Green"
+            }
+          },
+          "1,4": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Blue",
+              "_title": "Blue"
+            }
+          },
+          "8,4": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Red",
+              "_title": "SmartDashboard/Red"
+            }
+          },
+          "10,4": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Blue",
+              "_title": "SmartDashboard/Blue"
+            }
+          },
+          "9,4": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Green",
+              "_title": "SmartDashboard/Green"
             }
           }
         }
@@ -478,14 +539,62 @@
                 {
                   "_type": "Text View",
                   "_source0": "network_table:///LiveWindow/Ungrouped/Servo[7]/Value",
-                  "_title": "/LiveWindow/Ungrouped/Servo[7]/Value"
+                  "_title": "Servo[7]/Value"
                 },
                 {
                   "_type": "Text View",
                   "_source0": "network_table:///LiveWindow/Ungrouped/Servo[8]/Value",
-                  "_title": "/LiveWindow/Ungrouped/Servo[8]/Value"
+                  "_title": "Servo[8]/Value"
+                },
+                {
+                  "_type": "Gyro",
+                  "_source0": "network_table:///LiveWindow/Ungrouped/navX-Sensor",
+                  "_title": "navX-Sensor",
+                  "Visuals/Major tick spacing": 45.0,
+                  "Visuals/Starting angle": 180.0,
+                  "Visuals/Show tick mark ring": true,
+                  "Visuals/Counter clockwise": false
                 }
               ]
+            }
+          },
+          "2,0": {
+            "size": [
+              2,
+              4
+            ],
+            "content": {
+              "_type": "Subsystem Layout",
+              "_source0": "network_table:///LiveWindow/peripherals",
+              "_title": "peripherals",
+              "Layout/Label position": "BOTTOM",
+              "_children": []
+            }
+          },
+          "4,0": {
+            "size": [
+              2,
+              4
+            ],
+            "content": {
+              "_type": "Subsystem Layout",
+              "_source0": "network_table:///LiveWindow/pneumatics",
+              "_title": "pneumatics",
+              "Layout/Label position": "BOTTOM",
+              "_children": []
+            }
+          },
+          "6,0": {
+            "size": [
+              2,
+              4
+            ],
+            "content": {
+              "_type": "Subsystem Layout",
+              "_source0": "network_table:///LiveWindow/drivetrain",
+              "_title": "drivetrain",
+              "Layout/Label position": "BOTTOM",
+              "_children": []
             }
           }
         }
@@ -496,6 +605,6 @@
     "x": 0.0,
     "y": 0.0,
     "width": 1920.0,
-    "height": 808.0
+    "height": 847.0
   }
 }

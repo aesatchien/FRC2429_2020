@@ -31,10 +31,10 @@ class OI(object):
         # SmartDashboard Buttons - test some autonomous commands here
         SmartDashboard.putNumber("Auto Distance", 10)
         SmartDashboard.putNumber("Auto Rotation", 10)
-        SmartDashboard.putData("Drive Forward", AutonomousDrive(robot, setpoint=None, control_type='position', timeout=6))
-        SmartDashboard.putData("Rotate X", AutonomousRotate(robot, setpoint=None, timeout=6))
-        SmartDashboard.putData("Update Pos PIDs", (UpdatePIDs(robot, factor=1, from_dashboard='position')))
-        SmartDashboard.putData("Update Vel PIDs", (UpdatePIDs(robot, factor=1, from_dashboard='velocity')))
+        #SmartDashboard.putData("Drive Forward", AutonomousDrive(robot, setpoint=None, control_type='position', timeout=6))
+        #SmartDashboard.putData("Rotate X", AutonomousRotate(robot, setpoint=None, timeout=6))
+        #SmartDashboard.putData("Update Pos PIDs", (UpdatePIDs(robot, factor=1, from_dashboard='position')))
+        #SmartDashboard.putData("Update Vel PIDs", (UpdatePIDs(robot, factor=1, from_dashboard='velocity')))
 
     def initialize_joysitics(self):
         robot = self.robot
@@ -55,27 +55,27 @@ class OI(object):
         self.axisButtonRT = AxisButton(self.stick, 3)
 
         # binding button to commands
-        self.axisButtonRT.whenPressed(Intake(robot, power=0, button=self.axisButtonRT))
-        self.axisButtonLT.whenPressed(Intake(robot, power=0, button=self.axisButtonLT))
-        self.buttonRB.whenPressed(ActuateGate(robot, direction="open"))
-        self.buttonLB.whenPressed(ActuateGate(robot, direction="close"))
-        self.buttonA.whenPressed(UpdatePIDs(robot,1.5, from_dashboard=False))
-        self.buttonB.whenPressed(UpdatePIDs(robot,0.66, from_dashboard=False))
-        self.buttonX.whenPressed(PneumaticPiston(robot, 'open'))
-        self.buttonY.whenPressed(PneumaticPiston(robot, 'close'))
+        #self.axisButtonRT.whenPressed(Intake(robot, power=0, button=self.axisButtonRT))
+        #self.axisButtonLT.whenPressed(Intake(robot, power=0, button=self.axisButtonLT))
+        #self.buttonRB.whenPressed(ActuateGate(robot, direction="open"))
+        #self.buttonLB.whenPressed(ActuateGate(robot, direction="close"))
+        #self.buttonA.whenPressed(UpdatePIDs(robot,1.5, from_dashboard=False))
+        #self.buttonB.whenPressed(UpdatePIDs(robot,0.66, from_dashboard=False))
+        #self.buttonX.whenPressed(PneumaticPiston(robot, 'open'))
+        #self.buttonY.whenPressed(PneumaticPiston(robot, 'close'))
         #self.buttonLB.whenPressed(AutonomousDrive(robot, setpoint=250, control_type='velocity', button=self.buttonLB, from_dashboard=False))
         #self.buttonRB.whenPressed(AutonomousDrive(robot, setpoint=500, control_type='velocity', button=self.buttonRB, from_dashboard=False))
         # self.buttonBack.whenPressed
         # self.buttonStart.whenPressed
         # self.axisButtonLT.whenPressed
         # self.axisButtonRT.whenPressed
-        self.povButtonUp.whenPressed(DpadDrive(robot,"up",self.povButtonUp))
-        self.povButtonDown.whenPressed(DpadDrive(robot, "down", self.povButtonDown))
-        self.povButtonRight.whenPressed(DpadDrive(robot, "right", self.povButtonRight))
-        self.povButtonLeft.whenPressed(DpadDrive(robot, "left", self.povButtonLeft))
+        #self.povButtonUp.whenPressed(DpadDrive(robot,"up",self.povButtonUp))
+        #self.povButtonDown.whenPressed(DpadDrive(robot, "down", self.povButtonDown))
+        #self.povButtonRight.whenPressed(DpadDrive(robot, "right", self.povButtonRight))
+        #self.povButtonLeft.whenPressed(DpadDrive(robot, "left", self.povButtonLeft))
 
         # add/change bindings if we are using more than one joystick
-        self.competition_mode = True
+        self.competition_mode = False
         if self.competition_mode:
             self.co_stick = wpilib.Joystick(1)
             self.co_buttonA = JoystickButton(self.co_stick, 1)

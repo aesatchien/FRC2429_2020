@@ -3,6 +3,10 @@ import wpilib
 from wpilib.command import Subsystem
 from wpilib import Spark
 from wpilib import Servo
+from rev.color import ColorSensorV3
+from rev.color import ColorMatch
+from wpilib import Color
+from wpilib import I2C
 from wpilib import SmartDashboard
 
 class Peripherals(Subsystem):
@@ -12,6 +16,18 @@ class Peripherals(Subsystem):
         self.control_panel_spark = Spark(5)
         self.left_dispenser_gate = Servo(7)
         self.right_dispenser_gate = Servo(8)
+        self.color_sensor = ColorSensorV3(I2C.Port.kOnboard)
+        self.color_matcher = ColorMatch()
+
+
+        self.kBlueTarget = Color(0.143, 0.427, 0.429)
+        self.kGreenTarget = Color(0.197, 0.561, 0.240)
+        self.kRedTarget = Color(0.561, 0.232, 0.114)
+        self.kYellowTarget = Color(0.361, 0.524, 0.113)
+        self.color_matcher.addColorMatch(self.kBlueTarget)
+        self.color_matcher.addColorMatch(self.kGreenTarget)
+        self.color_matcher.addColorMatch(self.kRedTarget)
+        self.color_matcher.addColorMatch(self.kYellowTarget)
 
     def run_intake(self, power=0):
         self.intake_spark.set(power)
@@ -34,4 +50,19 @@ class Peripherals(Subsystem):
 
 
     def log(self):
-        pass
+        detected_color = self.color_sensor.getColor()
+        match = self.color_matcher.matchClosestColor(detected_color, 0.1)
+        color_string = ''
+        if match == self.kBlueTarget:
+            color_string = 'blue'
+        elif match == self.kGreenTarget:
+            color_string = 'green'
+        elif match == self.kRedTarget:
+            color_string = 'red'
+        elif match == self.kYellowTarget:
+            color_string = 'yellow'
+        SmartDashboard.putString('Detected Color', color_string)
+        SmartDashboard.putNumber("Red", detected_color.red)
+        SmartDashboard.putNumber("Green", detected_color.green)
+        SmartDashboard.putNumber("Blue", detected_color.blue)
+        #SmartDashboard.putNumber("Confidence", match.confidence)
