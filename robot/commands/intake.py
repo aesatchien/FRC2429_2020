@@ -22,14 +22,15 @@ class Intake(Command):
 
     def execute(self):
         """Called repeatedly when this Command is scheduled to run"""
-#        if self.button == self.robot.oi.axisButtonRT:
-#            self.power = self.robot.oi.stick.getRawAxis(3)
-#        elif self.button == self.robot.oi.axisButtonLT:
-#            self.power = -self.robot.oi.stick.getRawAxis(2)
-#        elif self.button == self.robot.oi.co_axisButtonRT:
-#            self.power = self.robot.oi.co_stick.getRawAxis(3)
-#        elif self.button == self.robot.oi.co_axisButtonLT:
-#            self.power = -self.robot.oi.co_stick.getRawAxis(2)
+        if self.button == self.robot.oi.axisButtonRT:
+            self.power = self.robot.oi.stick.getRawAxis(3)
+        elif self.button == self.robot.oi.axisButtonLT:
+            self.power = -self.robot.oi.stick.getRawAxis(2)
+        if self.robot.oi.competition_mode:
+            if self.button == self.robot.oi.co_axisButtonRT:
+                self.power = self.robot.oi.co_stick.getRawAxis(3)
+            elif self.button == self.robot.oi.co_axisButtonLT:
+                self.power = -self.robot.oi.co_stick.getRawAxis(2)
         self.robot.peripherals.run_intake(self.power)
 
     def isFinished(self):

@@ -5,7 +5,7 @@ from wpilib import SmartDashboard
 from wpilib.command import JoystickButton
 # Spartan-specific commands - must import if you plan to use
 from triggers.axis_button import AxisButton
-from wpilib.command import POVButton
+from triggers.pov_button import POVButton
 from commands.dpad_drive import DpadDrive
 from commands.update_PIDs import UpdatePIDs
 from commands.autonomous_drive import AutonomousDrive
@@ -32,6 +32,7 @@ class OI(object):
         # SmartDashboard Buttons - test some autonomous commands here
         SmartDashboard.putNumber("Auto Distance", 10)
         SmartDashboard.putNumber("Auto Rotation", 10)
+        #wpilib.SmartDashboard.putData(PneumaticPiston(robot, 'open'))
         #SmartDashboard.putData("Drive Forward", AutonomousDrive(robot, setpoint=None, control_type='position', timeout=6))
         #SmartDashboard.putData("Rotate X", AutonomousRotate(robot, setpoint=None, timeout=6))
         #SmartDashboard.putData("Update Pos PIDs", (UpdatePIDs(robot, factor=1, from_dashboard='position')))
@@ -57,7 +58,7 @@ class OI(object):
 
         # binding button to commands
         self.axisButtonRT.whenPressed(Intake(robot, power=0, button=self.axisButtonRT))
-        #self.axisButtonLT.whenPressed(Intake(robot, power=0, button=self.axisButtonLT))
+        self.axisButtonLT.whenPressed(Intake(robot, power=0, button=self.axisButtonLT))
         self.buttonRB.whenPressed(ActuateGate(robot, direction="open"))
         self.buttonLB.whenPressed(ActuateGate(robot, direction="close"))
         #self.buttonA.whenPressed(UpdatePIDs(robot,1.5, from_dashboard=False))
@@ -74,10 +75,10 @@ class OI(object):
         # self.buttonStart.whenPressed
         # self.axisButtonLT.whenPressed
         # self.axisButtonRT.whenPressed
-        #self.povButtonUp.whenPressed(DpadDrive(robot,"up",self.povButtonUp))
-        #self.povButtonDown.whenPressed(DpadDrive(robot, "down", self.povButtonDown))
-        #self.povButtonRight.whenPressed(DpadDrive(robot, "right", self.povButtonRight))
-        #self.povButtonLeft.whenPressed(DpadDrive(robot, "left", self.povButtonLeft))
+        self.povButtonUp.whenPressed(DpadDrive(robot,"up",self.povButtonUp))
+        self.povButtonDown.whenPressed(DpadDrive(robot, "down", self.povButtonDown))
+        self.povButtonRight.whenPressed(DpadDrive(robot, "right", self.povButtonRight))
+        self.povButtonLeft.whenPressed(DpadDrive(robot, "left", self.povButtonLeft))
 
         # add/change bindings if we are using more than one joystick
         self.competition_mode = False

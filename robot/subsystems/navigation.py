@@ -6,7 +6,7 @@ from wpilib import SmartDashboard
 
 class Navigation(Subsystem):
     def __init__(self, robot):
-
+        super().__init__("navigation")
         self.counter = 0
         # pain to debug this, so use the connected attribute as a debug flag
         self.connected = True

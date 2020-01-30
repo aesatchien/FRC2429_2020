@@ -27,9 +27,11 @@ class Robot(CommandBasedRobot):
         # Initialize the subsystems
         self.drivetrain = DriveTrain(self)
         self.navigation = Navigation(self)
-        #self.pneumatics = Pneumatics(self)
+        self.pneumatics = Pneumatics(self)
         self.peripherals = Peripherals(self)
-        #wpilib.SmartDashboard.putData(self.drivetrain)
+        wpilib.SmartDashboard.putData(self.drivetrain)
+        wpilib.SmartDashboard.putData(self.pneumatics)
+        wpilib.SmartDashboard.putData(self.peripherals)
 
         # This MUST be here. If the OI creates Commands (which it very likely
         # will), constructing it during the construction of CommandBase (from
