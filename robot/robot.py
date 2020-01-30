@@ -23,7 +23,6 @@ class Robot(CommandBasedRobot):
         """
         # make this true to ignore joystick errors
         self.debug = False
-
         self.enabled_time = 0
         # Initialize the subsystems
         self.drivetrain = DriveTrain(self)

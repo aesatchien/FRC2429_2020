@@ -21,11 +21,7 @@ class PanelSpinner(Command):
 
     def execute(self):
         """Called repeatedly when this Command is scheduled to run"""
-        if self.button == self.robot.oi.co_buttonA:
-            self.robot.peripherals.panel_clockwise(power=0.4)
-        else:
-            print("Something happened that I didn't understand in Panel Spinner")
-        pass
+        self.robot.peripherals.panel_clockwise(self.power)
 
     def isFinished(self):
         """Make this return true when this Command no longer needs to run execute()"""

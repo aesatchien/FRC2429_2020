@@ -44,14 +44,16 @@ class DpadDrive(Command):
         if self.button == self.robot.oi.povButtonRight:
             thrust=0; strafe=self.strafe_power * self.direction; twist=twist_correction
 
-        if self.button == self.robot.oi.co_povButtonUp:
-            thrust=self.co_drive_power*self.direction; strafe=0; twist=twist_correction
-        if self.button == self.robot.oi.co_povButtonDown:
-            thrust=-self.co_drive_power*self.direction; strafe=0; twist=twist_correction
-        if self.button == self.robot.oi.co_povButtonLeft:
-            thrust=0; strafe=-self.co_strafe_power * self.direction; twist=twist_correction
-        if self.button == self.robot.oi.co_povButtonRight:
-            thrust=0; strafe=self.co_strafe_power * self.direction; twist=twist_correction
+        # you guys messed this up - needs to know if there is a co stic
+        if self.robot.oi.competition_mode:
+            if self.button == self.robot.oi.co_povButtonUp:
+                thrust=self.co_drive_power*self.direction; strafe=0; twist=twist_correction
+            if self.button == self.robot.oi.co_povButtonDown:
+                thrust=-self.co_drive_power*self.direction; strafe=0; twist=twist_correction
+            if self.button == self.robot.oi.co_povButtonLeft:
+                thrust=0; strafe=-self.co_strafe_power * self.direction; twist=twist_correction
+            if self.button == self.robot.oi.co_povButtonRight:
+                thrust=0; strafe=self.co_strafe_power * self.direction; twist=twist_correction
 
 
         #self.robot.drivetrain.spark_with_stick(thrust=thrust, strafe=strafe, z_rotation=z_rotation)

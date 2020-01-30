@@ -23,8 +23,7 @@ class ActuateGate(Command):
         else:
             print("Something happened that I didn't understand in GateServo")
 
-
-        #print("\n" + f"** Started {self.name} with input {self.direction} at {self.start_time} s **", flush=True)
+        print("\n" + f"** Started {self.name} with input {self.direction} at {self.start_time} s **", flush=True)
         #self.robot.pneumatics.actuate_solenoid(self.direction)
 
     def execute(self):

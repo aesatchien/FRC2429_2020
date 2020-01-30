@@ -47,7 +47,6 @@ class Peripherals(Subsystem):
         self.right_dispenser_gate.setAngle(0)
 
     def panel_clockwise(self, power):
-        print(power)
         self.control_panel_spark.set(power)
 
     def log(self):

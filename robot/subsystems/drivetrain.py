@@ -45,91 +45,91 @@ class DriveTrain(Subsystem):
         self.deadband = 0.05
 
         # Configure drive motors
-        try:
-            if robot.isReal():
-                self.spark_neo_right_front = rev.CANSparkMax(1, rev.MotorType.kBrushless)
-                self.spark_neo_right_rear = rev.CANSparkMax(2, rev.MotorType.kBrushless)
-                self.spark_neo_left_front = rev.CANSparkMax(3, rev.MotorType.kBrushless)
-                self.spark_neo_left_rear = rev.CANSparkMax(4, rev.MotorType.kBrushless)
-                self.spark_PID_controller_right_front = self.spark_neo_right_front.getPIDController()
-                self.spark_PID_controller_right_rear = self.spark_neo_right_rear.getPIDController()
-                self.spark_PID_controller_left_front = self.spark_neo_left_front.getPIDController()
-                self.spark_PID_controller_left_rear = self.spark_neo_left_rear.getPIDController()
-                #wpilib.Timer.delay(0.02)
+
+        if True: #robot.isReal():
+            self.spark_neo_right_front = rev.CANSparkMax(1, rev.MotorType.kBrushless)
+            self.spark_neo_right_rear = rev.CANSparkMax(2, rev.MotorType.kBrushless)
+            self.spark_neo_left_front = rev.CANSparkMax(3, rev.MotorType.kBrushless)
+            self.spark_neo_left_rear = rev.CANSparkMax(4, rev.MotorType.kBrushless)
+            self.spark_PID_controller_right_front = self.spark_neo_right_front.getPIDController()
+            self.spark_PID_controller_right_rear = self.spark_neo_right_rear.getPIDController()
+            self.spark_PID_controller_left_front = self.spark_neo_left_front.getPIDController()
+            self.spark_PID_controller_left_rear = self.spark_neo_left_rear.getPIDController()
+            #wpilib.Timer.delay(0.02)
 
 
-                # swap encoders to get sign right
-                # changing them up for mechanum vs WCD
-                self.sparkneo_encoder_1 = rev.CANSparkMax.getEncoder(self.spark_neo_left_front)
-                self.sparkneo_encoder_2 = rev.CANSparkMax.getEncoder(self.spark_neo_left_rear)
-                self.sparkneo_encoder_3 = rev.CANSparkMax.getEncoder(self.spark_neo_right_front)
-                self.sparkneo_encoder_4 = rev.CANSparkMax.getEncoder(self.spark_neo_right_rear)
-                #wpilib.Timer.delay(0.02)
+            # swap encoders to get sign right
+            # changing them up for mechanum vs WCD
+            self.sparkneo_encoder_1 = rev.CANSparkMax.getEncoder(self.spark_neo_left_front)
+            self.sparkneo_encoder_2 = rev.CANSparkMax.getEncoder(self.spark_neo_left_rear)
+            self.sparkneo_encoder_3 = rev.CANSparkMax.getEncoder(self.spark_neo_right_front)
+            self.sparkneo_encoder_4 = rev.CANSparkMax.getEncoder(self.spark_neo_right_rear)
+            #wpilib.Timer.delay(0.02)
 
-                # Configure encoders and controllers
-                # should be wheel_diameter * pi / gear_ratio - and for the old double reduction gear box
-                # the gear ratio was either  5.67:1 or 4.17:1.  With the shifter (low gear) I think it was a 12.26.
-                conversion_factor = 8.0 * 3.141 / 4.17
-                err_1 = self.sparkneo_encoder_1.setPositionConversionFactor(conversion_factor)
-                err_2 = self.sparkneo_encoder_2.setPositionConversionFactor(conversion_factor)
-                err_3 = self.sparkneo_encoder_3.setPositionConversionFactor(conversion_factor)
-                err_4 = self.sparkneo_encoder_4.setPositionConversionFactor(conversion_factor)
+            # Configure encoders and controllers
+            # should be wheel_diameter * pi / gear_ratio - and for the old double reduction gear box
+            # the gear ratio was either  5.67:1 or 4.17:1.  With the shifter (low gear) I think it was a 12.26.
+            conversion_factor = 8.0 * 3.141 / 4.17
+            err_1 = self.sparkneo_encoder_1.setPositionConversionFactor(conversion_factor)
+            err_2 = self.sparkneo_encoder_2.setPositionConversionFactor(conversion_factor)
+            err_3 = self.sparkneo_encoder_3.setPositionConversionFactor(conversion_factor)
+            err_4 = self.sparkneo_encoder_4.setPositionConversionFactor(conversion_factor)
 
-                #wpilib.Timer.delay(0.02)
-                # TODO - figure out if I want to invert the motors or the encoders
-                self.spark_neo_left_front.setInverted(False)
-                self.spark_neo_left_rear.setInverted(False)
-                self.spark_neo_right_front.setInverted(False)
-                self.spark_neo_right_rear.setInverted(False)
+            #wpilib.Timer.delay(0.02)
+            # TODO - figure out if I want to invert the motors or the encoders
+            self.spark_neo_left_front.setInverted(False)
+            self.spark_neo_left_rear.setInverted(False)
+            self.spark_neo_right_front.setInverted(False)
+            self.spark_neo_right_rear.setInverted(False)
 
-                if err_1 != rev.CANError.kOk or err_2 != rev.CANError.kOk:
-                    print(f"Warning: drivetrain encoder issue with neo1 returning {err_1} and neo3 returning {err_2}")
-                self.configure_controllers()
-                self.display_PIDs()
+            if err_1 != rev.CANError.kOk or err_2 != rev.CANError.kOk:
+                print(f"Warning: drivetrain encoder issue with neo1 returning {err_1} and neo3 returning {err_2}")
+            self.configure_controllers()
+            self.display_PIDs()
 
-            else:
-                # get a pretend drivetrain for the simulator
-                self.spark_neo_left_front = wpilib.Talon(1)
-                self.spark_neo_left_rear = wpilib.Talon(2)
-                self.spark_neo_right_front = wpilib.Talon(3)
-                self.spark_neo_right_rear = wpilib.Talon(4)
+        else:
+            # get a pretend drivetrain for the simulator
+            self.spark_neo_left_front = wpilib.Talon(1)
+            self.spark_neo_left_rear = wpilib.Talon(2)
+            self.spark_neo_right_front = wpilib.Talon(3)
+            self.spark_neo_right_rear = wpilib.Talon(4)
 
-            # Not sure if speedcontrollergroups work with the single sparkmax in python - seems to complain
-            drive_type = 'mechanum'
-            if drive_type == 'wcd':
-                # WCD
-                err_1 = self.spark_neo_left_rear.follow(self.spark_neo_left_front)
-                err_2 = self.spark_neo_right_rear.follow(self.spark_neo_right_front)
-                if err_1 != rev.CANError.kOk or err_2 != rev.CANError.kOk:
-                    print(f"Warning: drivetrain follower issue with neo2 returning {err_1} and neo4 returning {err_2}")
-                self.speedgroup_left = SpeedControllerGroup(self.spark_neo_left_front)
-                self.speedgroup_right = SpeedControllerGroup(self.spark_neo_right_front)
-                self.differential_drive = DifferentialDrive(self.speedgroup_left, self.speedgroup_right)
-                self.drive = self.differential_drive
-                self.differential_drive.setMaxOutput(1.0)
-            if drive_type == 'mechanum':
-                # Mechanum
-                #TODO: Reset followers in software
-                self.speedgroup_lfront = SpeedControllerGroup(self.spark_neo_left_front)
-                self.speedgroup_lrear = SpeedControllerGroup(self.spark_neo_left_rear)
-                self.speedgroup_rfront = SpeedControllerGroup(self.spark_neo_right_front)
-                self.speedgroup_rrear = SpeedControllerGroup(self.spark_neo_right_rear)
-                self.mechanum_drive = MecanumDrive(self.speedgroup_lfront, self.speedgroup_lrear, self.speedgroup_rfront, self.speedgroup_rrear)
-                #self.mechanum_drive = MecanumDrive(self.spark_neo_left_front, self.spark_neo_left_rear, self.spark_neo_right_front, self.spark_neo_right_rear)
-                self.mechanum_drive.setMaxOutput(self.mecanum_power_limit)
-                self.drive = self.mechanum_drive
+        # Not sure if speedcontrollergroups work with the single sparkmax in python - seems to complain
+        drive_type = 'mechanum'
+        print("Enabling mechanum drive!")
+        if drive_type == 'wcd':
+            # WCD
+            err_1 = self.spark_neo_left_rear.follow(self.spark_neo_left_front)
+            err_2 = self.spark_neo_right_rear.follow(self.spark_neo_right_front)
+            if err_1 != rev.CANError.kOk or err_2 != rev.CANError.kOk:
+                print(f"Warning: drivetrain follower issue with neo2 returning {err_1} and neo4 returning {err_2}")
+            self.speedgroup_left = SpeedControllerGroup(self.spark_neo_left_front)
+            self.speedgroup_right = SpeedControllerGroup(self.spark_neo_right_front)
+            self.differential_drive = DifferentialDrive(self.speedgroup_left, self.speedgroup_right)
+            self.drive = self.differential_drive
+            self.differential_drive.setMaxOutput(1.0)
+        if drive_type == 'mechanum':
+            # Mechanum
+            #TODO: Reset followers in software
+            self.speedgroup_lfront = SpeedControllerGroup(self.spark_neo_left_front)
+            self.speedgroup_lrear = SpeedControllerGroup(self.spark_neo_left_rear)
+            self.speedgroup_rfront = SpeedControllerGroup(self.spark_neo_right_front)
+            self.speedgroup_rrear = SpeedControllerGroup(self.spark_neo_right_rear)
+            self.mechanum_drive = MecanumDrive(self.speedgroup_lfront, self.speedgroup_lrear, self.speedgroup_rfront, self.speedgroup_rrear)
+            #self.mechanum_drive = MecanumDrive(self.spark_neo_left_front, self.spark_neo_left_rear, self.spark_neo_right_front, self.spark_neo_right_rear)
+            self.mechanum_drive.setMaxOutput(self.mecanum_power_limit)
+            self.drive = self.mechanum_drive
 
-            self.drive.setSafetyEnabled(True)
-            self.drive.setExpiration(0.1)
-            # self.differential_drive.setSensitivity(0.5)
+        self.drive.setSafetyEnabled(True)
+        self.drive.setExpiration(0.1)
+        # self.differential_drive.setSensitivity(0.5)
 
-            # wpilib.LiveWindow.addActuator("DriveTrain", "spark_neo_l1", self.spark_neo_l1)
-            # wpilib.LiveWindow.addActuator("DriveTrain", "spark_neo_r3", self.spark_neo_r3)
-            # wpilib.LiveWindow.addActuator("DriveTrain", "spark_neo_l2", self.spark_neo_l2)
-            # wpilib.LiveWindow.addActuator("DriveTrain", "spark_neo_r4", self.spark_neo_r4)
+        # wpilib.LiveWindow.addActuator("DriveTrain", "spark_neo_l1", self.spark_neo_l1)
+        # wpilib.LiveWindow.addActuator("DriveTrain", "spark_neo_r3", self.spark_neo_r3)
+        # wpilib.LiveWindow.addActuator("DriveTrain", "spark_neo_l2", self.spark_neo_l2)
+        # wpilib.LiveWindow.addActuator("DriveTrain", "spark_neo_r4", self.spark_neo_r4)
 
-        except:
-            print('Buncha CAN errors)')
+
 
 
     def initDefaultCommand(self):
@@ -251,29 +251,30 @@ class DriveTrain(Subsystem):
                 #error_list.append(controller.setIdleMode(rev.IdleMode.kBrake))
                 #controller.setParameter(rev.ConfigParameter.kIdleMode, rev.IdleMode.kBrake)
                 error_list.append(controller.setSmartCurrentLimit(self.current_limit))
-                controller.setParameter(rev.ConfigParameter.kSmartMotionMaxAccel_0, self.maxacc)
-                controller.setParameter(rev.ConfigParameter.kSmartMotionMaxAccel_1, self.maxacc)
-                controller.setParameter(rev.ConfigParameter.kSmartMotionMaxVelocity_0, self.maxvel)
-                controller.setParameter(rev.ConfigParameter.kSmartMotionMaxVelocity_1, self.maxvel)
+                #controller.setParameter(rev.ConfigParameter.kSmartMotionMaxAccel_0, self.maxacc)
+                #controller.setParameter(rev.ConfigParameter.kSmartMotionMaxAccel_1, self.maxacc)
+                #controller.setParameter(rev.ConfigParameter.kSmartMotionMaxVelocity_0, self.maxvel)
+                #controller.setParameter(rev.ConfigParameter.kSmartMotionMaxVelocity_1, self.maxvel)
                 #Timer.delay(0.01)
                 #controller.burnFlash()
 
         controllers = [self.spark_neo_left_front, self.spark_neo_left_rear, self.spark_neo_right_front, self.spark_neo_right_rear]
         for controller in controllers:
-            error_list.append(controller.setParameter(rev.ConfigParameter.kP_0, self.PID_dict_pos['kP']))
-            error_list.append(controller.setParameter(rev.ConfigParameter.kP_1, self.PID_dict_vel['kP']))
-            error_list.append(controller.setParameter(rev.ConfigParameter.kI_0, self.PID_dict_pos['kI']))
-            error_list.append(controller.setParameter(rev.ConfigParameter.kI_1, self.PID_dict_vel['kI']))
-            error_list.append(controller.setParameter(rev.ConfigParameter.kD_0, self.PID_dict_pos['kD']))
-            error_list.append(controller.setParameter(rev.ConfigParameter.kD_1, self.PID_dict_vel['kD']))
-            error_list.append(controller.setParameter(rev.ConfigParameter.kIZone_0, self.PID_dict_pos['kIz']))
-            error_list.append(controller.setParameter(rev.ConfigParameter.kIZone_1, self.PID_dict_vel['kIz']))
-            error_list.append(controller.setParameter(rev.ConfigParameter.kF_0, self.PID_dict_pos['kFF']))
-            error_list.append(controller.setParameter(rev.ConfigParameter.kF_1, self.PID_dict_vel['kFF']))
-            error_list.append(controller.setParameter(rev.ConfigParameter.kOutputMax_0, self.PID_dict_pos['kMaxOutput']))
-            error_list.append(controller.setParameter(rev.ConfigParameter.kOutputMax_1, self.PID_dict_vel['kMaxOutput']))
-            error_list.append(controller.setParameter(rev.ConfigParameter.kOutputMin_0, self.PID_dict_pos['kMinOutput']))
-            error_list.append(controller.setParameter(rev.ConfigParameter.kOutputMin_1, self.PID_dict_vel['kMinOutput']))
+            pass
+            #error_list.append(controller.setParameter(rev.ConfigParameter.kP_0, self.PID_dict_pos['kP']))
+            #error_list.append(controller.setParameter(rev.ConfigParameter.kP_1, self.PID_dict_vel['kP']))
+            #error_list.append(controller.setParameter(rev.ConfigParameter.kI_0, self.PID_dict_pos['kI']))
+            #error_list.append(controller.setParameter(rev.ConfigParameter.kI_1, self.PID_dict_vel['kI']))
+            #error_list.append(controller.setParameter(rev.ConfigParameter.kD_0, self.PID_dict_pos['kD']))
+            #error_list.append(controller.setParameter(rev.ConfigParameter.kD_1, self.PID_dict_vel['kD']))
+            #error_list.append(controller.setParameter(rev.ConfigParameter.kIZone_0, self.PID_dict_pos['kIz']))
+            #error_list.append(controller.setParameter(rev.ConfigParameter.kIZone_1, self.PID_dict_vel['kIz']))
+            #error_list.append(controller.setParameter(rev.ConfigParameter.kF_0, self.PID_dict_pos['kFF']))
+            #error_list.append(controller.setParameter(rev.ConfigParameter.kF_1, self.PID_dict_vel['kFF']))
+            #error_list.append(controller.setParameter(rev.ConfigParameter.kOutputMax_0, self.PID_dict_pos['kMaxOutput']))
+            #error_list.append(controller.setParameter(rev.ConfigParameter.kOutputMax_1, self.PID_dict_vel['kMaxOutput']))
+            #error_list.append(controller.setParameter(rev.ConfigParameter.kOutputMin_0, self.PID_dict_pos['kMinOutput']))
+            #error_list.append(controller.setParameter(rev.ConfigParameter.kOutputMin_1, self.PID_dict_vel['kMinOutput']))
             #controller.burnFlash()
             #Timer.delay(0.02)
 
