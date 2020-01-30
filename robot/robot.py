@@ -17,6 +17,7 @@ class Robot(CommandBasedRobot):
     """This is the main class for running the PacGoat code."""
 
     def robotInit(self):
+        super().__init__()
         """
         This function is run when the robot is first started up and should be
         used for any initialization code.

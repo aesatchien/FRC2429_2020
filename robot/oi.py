@@ -23,6 +23,7 @@ class OI(object):
     """
 
     def __init__(self, robot):
+        super().__init__()
         self.robot = robot
         if not robot.debug:
             self.initialize_joysitics()
@@ -32,9 +33,13 @@ class OI(object):
         # SmartDashboard Buttons - test some autonomous commands here
         SmartDashboard.putNumber("Auto Distance", 10)
         SmartDashboard.putNumber("Auto Rotation", 10)
-        #wpilib.SmartDashboard.putData(PneumaticPiston(robot, 'open'))
-        #SmartDashboard.putData("Drive Forward", AutonomousDrive(robot, setpoint=None, control_type='position', timeout=6))
-        #SmartDashboard.putData("Rotate X", AutonomousRotate(robot, setpoint=None, timeout=6))
+
+        self.intake_command = Intake(robot, power=0.5, button=None)
+        wpilib.SmartDashboard.putData("Intake", self.intake_command)
+        self.drive_fwd_command = AutonomousDrive(robot, setpoint=None, control_type='position', timeout=6)
+        wpilib.SmartDashboard.putData("Drive Forward", self.drive_fwd_command)
+        self.rotate_command = AutonomousRotate(robot, setpoint=None, timeout=6)
+        SmartDashboard.putData("Rotate X", self.rotate_command)
         #SmartDashboard.putData("Update Pos PIDs", (UpdatePIDs(robot, factor=1, from_dashboard='position')))
         #SmartDashboard.putData("Update Vel PIDs", (UpdatePIDs(robot, factor=1, from_dashboard='velocity')))
 

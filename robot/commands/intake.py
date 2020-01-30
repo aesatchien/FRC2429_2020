@@ -1,13 +1,13 @@
 from wpilib.command import Command
 from wpilib import Timer
-
+from wpilib import SendableBuilder
 class Intake(Command):
     """
     This command opens and cloed the piston
     """
 
     def __init__(self, robot, power=0.1, button=None):
-        super().__init__()
+        Command.__init__(self, name='intake')
         self.requires(robot.peripherals)
         self.robot = robot
         self.button = button
