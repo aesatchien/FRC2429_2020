@@ -18,15 +18,16 @@ class Peripherals(Subsystem):
         self.right_dispenser_gate = Servo(8)
         self.counter = 0
         self.color_sensor = ColorSensorV3(I2C.Port.kOnboard)
+        self.color_sensor.setGain(ColorSensorV3.GainFactor.k1x)
         self.color_matcher = ColorMatch()
         # we can config the colorsensor resolution and the rate
         #self.color_sensor.configureColorSensor(res=, rate=)
 
         # need to put these numbers in for ourselves by positioning the sensor over the target and recording the RGB
-        self.kBlueTarget = Color(0.143, 0.427, 0.429)
-        self.kGreenTarget = Color(0.197, 0.561, 0.240)
-        self.kRedTarget = Color(0.561, 0.232, 0.114)
-        self.kYellowTarget = Color(0.361, 0.524, 0.113)
+        self.kBlueTarget = Color(0.182, 0.452, 0.366) #Color(0.143, 0.427, 0.429)
+        self.kGreenTarget = Color(0.218, 0.526, 0.255) #Color(0.197, 0.561, 0.240)
+        self.kRedTarget = Color(0.414, 0.401, 0.185) #Color(0.561, 0.232, 0.114)
+        self.kYellowTarget = Color(0.326, 0.517, 0.155) #Color(0.361, 0.524, 0.113)
         self.color_matcher.addColorMatch(self.kBlueTarget)
         self.color_matcher.addColorMatch(self.kGreenTarget)
         self.color_matcher.addColorMatch(self.kRedTarget)
@@ -53,7 +54,8 @@ class Peripherals(Subsystem):
         self.counter += 1
         if self.counter % 5 == 0:
             detected_color = self.color_sensor.getColor()
-            match = self.color_matcher.matchClosestColor(detected_color, 0.5)
+            match_confidence = 0.5
+            match = self.color_matcher.matchClosestColor(detected_color, match_confidence)
             color_string = 'No Match'
             if match == self.kBlueTarget:
                 color_string = 'blue'
@@ -67,4 +69,4 @@ class Peripherals(Subsystem):
             SmartDashboard.putNumber("Red", detected_color.red)
             SmartDashboard.putNumber("Green", detected_color.green)
             SmartDashboard.putNumber("Blue", detected_color.blue)
-            #SmartDashboard.putNumber("Confidence", match.confidence)
+            SmartDashboard.putNumber("Confidence", match_confidence)
