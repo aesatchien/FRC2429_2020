@@ -160,7 +160,7 @@
               "_title": "alert"
             }
           },
-          "11,2": {
+          "11,0": {
             "size": [
               1,
               1
@@ -322,6 +322,39 @@
               "_type": "Text View",
               "_source0": "network_table:///SmartDashboard/Blue",
               "_title": "Blue"
+            }
+          },
+          "9,3": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Robot X",
+              "_title": "Robot X"
+            }
+          },
+          "8,3": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Robot Y",
+              "_title": "Robot Y"
+            }
+          },
+          "11,1": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Confidence",
+              "_title": "Confidence"
             }
           }
         }
@@ -490,6 +523,19 @@
               "Layout/Label position": "BOTTOM",
               "_children": []
             }
+          },
+          "8,0": {
+            "size": [
+              2,
+              4
+            ],
+            "content": {
+              "_type": "Subsystem Layout",
+              "_source0": "network_table:///LiveWindow/navigation",
+              "_title": "navigation",
+              "Layout/Label position": "BOTTOM",
+              "_children": []
+            }
           }
         }
       }
@@ -499,6 +545,6 @@
     "x": 0.0,
     "y": 0.0,
     "width": 1920.0,
-    "height": 847.0
+    "height": 721.0
   }
 }
