@@ -10,22 +10,6 @@
         "hgap": 16.0,
         "vgap": 16.0,
         "tiles": {
-          "8,0": {
-            "size": [
-              2,
-              2
-            ],
-            "content": {
-              "_type": "Graph",
-              "_source0": "network_table:///SmartDashboard/Robot X",
-              "_title": "Robot X",
-              "Graph/Visible time": 30.0,
-              "Y-axis/Automatic bounds": true,
-              "Y-axis/Upper bound": 1.0,
-              "Y-axis/Lower bound": -1.0,
-              "Visible data/SmartDashboard/Robot X": true
-            }
-          },
           "3,0": {
             "size": [
               2,
@@ -165,28 +149,9 @@
               "imageHeight": 240
             }
           },
-          "0,2": {
+          "8,0": {
             "size": [
               3,
-              2
-            ],
-            "content": {
-              "_type": "Camera Stream",
-              "_source0": "camera_server://Genius Processed",
-              "_title": "Genius Processed",
-              "Crosshair/Show crosshair": false,
-              "Crosshair/Crosshair color": "#FFFFFFFF",
-              "Controls/Show controls": true,
-              "Controls/Rotation": "NONE",
-              "compression": 49.0,
-              "fps": 20,
-              "imageWidth": 320,
-              "imageHeight": 240
-            }
-          },
-          "8,3": {
-            "size": [
-              5,
               1
             ],
             "content": {
@@ -195,23 +160,7 @@
               "_title": "alert"
             }
           },
-          "10,0": {
-            "size": [
-              2,
-              2
-            ],
-            "content": {
-              "_type": "Graph",
-              "_source0": "network_table:///SmartDashboard/Robot Y",
-              "_title": "SmartDashboard/Robot Y",
-              "Graph/Visible time": 30.0,
-              "Y-axis/Automatic bounds": true,
-              "Y-axis/Upper bound": 1.0,
-              "Y-axis/Lower bound": -1.0,
-              "Visible data/SmartDashboard/Robot Y": true
-            }
-          },
-          "12,2": {
+          "11,2": {
             "size": [
               1,
               1
@@ -307,28 +256,6 @@
               }
             }
           },
-          "8,2": {
-            "size": [
-              1,
-              1
-            ],
-            "content": {
-              "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/Analog",
-              "_title": "Analog"
-            }
-          },
-          "11,2": {
-            "size": [
-              1,
-              1
-            ],
-            "content": {
-              "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/Enc1 Conversion",
-              "_title": "Enc1 Conversion"
-            }
-          },
           "9,2": {
             "size": [
               1,
@@ -353,7 +280,7 @@
               "_title": "error"
             }
           },
-          "12,0": {
+          "8,2": {
             "size": [
               1,
               1
@@ -364,7 +291,7 @@
               "_title": "Detected Color"
             }
           },
-          "12,1": {
+          "8,1": {
             "size": [
               1,
               1
@@ -375,7 +302,7 @@
               "_title": "Red"
             }
           },
-          "0,4": {
+          "9,1": {
             "size": [
               1,
               1
@@ -386,7 +313,7 @@
               "_title": "Green"
             }
           },
-          "1,4": {
+          "10,1": {
             "size": [
               1,
               1
@@ -395,39 +322,6 @@
               "_type": "Text View",
               "_source0": "network_table:///SmartDashboard/Blue",
               "_title": "Blue"
-            }
-          },
-          "8,4": {
-            "size": [
-              1,
-              1
-            ],
-            "content": {
-              "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/Red",
-              "_title": "SmartDashboard/Red"
-            }
-          },
-          "10,4": {
-            "size": [
-              1,
-              1
-            ],
-            "content": {
-              "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/Blue",
-              "_title": "SmartDashboard/Blue"
-            }
-          },
-          "9,4": {
-            "size": [
-              1,
-              1
-            ],
-            "content": {
-              "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/Green",
-              "_title": "SmartDashboard/Green"
             }
           }
         }
