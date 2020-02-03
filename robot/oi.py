@@ -34,10 +34,10 @@ class OI(object):
         SmartDashboard.putNumber("Auto Distance", 10)
         SmartDashboard.putNumber("Auto Rotation", 10)
 
+        # These are broken as of 2/1/2020 if we use the newest commands_v1 library.  commented out for now.
         self.drive_fwd_command = AutonomousDrive(robot, setpoint=None, control_type='position', timeout=6, source="dashboard")
-        wpilib.SmartDashboard.putData("Drive Forward", self.drive_fwd_command)
         self.rotate_command = AutonomousRotate(robot, setpoint=None, timeout=6)
-        SmartDashboard.putData("Rotate X", self.rotate_command)
+        self.send_commands_to_dashboard()
         #SmartDashboard.putData("Update Pos PIDs", (UpdatePIDs(robot, factor=1, from_dashboard='position')))
         #SmartDashboard.putData("Update Vel PIDs", (UpdatePIDs(robot, factor=1, from_dashboard='velocity')))
 
@@ -116,3 +116,9 @@ class OI(object):
 
     def getJoystick(self):
         return self.stick
+
+    def send_commands_to_dashboard(self):
+        pass
+        # stuck these in here in case we could trick the pybind keep-alive issue but no, this doesn't do the trick
+        #SmartDashboard.putData("Drive Forward", self.drive_fwd_command)
+        #SmartDashboard.putData("Rotate X", self.rotate_command)
