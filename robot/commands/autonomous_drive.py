@@ -17,7 +17,7 @@ class AutonomousDrive(Command):
     # may need to use variables at some point ...
     tolerance = 0.5
 
-    def __init__(self, robot, setpoint=None, control_type='position', button = 'None', timeout=None, from_dashboard = True):
+    def __init__(self, robot, setpoint=None, control_type='position', button = 'None', timeout=None, from_dashboard = True, source = None):
         """The constructor"""
         super().__init__()
         # Signal that we require ExampleSubsystem
@@ -25,6 +25,7 @@ class AutonomousDrive(Command):
         # little trick here so we can call this either from code explicitly with a setpoint or get from smartdashboard
         self.from_dashboard = from_dashboard
         self.setpoint = setpoint
+        self.source = source
         if timeout is None:
             self.setTimeout(5)
             self.initial_timeout = 5
@@ -37,10 +38,17 @@ class AutonomousDrive(Command):
         strip_name = lambda x: str(x)[1 + str(x).rfind('.'):-2]
         self.name = strip_name(self.__class__)
 
+
     def initialize(self):
         """Called just before this Command runs the first time."""
-        if self.from_dashboard:
-            self.setpoint = SmartDashboard.getNumber('Auto Distance',0)
+        if self.source is None:
+            self.setpoint = self.setpoint
+        elif self.source == "dashboard":
+            self.setpoint = SmartDashboard.getNumber('Auto Distance', 0)
+        elif self.source == "camera":
+            if SmartDashboard.getNumber("targets", 0) > 0:
+                self.setpoint = SmartDashboard.getNumber("distance", 0)
+
         self.start_time = round(Timer.getFPGATimestamp() - self.robot.enabled_time, 1)
         print("\n" + f"** Started {self.name} with setpoint {self.setpoint} and control_type {self.control_type} at {self.start_time} s **")
         SmartDashboard.putString("alert", f"** Started {self.name} with setpoint {self.setpoint} and control_type {self.control_type} at {self.start_time} s **")

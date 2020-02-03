@@ -36,7 +36,7 @@ class OI(object):
 
         self.intake_command = Intake(robot, power=0.5, button=None)
         wpilib.SmartDashboard.putData("Intake", self.intake_command)
-        self.drive_fwd_command = AutonomousDrive(robot, setpoint=None, control_type='position', timeout=6)
+        self.drive_fwd_command = AutonomousDrive(robot, setpoint=None, control_type='position', timeout=6, source="dashboard")
         wpilib.SmartDashboard.putData("Drive Forward", self.drive_fwd_command)
         self.rotate_command = AutonomousRotate(robot, setpoint=None, timeout=6)
         SmartDashboard.putData("Rotate X", self.rotate_command)

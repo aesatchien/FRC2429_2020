@@ -35,7 +35,10 @@ class Intake(Command):
 
     def isFinished(self):
         """Make this return true when this Command no longer needs to run execute()"""
-        return not self.button.get()
+        if self.button is not None:
+            return not self.button.get()
+        else:
+            return True
 
 
     def end(self):

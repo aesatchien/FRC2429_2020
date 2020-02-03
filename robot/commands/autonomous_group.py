@@ -12,6 +12,6 @@ class AutonomousGroup(CommandGroup):
     def __init__(self, robot, setpoint=None, control_type='position', button='None', timeout=None, from_dashboard=True):
         super().__init__()
         self.addParallel(TrackTelemetry(robot, timeout=timeout))
-        self.addParallel(AutonomousDrive(robot, setpoint=setpoint, control_type=control_type, button=button, timeout=timeout, from_dashboard=from_dashboard))
+        self.addParallel(AutonomousDrive(robot, setpoint=setpoint, control_type=control_type, button=button, timeout=timeout, source="camera"))
 
 
