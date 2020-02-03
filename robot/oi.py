@@ -26,7 +26,7 @@ class OI(object):
         super().__init__()
         self.robot = robot
         if not robot.debug:
-            self.initialize_joysitics()
+            self.initialize_joystics()
         else:
             self.stick = wpilib.Joystick(0)
 
@@ -34,8 +34,6 @@ class OI(object):
         SmartDashboard.putNumber("Auto Distance", 10)
         SmartDashboard.putNumber("Auto Rotation", 10)
 
-        self.intake_command = Intake(robot, power=0.5, button=None)
-        wpilib.SmartDashboard.putData("Intake", self.intake_command)
         self.drive_fwd_command = AutonomousDrive(robot, setpoint=None, control_type='position', timeout=6, source="dashboard")
         wpilib.SmartDashboard.putData("Drive Forward", self.drive_fwd_command)
         self.rotate_command = AutonomousRotate(robot, setpoint=None, timeout=6)
@@ -43,7 +41,7 @@ class OI(object):
         #SmartDashboard.putData("Update Pos PIDs", (UpdatePIDs(robot, factor=1, from_dashboard='position')))
         #SmartDashboard.putData("Update Vel PIDs", (UpdatePIDs(robot, factor=1, from_dashboard='velocity')))
 
-    def initialize_joysitics(self):
+    def initialize_joystics(self):
         robot = self.robot
         self.stick = wpilib.Joystick(0)
         self.buttonA = JoystickButton(self.stick, 1)
