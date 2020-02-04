@@ -3,7 +3,7 @@ from wpilib import Timer
 from wpilib import SendableBuilder
 class Intake(Command):
     """
-    This command opens and cloed the piston
+    This command sets the intake
     """
 
     def __init__(self, robot, power=0.1, button=None):
