@@ -130,25 +130,6 @@
               ]
             }
           },
-          "0,0": {
-            "size": [
-              3,
-              2
-            ],
-            "content": {
-              "_type": "Camera Stream",
-              "_source0": "camera_server://GeniusCam",
-              "_title": "GeniusCam",
-              "Crosshair/Show crosshair": true,
-              "Crosshair/Crosshair color": "#FFFFFFFF",
-              "Controls/Show controls": true,
-              "Controls/Rotation": "NONE",
-              "compression": 49.0,
-              "fps": 20,
-              "imageWidth": 320,
-              "imageHeight": 240
-            }
-          },
           "8,0": {
             "size": [
               3,
