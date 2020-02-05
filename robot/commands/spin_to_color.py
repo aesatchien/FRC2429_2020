@@ -3,9 +3,10 @@ from wpilib import Timer
 
 class SpinToColor(Command):
     def __init__(self, robot, color_name, power=0.2):
-        super().__init__(self, name='intake')
+        super().__init__(self, name='spintocolor')
         self.requires(robot.peripherals)
 
+        # what's this for? - CJH
         self.color = None
 
         self.robot = robot
