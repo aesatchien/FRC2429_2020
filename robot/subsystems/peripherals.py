@@ -25,7 +25,7 @@ class Peripherals(Subsystem):
         #self.color_sensor.setGain(ColorSensorV3.GainFactor.k1x)
         #self.color_sensor.configureColorSensor(res=, rate=)
 
-        # need to put these numbers in for ourselves by positioning the sensor over the target and recording the RGB
+        # made these numbers ourselves by positioning the sensor over the target and recording the RGB
         self.kBlueTarget = Color(0.181, 0.453, 0.365)
         self.kGreenTarget = Color(0.215, 0.529, 0.255)
         self.kRedTarget = Color(0.417, 0.398, 0.184)
@@ -78,20 +78,6 @@ class Peripherals(Subsystem):
         if self.counter % 5 == 0:
             detected_color = self.color_sensor.getColor()
             color_string = self.get_color_str(detected_color)
-
-            '''
-            match = self.color_matcher.matchClosestColor(match_confidence, detected_color) 
-            color_string = 'No Match'
-
-            for key in self.color_dict:
-                match_confidence = self.color_distance(detected_color, self.color_dict[key])
-                if match_confidence < 0.05:
-                    color_string = key
-                    break
-                else:
-                    color_string = "No Match"
-
-            '''
 
             SmartDashboard.putString('Detected Color', color_string)
             SmartDashboard.putNumber("Red", detected_color.red)

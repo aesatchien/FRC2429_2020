@@ -3,7 +3,8 @@ from wpilib import Timer
 
 class SpinToColor(Command):
     def __init__(self, robot, color_name, power=0.2):
-        super().__init__(self, name='spintocolor')
+        # sometimes super()__init__ gives an error when Command._init__ does not...
+        Command.__init__(self, name='spintocolor')
         self.requires(robot.peripherals)
 
         # what's this for? - CJH
