@@ -6,8 +6,7 @@ class SpinToColor(Command):
         super().__init__(self, name='intake')
         self.requires(robot.peripherals)
 
-        self.current_color = None
-        self.previous_color = None
+        self.color = None
 
         self.robot = robot
         self.color_name = color_name
@@ -17,4 +16,15 @@ class SpinToColor(Command):
         self.start_time = round(Timer.getFPGATimestamp() - self.robot.enabled_time, 1)
         print("\n" + f"** Started {self.name} with power {self.power} at {self.start_time} s **", flush=True)
 
-        self.previous_color = self.current_color = self.robot.peripherals.get_color_str();
+        self.robot.peripherals.panel_clockwise(0.2)
+
+    def isFinished(self):
+        return self.robot.peripherals.get_color_str() == self.color_name
+
+    def end(self):
+        self.robot.peripherals.panel_clockwise(0)
+
+        print("\n" + f"** Ended {self.name} at {round(Timer.getFPGATimestamp() - self.robot.enabled_time, 1)} s **")
+
+    def interrupted(self):
+        self.end()

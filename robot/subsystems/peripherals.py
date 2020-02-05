@@ -19,6 +19,7 @@ class Peripherals(Subsystem):
         self.right_dispenser_gate = Servo(8)
         self.counter = 0
         self.color_sensor = ColorSensorV3(I2C.Port.kOnboard)
+        self.match_confidence = 0
 
         # we can config the colorsensor resolution and the rate
         #self.color_sensor.setGain(ColorSensorV3.GainFactor.k1x)
@@ -48,7 +49,7 @@ class Peripherals(Subsystem):
     def panel_clockwise(self, power):
         self.control_panel_spark.set(power)
 
-    def get_color_str(self, color=None, match_confidence=0.5):
+    def get_color_str(self, color=None):
         detected_color = color or self.color_sensor.getColor()
 
         '''
@@ -57,21 +58,10 @@ class Peripherals(Subsystem):
         else: 
             detected_color = self.color_sensor.getColor() 
         '''
-
-        match = self.color_matcher.matchClosestColor(detected_color, match_confidence)
-        color_string = 'No Match'
-        if match == self.kBlueTarget:
-            color_string = 'blue'
-        elif match == self.kGreenTarget:
-            color_string = 'green'
-        elif match == self.kRedTarget:
-            color_string = 'red'
-        elif match == self.kYellowTarget:
-            color_string = 'yellow'
-
+        self.match_confidence = 0.5
         for key in self.color_dict:
-            match_confidence = self.color_distance(detected_color, self.color_dict[key])
-            if match_confidence < 0.05:
+            self.match_confidence = self.color_distance(detected_color, self.color_dict[key])
+            if self.match_confidence < 0.05:
                 color_string = key
                 break
             else:
@@ -87,8 +77,7 @@ class Peripherals(Subsystem):
         self.counter += 1
         if self.counter % 5 == 0:
             detected_color = self.color_sensor.getColor()
-            match_confidence = 0.5
-            color_string = self.get_color_str(detected_color, match_confidence)
+            color_string = self.get_color_str(detected_color)
 
             '''
             match = self.color_matcher.matchClosestColor(match_confidence, detected_color) 
@@ -102,11 +91,11 @@ class Peripherals(Subsystem):
                 else:
                     color_string = "No Match"
 
-            ''' 
+            '''
 
             SmartDashboard.putString('Detected Color', color_string)
             SmartDashboard.putNumber("Red", detected_color.red)
             SmartDashboard.putNumber("Green", detected_color.green)
             SmartDashboard.putNumber("Blue", detected_color.blue)
-            SmartDashboard.putNumber("Confidence", match_confidence)
+            SmartDashboard.putNumber("Confidence", self.match_confidence)
 
