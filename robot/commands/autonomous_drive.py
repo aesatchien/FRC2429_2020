@@ -17,7 +17,7 @@ class AutonomousDrive(Command):
     # may need to use variables at some point ...
     tolerance = 0.5
 
-    def __init__(self, robot, setpoint=None, control_type='position', button = 'None', timeout=None, from_dashboard = True, source = None):
+    def __init__(self, robot, setpoint=None, control_type='position', button = 'None', timeout=None, from_dashboard=True, source=None):
         """The constructor"""
         super().__init__()
         # Signal that we require ExampleSubsystem
@@ -37,7 +37,6 @@ class AutonomousDrive(Command):
         self.button = button
         strip_name = lambda x: str(x)[1 + str(x).rfind('.'):-2]
         self.name = strip_name(self.__class__)
-
 
     def initialize(self):
         """Called just before this Command runs the first time."""

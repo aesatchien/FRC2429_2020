@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # Attempt to convert 2019 Spartan Java to Python - 11/22/2019 CJH
-# Then attempt to convert that to the 2020 wpilib API - 11/27/2020 CJH
+# Then attempt to convert that to the 2020 wpilib API - 1/27/2020 CJH
 import wpilib
 from wpilib import Timer
 from wpilib.command import Scheduler
