@@ -52,12 +52,46 @@ class Peripherals(Subsystem):
     def panel_clockwise(self, power):
         self.control_panel_spark.set(power)
 
+    def get_color_str(self, color=None, match_confidence=0.5):
+        detected_color = color or self.color_sensor.getColor()
+
+        '''
+        if color: 
+            detected_color = color
+        else: 
+            detected_color = self.color_sensor.getColor() 
+        '''
+
+        match = self.color_matcher.matchClosestColor(detected_color, match_confidence)
+        color_string = 'No Match'
+        if match == self.kBlueTarget:
+            color_string = 'blue'
+        elif match == self.kGreenTarget:
+            color_string = 'green'
+        elif match == self.kRedTarget:
+            color_string = 'red'
+        elif match == self.kYellowTarget:
+            color_string = 'yellow'
+
+        for key in self.color_dict:
+            match_confidence = self.color_distance(detected_color, self.color_dict[key])
+            if match_confidence < 0.05:
+                color_string = key
+                break
+            else:
+                color_string = "No Match"
+
+        return color_string
+
     def log(self):
         self.counter += 1
         if self.counter % 5 == 0:
             detected_color = self.color_sensor.getColor()
             match_confidence = 0.5
-            match = self.color_matcher.matchClosestColor(detected_color, match_confidence)
+            color_string = self.get_color_str(detected_color, match_confidence)
+
+            '''
+            match = self.color_matcher.matchClosestColor(match_confidence, detected_color)
             color_string = 'No Match'
             if match == self.kBlueTarget:
                 color_string = 'blue'
@@ -76,7 +110,7 @@ class Peripherals(Subsystem):
                 else:
                     color_string = "No Match"
 
-
+            '''
 
             SmartDashboard.putString('Detected Color', color_string)
             SmartDashboard.putNumber("Red", detected_color.red)
