@@ -14,6 +14,9 @@ class SpinToColor(Command):
         self.color_name = color_name
         self.power = power
 
+        strip_name = lambda x: str(x)[1 + str(x).rfind('.'):-2]
+        self.name = strip_name(self.__class__)
+
     def initialize(self):
         """Called just before this Command runs the first time."""
         self.start_time = round(Timer.getFPGATimestamp() - self.robot.enabled_time, 1)
