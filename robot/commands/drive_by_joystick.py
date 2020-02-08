@@ -9,12 +9,11 @@ class DriveByJoystick(Command):
     """
 
     def __init__(self, robot):
-        super().__init__()
+        #super().__init__()
+        Command.__init__(self, name='DriveByJoystick')
         self.requires(robot.drivetrain)
         self.robot = robot
         self.twist_sensitivity = 1.0
-        strip_name = lambda x: str(x)[1 + str(x).rfind('.'):-2]
-        self.name = strip_name(self.__class__)
         # correction variables
         self.is_twist_active = False
         self.heading = 0
@@ -39,7 +38,7 @@ class DriveByJoystick(Command):
         self.gyro_error = 0
         self.heading = self.robot.navigation.get_angle()
         self.start_time = round(Timer.getFPGATimestamp() - self.robot.enabled_time,1)
-        print("\n" + f"** Started {self.name} at {self.start_time} s **", flush=True)
+        print("\n" + f"** Started {self.getName()} at {self.start_time} s **", flush=True)
 
     def execute(self):
         """Called repeatedly when this Command is scheduled to run"""
@@ -90,8 +89,8 @@ class DriveByJoystick(Command):
     def end(self):
         """Called once after isFinished returns true"""
         self.robot.drivetrain.stop()
-        print("\n" + f"** Ended {self.name} at {round(Timer.getFPGATimestamp() - self.robot.enabled_time, 1)} s **", flush=True)
+        print("\n" + f"** Ended {self.getName()} at {round(Timer.getFPGATimestamp() - self.robot.enabled_time, 1)} s **", flush=True)
     def interrupted(self):
         """Called when another command which requires one or more of the same subsystems is scheduled to run."""
         self.robot.drivetrain.stop()
-        print("\n" + f"** Interrupted {self.name} at {round(Timer.getFPGATimestamp() - self.robot.enabled_time, 1)} s **", flush=True)
+        print("\n" + f"** Interrupted {self.getName()} at {round(Timer.getFPGATimestamp() - self.robot.enabled_time, 1)} s **", flush=True)

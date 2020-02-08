@@ -6,19 +6,19 @@ class Intake(Command):
     This command sets the intake
     """
 
-    def __init__(self, robot, power=0.1, button=None):
-        Command.__init__(self, name='intake')
+    def __init__(self, robot, power=0.1, button=None, end_power=0):
+        Command.__init__(self, name='Intake')
         self.requires(robot.peripherals)
         self.robot = robot
         self.button = button
-        strip_name = lambda x: str(x)[1 + str(x).rfind('.'):-2]
-        self.name = strip_name(self.__class__)
         self.power = power
+        self.end_power = end_power
+
 
     def initialize(self):
         """Called just before this Command runs the first time."""
         self.start_time = round(Timer.getFPGATimestamp() - self.robot.enabled_time, 1)
-        print("\n" + f"** Started {self.name} with power {self.power} at {self.start_time} s **", flush=True)
+        print("\n" + f"** Started {self.getName()} with power {self.power} at {self.start_time} s **", flush=True)
 
     def execute(self):
         """Called repeatedly when this Command is scheduled to run"""
@@ -43,9 +43,9 @@ class Intake(Command):
 
     def end(self):
         """Called once after isFinished returns true"""
-        print("\n" + f"** Ended {self.name} at {round(Timer.getFPGATimestamp() - self.robot.enabled_time, 1)} s **")
+        print("\n" + f"** Ended {self.getName()} at {round(Timer.getFPGATimestamp() - self.robot.enabled_time, 1)} s **")
         # Note to self: do not reset self.power here!
-        self.robot.peripherals.run_intake(0)
+        self.robot.peripherals.run_intake(self.end_power)
     def interrupted(self):
         """Called when another command which requires one or more of the same subsystems is scheduled to run."""
         #print("\n" + f"** Interrupted {self.name} at {round(Timer.getFPGATimestamp() - self.robot.enabled_time, 1)} s **")

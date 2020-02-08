@@ -1,17 +1,18 @@
 # just leaving this from pacgoat as an example for now
 from wpilib.command import CommandGroup
-
 from commands.autonomous_drive import AutonomousDrive
-from commands.track_telemetry import TrackTelemetry
+from commands.autonomous_rotate import AutonomousRotate
+from commands.intake import Intake
 
 class AutonomousGroup(CommandGroup):
     """
-    Trying to figure out how to track telemetry separately (as apposed to all the time)
+    Testing an automatic intake of a ball
     """
 
-    def __init__(self, robot, setpoint=None, control_type='position', button='None', timeout=None, from_dashboard=True):
+    def __init__(self, robot, timeout=None):
         super().__init__()
-        self.addParallel(TrackTelemetry(robot, timeout=timeout))
-        self.addParallel(AutonomousDrive(robot, setpoint=setpoint, control_type=control_type, button=button, timeout=timeout, source="camera"))
+        self.addSequential(AutonomousRotate(robot, setpoint=None, timeout=3, source='camera'))
+        self.addParallel(Intake(robot, power=0.5, end_power=0.5))
+        self.addSequential(AutonomousDrive(robot, setpoint=None, control_type='position', timeout=6, source='camera'))
 
 

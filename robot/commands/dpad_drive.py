@@ -8,7 +8,8 @@ class DpadDrive(Command):
     """
 
     def __init__(self, robot, state, button):
-        super().__init__()
+        #super().__init__()
+        Command.__init__(self, name='DpadDrive')
         self.requires(robot.drivetrain)
         self.robot = robot
         self.state = state
@@ -19,13 +20,11 @@ class DpadDrive(Command):
         self.co_strafe_power = 0.25
         self.kp_twist = 0.03
         self.direction = 1 # change this to -1 change all directions quickly
-        strip_name = lambda x: str(x)[1 + str(x).rfind('.'):-2]
-        self.name = strip_name(self.__class__)
 
     def initialize(self):
         """Called just before this Command runs the first time."""
         self.start_time = round(Timer.getFPGATimestamp() - self.robot.enabled_time,1)
-        print("\n" + f"** Started {self.name} with input {self.state} at {self.start_time} s **", flush=True)
+        print("\n" + f"** Started {self.getName()} with input {self.state} at {self.start_time} s **", flush=True)
         SmartDashboard.putString("alert", f"** Started {self.name} with input {self.state} at {self.start_time} s **")
         self.heading = self.robot.navigation.get_angle()
     def execute(self):
@@ -67,8 +66,8 @@ class DpadDrive(Command):
     def end(self):
         """Called once after isFinished returns true"""
         self.robot.drivetrain.stop()
-        print("\n" + f"** Ended {self.name} at {round(Timer.getFPGATimestamp() - self.robot.enabled_time, 1)} s **")
+        print("\n" + f"** Ended {self.getName()} at {round(Timer.getFPGATimestamp() - self.robot.enabled_time, 1)} s **")
     def interrupted(self):
         """Called when another command which requires one or more of the same subsystems is scheduled to run."""
         self.robot.drivetrain.stop()
-        print("\n" + f"** Interrupted {self.name} at {round(Timer.getFPGATimestamp() - self.robot.enabled_time, 1)} s **")
+        print("\n" + f"** Interrupted {self.getName()} at {round(Timer.getFPGATimestamp() - self.robot.enabled_time, 1)} s **")

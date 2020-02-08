@@ -11,18 +11,17 @@ class UpdatePIDs(Command):
     """
 
     def __init__(self, robot, factor=1, from_dashboard=None):
-        super().__init__()
+        #super().__init__()
+        Command.__init__(self, name='UpdatePIDs')
         self.robot = robot
         self.factor = factor
         self.from_dashboard = from_dashboard
-        strip_name = lambda x: str(x)[1 + str(x).rfind('.'):-2]
-        self.name = strip_name(self.__class__)
 
     def initialize(self):
         """Called just before this Command runs the first time."""
         strip_name = lambda x: str(x)[1 + str(x).rfind('.'):-2]
         print(
-            "\n" + f"** Started {self.name} with input {self.factor} at {round(Timer.getFPGATimestamp() - self.robot.enabled_time, 1)} s **")
+            "\n" + f"** Started {self.getName()} with input {self.factor} at {round(Timer.getFPGATimestamp() - self.robot.enabled_time, 1)} s **")
         keys = ['kP', 'kI', 'kD', 'kIz', 'kFF']
         if self.from_dashboard == 'position':
             dict_0 = {}

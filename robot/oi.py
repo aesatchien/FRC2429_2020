@@ -15,7 +15,7 @@ from commands.intake import Intake
 from commands.panel_spinner import PanelSpinner
 from commands.actuate_gate import ActuateGate
 from commands.spin_to_color import SpinToColor
-#from commands.autonomous_group import AutonomousGroup
+from commands.autonomous_group import AutonomousGroup
 
 class OI(object):
     """
@@ -36,10 +36,11 @@ class OI(object):
         SmartDashboard.putNumber("Auto Rotation", 10)
 
         # These are broken as of 2/1/2020 if we use the newest commands_v1 library.  commented out for now.
-        self.drive_fwd_command = AutonomousDrive(robot, setpoint=None, control_type='position', timeout=6, source="dashboard")
-        self.rotate_command = AutonomousRotate(robot, setpoint=None, timeout=6)
+        self.drive_fwd_command = AutonomousDrive(robot, setpoint=None, control_type='position', timeout=6, source='dashboard')
+        self.rotate_command = AutonomousRotate(robot, setpoint=None, timeout=6, source='dashboard')
         self.position_pids_command = UpdatePIDs(robot, factor=1, from_dashboard='position')
         self.velocity_pids_command = UpdatePIDs(robot, factor=1, from_dashboard='velocity')
+        self.autonomous_test_command = AutonomousGroup(robot)
         self.send_commands_to_dashboard()
 
     def initialize_joystics(self):
@@ -63,8 +64,8 @@ class OI(object):
         # binding button to commands
         self.axisButtonRT.whenPressed(Intake(robot, power=0, button=self.axisButtonRT))
         self.axisButtonLT.whenPressed(Intake(robot, power=0, button=self.axisButtonLT))
-        self.buttonRB.whenPressed(ActuateGate(robot, direction="open"))
-        self.buttonLB.whenPressed(ActuateGate(robot, direction="close"))
+        self.buttonRB.whenPressed(ActuateGate(robot, direction='open'))
+        self.buttonLB.whenPressed(ActuateGate(robot, direction='close'))
         #self.buttonA.whenPressed(UpdatePIDs(robot,1.5, from_dashboard=False))
         #self.buttonB.whenPressed(UpdatePIDs(robot,0.66, from_dashboard=False))
         self.buttonA.whenPressed(Intake(robot, power=0.5, button=self.buttonA))
@@ -79,10 +80,10 @@ class OI(object):
         # self.buttonStart.whenPressed
         # self.axisButtonLT.whenPressed
         # self.axisButtonRT.whenPressed
-        self.povButtonUp.whenPressed(DpadDrive(robot,"up",self.povButtonUp))
-        self.povButtonDown.whenPressed(DpadDrive(robot, "down", self.povButtonDown))
-        self.povButtonRight.whenPressed(DpadDrive(robot, "right", self.povButtonRight))
-        self.povButtonLeft.whenPressed(DpadDrive(robot, "left", self.povButtonLeft))
+        self.povButtonUp.whenPressed(DpadDrive(robot, 'up', self.povButtonUp))
+        self.povButtonDown.whenPressed(DpadDrive(robot, 'down', self.povButtonDown))
+        self.povButtonRight.whenPressed(DpadDrive(robot, 'right', self.povButtonRight))
+        self.povButtonLeft.whenPressed(DpadDrive(robot, 'left', self.povButtonLeft))
 
         # add/change bindings if we are using more than one joystick
         self.competition_mode = False
@@ -106,13 +107,13 @@ class OI(object):
             # co-pilot joystick to commands
             self.co_axisButtonRT.whenPressed(Intake(robot, power=0, button=self.co_axisButtonRT))
             self.co_axisButtonLT.whenPressed(Intake(robot, power=0, button=self.co_axisButtonLT))
-            self.co_buttonRB.whenPressed(ActuateGate(robot, direction="open"))
-            self.co_buttonLB.whenPressed(ActuateGate(robot, direction="close"))
+            self.co_buttonRB.whenPressed(ActuateGate(robot, direction='open'))
+            self.co_buttonLB.whenPressed(ActuateGate(robot, direction='close'))
             self.co_buttonA.whenPressed(PanelSpinner(robot, button=self.co_buttonA, power=0))
-            self.co_povButtonUp.whenPressed(DpadDrive(robot, "up", self.co_povButtonUp))
-            self.co_povButtonDown.whenPressed(DpadDrive(robot, "down", self.co_povButtonDown))
-            self.co_povButtonRight.whenPressed(DpadDrive(robot, "right", self.co_povButtonRight))
-            self.co_povButtonLeft.whenPressed(DpadDrive(robot, "left", self.co_povButtonLeft))
+            self.co_povButtonUp.whenPressed(DpadDrive(robot, 'up', self.co_povButtonUp))
+            self.co_povButtonDown.whenPressed(DpadDrive(robot, 'down', self.co_povButtonDown))
+            self.co_povButtonRight.whenPressed(DpadDrive(robot, 'right', self.co_povButtonRight))
+            self.co_povButtonLeft.whenPressed(DpadDrive(robot, 'left', self.co_povButtonLeft))
 
 
     def getJoystick(self):
@@ -124,4 +125,5 @@ class OI(object):
         SmartDashboard.putData("Drive Forward", self.drive_fwd_command)
         SmartDashboard.putData("Rotate X", self.rotate_command)
         SmartDashboard.putData("Update Pos PIDs", self.position_pids_command)
-        SmartDashboard.putData("Update Vel PIDs", self.velocity_pids_command )
+        SmartDashboard.putData("Update Vel PIDs", self.velocity_pids_command)
+        SmartDashboard.putData("Autonomous Test", self.autonomous_test_command)
