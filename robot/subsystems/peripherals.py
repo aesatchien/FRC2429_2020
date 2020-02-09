@@ -9,6 +9,7 @@ from wpilib import Color
 from wpilib import I2C
 from wpilib import SmartDashboard
 import math
+from networktables import NetworkTables
 
 class Peripherals(Subsystem):
     def __init__(self, robot):
@@ -20,6 +21,8 @@ class Peripherals(Subsystem):
         self.counter = 0
         self.color_sensor = ColorSensorV3(I2C.Port.kOnboard)
         self.match_confidence = 0
+        self.ball_table = NetworkTables.getTable("BallCam")
+
 
         # we can config the colorsensor resolution and the rate
         #self.color_sensor.setGain(ColorSensorV3.GainFactor.k1x)
@@ -84,4 +87,4 @@ class Peripherals(Subsystem):
             SmartDashboard.putNumber("Green", detected_color.green)
             SmartDashboard.putNumber("Blue", detected_color.blue)
             SmartDashboard.putNumber("Confidence", self.match_confidence)
-
+            #SmartDashboard.putNumber("Cam distance", self.ball_table.getNumber("distance", 0))

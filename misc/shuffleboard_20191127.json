@@ -337,6 +337,17 @@
               "_source0": "network_table:///SmartDashboard/Confidence",
               "_title": "Confidence"
             }
+          },
+          "0,0": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Enc1 Conversion",
+              "_title": "Enc1 Conversion"
+            }
           }
         }
       }

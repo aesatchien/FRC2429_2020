@@ -25,7 +25,7 @@ class DpadDrive(Command):
         """Called just before this Command runs the first time."""
         self.start_time = round(Timer.getFPGATimestamp() - self.robot.enabled_time,1)
         print("\n" + f"** Started {self.getName()} with input {self.state} at {self.start_time} s **", flush=True)
-        SmartDashboard.putString("alert", f"** Started {self.name} with input {self.state} at {self.start_time} s **")
+        SmartDashboard.putString("alert", f"** Started {self.getName()} with input {self.state} at {self.start_time} s **")
         self.heading = self.robot.navigation.get_angle()
     def execute(self):
         """
