@@ -35,12 +35,13 @@ class AutonomousDrive(Command):
         self.robot = robot
         self.control_type = control_type
         self.button = button
+        self.max_thrust = 0.25
 
     def initialize(self):
         """Called just before this Command runs the first time."""
         self.start_time = round(Timer.getFPGATimestamp() - self.robot.enabled_time, 1)
-        print("\n" + f"** Started {self.get_name()} with setpoint {self.setpoint} and control_type {self.control_type} at {self.start_time} s **")
-        SmartDashboard.putString("alert", f"** Started {self.name} with setpoint {self.setpoint} and control_type {self.control_type} at {self.start_time} s **")
+        print("\n" + f"** Started {self.getName()} with setpoint {self.setpoint} and control_type {self.control_type} at {self.start_time} s **")
+        SmartDashboard.putString("alert", f"** Started {self.getName()} with setpoint {self.setpoint} and control_type {self.control_type} at {self.start_time} s **")
         self.has_arrived = False
         self.telemetry = {'time':[], 'position':[], 'velocity':[], 'current':[], 'output':[]}
         self.counter = 0
@@ -54,11 +55,11 @@ class AutonomousDrive(Command):
         elif self.source == "camera":
             ball_table = NetworkTables.getTable("BallCam")
             if ball_table.getNumber("targets", 0) > 0:
-                self.setpoint = SmartDashboard.getNumber("distance", 0)
+                self.setpoint = ball_table.getNumber("distance", 0)
             else:
                 self.setpoint = 0  # this should end us
                 self.has_arrived = True
-            print(f"Autonomous drive found {ball_table.getNumber('targets', 0)} targets on BallCam ...")
+            print(f"Autonomous drive found {ball_table.getNumber('targets', 0)} targets on BallCam and dist is {self.setpoint}...")
 
         if self.control_type == 'position':
             self.robot.drivetrain.goToSetPoint(self.setpoint)
@@ -82,17 +83,18 @@ class AutonomousDrive(Command):
             self.telemetry['output'].append(self.robot.drivetrain.spark_neo_left_front.getAppliedOutput())
         self.counter += 1
 
+        setpoint_sign = 1.0  # could do this all with a copysign but better to be explicit
+        if self.setpoint < 0:
+            setpoint_sign = -1.0
+
         # try to trick ourselves into giving ~ a half second to slow down at the end of the motion profile
         # TODO: get more opinions on how to do this better
-        if self.control_type == 'position' and not self.has_arrived:
-            setpoint_sign = 1.0  # could do this all with a copysign but better to be explicit
-            if self.setpoint < 0:
-                setpoint_sign = -1.0
 
-        if setpoint_sign*(self.setpoint - self.robot.drivetrain.get_position()) <= self.tolerance:
-            self.has_arrived = True
-            self.timeout = self.timeSinceInitialized() + self.extra_time
-            print(f"** We have arrived at setpoint! (at {round(self.timeSinceInitialized(), 1)})")
+        if self.control_type == 'position' and not self.has_arrived:
+            if setpoint_sign*(self.setpoint - self.robot.drivetrain.get_position()) <= self.tolerance:
+                self.has_arrived = True
+                self.timeout = self.timeSinceInitialized() + self.extra_time
+                print(f"** We have arrived at setpoint! (at {round(self.timeSinceInitialized(), 2)})")
 
 
     def isFinished(self):
@@ -110,10 +112,11 @@ class AutonomousDrive(Command):
         """Called once after isFinished returns true"""
         end_time = round(Timer.getFPGATimestamp() - self.robot.enabled_time, 1)
         print("\n" + f"** Ended {self.getName()} at {end_time} s with a duration of {round(end_time-self.start_time,1)} s **")
-        SmartDashboard.putString("alert", f"** Ended {self.name} at {end_time} s with a duration of {round(end_time-self.start_time,1)} s **")
+        SmartDashboard.putString("alert", f"** Ended {self.getName()} at {end_time} s with a duration of {round(end_time-self.start_time,1)} s **")
         for key in self.telemetry:
             SmartDashboard.putNumberArray("telemetry_" + str(key), self.telemetry[key])
         self.robot.drivetrain.stop()
+        self.has_arrived = False
 
     def interrupted(self):
         self.end()

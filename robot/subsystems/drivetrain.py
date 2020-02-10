@@ -34,6 +34,9 @@ class DriveTrain(Subsystem):
                              'kMinOutput': -0.99}
         self.PID_dict_vel = {'kP': 0.00015, 'kI': 8.0e-7, 'kD': 0.00, 'kIz': 0, 'kFF': 0.00022, 'kMaxOutput': 0.99,
                              'kMinOutput': -0.99}
+        # something in the newest settings is broken, not sure what.
+        self.PID_dict_vel = {'kP': 0.00015, 'kI': 0, 'kD': 0.00, 'kIz': 0, 'kFF': 0.00022, 'kMaxOutput': 0.1,
+                             'kMinOutput': -0.1}
         # Smart Motion Coefficients - these don't seem to be writing for some reason... python is old?  just set with rev's program for now
         self.maxvel = 500  # rpm
         self.maxacc = 500
@@ -254,8 +257,8 @@ class DriveTrain(Subsystem):
             self.error_dict.update({'kFF_1'+str(i):controller.setFF(self.PID_dict_vel['kFF'], 1)})
             self.error_dict.update({'kIZ_0'+str(i):controller.setIZone(self.PID_dict_pos['kIz'], 0)})
             self.error_dict.update({'kIZ_1'+str(i):controller.setIZone(self.PID_dict_vel['kIz'], 1)})
-            self.error_dict.update({'MinMax0_'+str(i):controller.setOutputRange(self.PID_dict_pos['kMaxOutput'], self.PID_dict_pos['kMinOutput'], 0)})
-            self.error_dict.update({'MinMax0_'+str(i):controller.setOutputRange(self.PID_dict_vel['kMaxOutput'], self.PID_dict_vel['kMinOutput'], 1)})
+            self.error_dict.update({'MinMax0_'+str(i):controller.setOutputRange(self.PID_dict_pos['kMinOutput'], self.PID_dict_pos['kMaxOutput'], 0)})
+            self.error_dict.update({'MinMax0_'+str(i):controller.setOutputRange(self.PID_dict_vel['kMinOutput'], self.PID_dict_vel['kMaxOutput'], 1)})
             self.error_dict.update({'Accel0_'+str(i):controller.setSmartMotionMaxVelocity(self.maxvel, 0)})
             self.error_dict.update({'Accel0_'+str(i):controller.setSmartMotionMaxVelocity(self.maxvel, 1)})
             self.error_dict.update({'Vel0_'+str(i):controller.setSmartMotionMaxAccel(self.maxacc, 0)})
@@ -343,5 +346,5 @@ class DriveTrain(Subsystem):
             self.display_PIDs()
             SmartDashboard.putString("alert",
                                      f"Position: ({round(self.x, 1)},{round(self.y, 1)})  Time: {round(Timer.getFPGATimestamp() - self.robot.enabled_time, 1)}")
-            SmartDashboard.putString("Controller1 Idle", str(self.spark_neo_left_front.getIdleMode()))
-            SmartDashboard.putNumber("Enc1 Conversion", self.sparkneo_encoder_1.getPositionConversionFactor())
+            #SmartDashboard.putString("Controller1 Idle", str(self.spark_neo_left_front.getIdleMode()))
+            #SmartDashboard.putNumber("Enc1 Conversion", self.sparkneo_encoder_1.getPositionConversionFactor())

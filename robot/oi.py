@@ -74,8 +74,8 @@ class OI(object):
         #self.buttonX.whenPressed(PneumaticPiston(robot, 'open'))
         self.buttonY.whenPressed(SpinToColor(robot, color_name='blue', power=0.3))
 
-        #self.buttonLB.whenPressed(AutonomousDrive(robot, setpoint=250, control_type='velocity', button=self.buttonLB, from_dashboard=False))
-        #self.buttonRB.whenPressed(AutonomousDrive(robot, setpoint=500, control_type='velocity', button=self.buttonRB, from_dashboard=False))
+        self.buttonStart.whenPressed(AutonomousDrive(robot, setpoint=250, control_type='velocity', button= self.buttonStart, source=None))
+        self.buttonBack.whenPressed(AutonomousDrive(robot, setpoint=500, control_type='velocity', button=self.buttonBack, source=None))
         #self.buttonBack.whenPressed()
         # self.buttonStart.whenPressed
         # self.axisButtonLT.whenPressed

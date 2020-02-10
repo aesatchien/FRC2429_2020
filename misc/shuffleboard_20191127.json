@@ -130,7 +130,7 @@
               ]
             }
           },
-          "8,0": {
+          "9,0": {
             "size": [
               3,
               1
@@ -139,17 +139,6 @@
               "_type": "Text View",
               "_source0": "network_table:///SmartDashboard/alert",
               "_title": "alert"
-            }
-          },
-          "11,0": {
-            "size": [
-              1,
-              1
-            ],
-            "content": {
-              "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/Controller1 Idle",
-              "_title": "Controller1 Idle"
             }
           },
           "5,0": {
@@ -237,7 +226,7 @@
               }
             }
           },
-          "9,2": {
+          "10,1": {
             "size": [
               1,
               1
@@ -250,7 +239,7 @@
               "Colors/Color when false": "#8B0000FF"
             }
           },
-          "10,2": {
+          "11,1": {
             "size": [
               1,
               1
@@ -261,51 +250,7 @@
               "_title": "error"
             }
           },
-          "8,2": {
-            "size": [
-              1,
-              1
-            ],
-            "content": {
-              "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/Detected Color",
-              "_title": "Detected Color"
-            }
-          },
-          "8,1": {
-            "size": [
-              1,
-              1
-            ],
-            "content": {
-              "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/Red",
-              "_title": "Red"
-            }
-          },
-          "9,1": {
-            "size": [
-              1,
-              1
-            ],
-            "content": {
-              "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/Green",
-              "_title": "Green"
-            }
-          },
-          "10,1": {
-            "size": [
-              1,
-              1
-            ],
-            "content": {
-              "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/Blue",
-              "_title": "Blue"
-            }
-          },
-          "9,3": {
+          "10,2": {
             "size": [
               1,
               1
@@ -316,7 +261,7 @@
               "_title": "Robot X"
             }
           },
-          "8,3": {
+          "9,2": {
             "size": [
               1,
               1
@@ -327,26 +272,74 @@
               "_title": "Robot Y"
             }
           },
-          "11,1": {
+          "9,1": {
             "size": [
               1,
               1
             ],
             "content": {
-              "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/Confidence",
-              "_title": "Confidence"
+              "_type": "Command",
+              "_source0": "network_table:///SmartDashboard/Autonomous Test",
+              "_title": "Autonomous Test"
             }
           },
           "0,0": {
             "size": [
-              1,
-              1
+              3,
+              3
             ],
             "content": {
-              "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/Enc1 Conversion",
-              "_title": "Enc1 Conversion"
+              "_type": "Camera Stream",
+              "_source0": "camera_server://BallCam Processed",
+              "_title": "BallCam Processed",
+              "Crosshair/Show crosshair": true,
+              "Crosshair/Crosshair color": "#FFFFFFFF",
+              "Controls/Show controls": true,
+              "Controls/Rotation": "NONE",
+              "compression": -1.0,
+              "fps": -1,
+              "imageWidth": -1,
+              "imageHeight": -1
+            }
+          },
+          "8,0": {
+            "size": [
+              1,
+              3
+            ],
+            "content": {
+              "_type": "Grid Layout",
+              "_title": "Color",
+              "Layout/Number of columns": 1,
+              "Layout/Number of rows": 5,
+              "Layout/Label position": "BOTTOM",
+              "_children": {
+                "0,0": {
+                  "_type": "Text View",
+                  "_source0": "network_table:///SmartDashboard/Red",
+                  "_title": "Red"
+                },
+                "0,1": {
+                  "_type": "Text View",
+                  "_source0": "network_table:///SmartDashboard/Green",
+                  "_title": "Green"
+                },
+                "0,2": {
+                  "_type": "Text View",
+                  "_source0": "network_table:///SmartDashboard/Blue",
+                  "_title": "Blue"
+                },
+                "0,3": {
+                  "_type": "Text View",
+                  "_source0": "network_table:///SmartDashboard/Detected Color",
+                  "_title": "Detected Color"
+                },
+                "0,4": {
+                  "_type": "Text View",
+                  "_source0": "network_table:///SmartDashboard/Confidence",
+                  "_title": "Confidence"
+                }
+              }
             }
           }
         }

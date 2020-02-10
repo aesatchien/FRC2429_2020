@@ -16,6 +16,7 @@ class AutonomousRotate(Command):
         # Signal that we require drivetrain
         self.requires(robot.drivetrain)
         self.setpoint = setpoint
+        self.source = source
         if timeout is None:
             self.setTimeout(3)
         else:
@@ -42,14 +43,14 @@ class AutonomousRotate(Command):
         elif self.source == "camera":
             ball_table = NetworkTables.getTable("BallCam")
             if ball_table.getNumber("targets", 0) > 0:
-                self.setpoint = SmartDashboard.getNumber("rotation", 0)
+                self.setpoint = ball_table.getNumber("rotation", 0)
             else:
                 self.setpoint = 0  # this should end us
                 self.has_arrived = True
-            print(f"Rotation found {ball_table.getNumber('rotation', 0)} targets on BallCam ...")
+            print(f"Rotation found {ball_table.getNumber('rotation', 0)} rotation on BallCam ...")
 
         print("\n" + f"** Started {self.getName()} with setpoint {self.setpoint} at {self.start_time} s **")
-        SmartDashboard.putString("alert", f"** Started {self.name} with setpoint {self.setpoint} at {self.start_time} s **")
+        SmartDashboard.putString("alert", f"** Started {self.getName()} with setpoint {self.setpoint} at {self.start_time} s **")
         self.start_angle = self.robot.navigation.get_angle()
         self.error = 0
         self.prev_error = 0
@@ -80,7 +81,7 @@ class AutonomousRotate(Command):
         """Called once after isFinished returns true"""
         end_time = round(Timer.getFPGATimestamp() - self.robot.enabled_time, 1)
         print("\n" + f"** Ended {self.getName()} at {end_time} s with a duration of {round(end_time-self.start_time,1)} s **")
-        SmartDashboard.putString("alert", f"** Ended {self.name} at {end_time} s with a duration of {round(end_time - self.start_time, 1)} s **")
+        SmartDashboard.putString("alert", f"** Ended {self.getName()} at {end_time} s with a duration of {round(end_time - self.start_time, 1)} s **")
         self.robot.drivetrain.stop()
 
     def interrupted(self):
