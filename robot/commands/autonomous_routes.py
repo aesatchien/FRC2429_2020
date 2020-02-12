@@ -5,29 +5,29 @@ from .autonomous_drive import AutonomousDrive
 from wpilib import Sendable
 
 class AutonomousRoutes(CommandGroup):
-    def __init__(self, robot, a_route, b_route, timeout=None):
+    def __init__(self, robot, route_a, route_b, timeout=None):
         super().__init__()
 
         self.robot = robot
-        self.a_route = a_route
-        self.b_route = b_route
+        self.route_a = route_a
+        self.route_b = route_b
 
 
         self.addParallel(TrackTelemetry(robot, timeout=timeout))
 
-        if a_route == 'scoring':
+        if route_a == 'scoring':
             self.scoring_a()
-        elif a_route == 'non-scoring':
+        elif route_a == 'non-scoring':
             self.non_scoring_a()
         else:
             print('invalid route name for phase A')
 
-        if a_route != 'non-scoring':
-            if b_route == 'shield generator port side':
+        if route_a != 'non-scoring':
+            if route_b == 'shield generator port side':
                 self.port_side_b()
-            elif b_route == 'shield generator trench side':
+            elif route_b == 'shield generator trench side':
                 self.trench_side_b()
-            elif b_route == 'trench':
+            elif route_b == 'trench':
                 self.trench_b()
             else:
                 print('invalid route name for phase B')
