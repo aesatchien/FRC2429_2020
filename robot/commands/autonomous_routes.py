@@ -1,13 +1,17 @@
-from wpilib.command import CommandGroup
+from wpilib.command import CommandGroup, WaitCommand
 from .track_telemetry import TrackTelemetry
-
+from .actuate_gate import ActuateGate
+from .autonomous_drive import AutonomousDrive
+from wpilib import Sendable
 
 class AutonomousRoutes(CommandGroup):
     def __init__(self, robot, a_route, b_route, timeout=None):
         super().__init__()
 
+        self.robot = robot
         self.a_route = a_route
         self.b_route = b_route
+
 
         self.addParallel(TrackTelemetry(robot, timeout=timeout))
 
@@ -48,6 +52,10 @@ class AutonomousRoutes(CommandGroup):
         Close gate
         """
 
+        self.addSequential(ActuateGate(self.robot, direction='open'))
+        self.addSequential(WaitCommand(5))
+        self.addSequential(ActuateGate(self.robot, direction='close'))
+
     def non_scoring_a(self):
         """
         PURPOSE: for when we are either unable to score or we don't intend to score
@@ -55,6 +63,8 @@ class AutonomousRoutes(CommandGroup):
         PROCEDURE:
         Drive backward 30"
         """
+
+        self.addSequential(AutonomousDrive(self.robot, setpoint=30))
 
     def port_side_b(self):
         """
@@ -65,6 +75,8 @@ class AutonomousRoutes(CommandGroup):
         Move forward 100"
         """
 
+        self.addSequential(AutonomousDrive(self.robot, setpoint=100))
+
     def trench_side_b(self):
         """
         PURPOSE: for when we want to get the balls on the side of the shield generator facing the trench
@@ -72,6 +84,8 @@ class AutonomousRoutes(CommandGroup):
         PROCEDURE:
         Move forward 100"
         """
+
+        self.addSequential(AutonomousDrive(self.robot, setpoint=100))
 
     def trench_b(self):
         """
@@ -83,3 +97,7 @@ class AutonomousRoutes(CommandGroup):
         Drive forward 200"
         Stop intake
         """
+
+        self.robot.peripherals.run_intake(0.1)
+        self.addSequential(AutonomousDrive(self.robot, setpoint=200))
+        self.robot.peripherals.run_intake(0)

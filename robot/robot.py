@@ -11,6 +11,7 @@ from subsystems.drivetrain import DriveTrain
 from subsystems.navigation import Navigation
 from subsystems.pneumatics import Pneumatics
 from subsystems.peripherals import Peripherals
+#from subsystems.distance import Distance
 
 
 class Robot(CommandBasedRobot):
@@ -30,6 +31,7 @@ class Robot(CommandBasedRobot):
         self.navigation = Navigation(self)
         #self.pneumatics = Pneumatics(self)
         self.peripherals = Peripherals(self)
+        #self.distance = Distance(self)
         #wpilib.SmartDashboard.putData(self.drivetrain)
         #wpilib.SmartDashboard.putData(self.pneumatics)
         #wpilib.SmartDashboard.putData(self.peripherals)
