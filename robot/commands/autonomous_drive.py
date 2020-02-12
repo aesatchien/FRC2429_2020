@@ -46,7 +46,8 @@ class AutonomousDrive(Command):
         self.telemetry = {'time':[], 'position':[], 'velocity':[], 'current':[], 'output':[]}
         self.counter = 0
         self.extra_time = 0.5 # amount of time to give it to slow down after we reach setpoint
-        self.setTimeout(self.initial_timeout) # needs to be in initialize because we modify it in execute - dashboard instance keeps getting reused
+        self.setTimeout(self.timeSinceInitialized() +  self.initial_timeout) # needs to be in initialize because we modify it in execute - dashboard instance keeps getting reused
+
 
         if self.source is None:
             self.setpoint = self.setpoint
@@ -93,7 +94,7 @@ class AutonomousDrive(Command):
         if self.control_type == 'position' and not self.has_arrived:
             if setpoint_sign*(self.setpoint - self.robot.drivetrain.get_position()) <= self.tolerance:
                 self.has_arrived = True
-                self.timeout = self.timeSinceInitialized() + self.extra_time
+                self.setTimeout( self.timeSinceInitialized() + self.extra_time)
                 print(f"** We have arrived at setpoint! (at {round(self.timeSinceInitialized(), 2)})")
 
 

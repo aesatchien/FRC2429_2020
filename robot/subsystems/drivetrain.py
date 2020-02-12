@@ -35,8 +35,7 @@ class DriveTrain(Subsystem):
         self.PID_dict_vel = {'kP': 0.00015, 'kI': 8.0e-7, 'kD': 0.00, 'kIz': 0, 'kFF': 0.00022, 'kMaxOutput': 0.99,
                              'kMinOutput': -0.99}
         # something in the newest settings is broken, not sure what.
-        self.PID_dict_vel = {'kP': 0.00015, 'kI': 0, 'kD': 0.00, 'kIz': 0, 'kFF': 0.00022, 'kMaxOutput': 0.1,
-                             'kMinOutput': -0.1}
+
         # Smart Motion Coefficients - these don't seem to be writing for some reason... python is old?  just set with rev's program for now
         self.maxvel = 500  # rpm
         self.maxacc = 500
