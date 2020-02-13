@@ -22,6 +22,8 @@ class Peripherals(Subsystem):
         self.color_sensor = ColorSensorV3(I2C.Port.kOnboard)
         self.match_confidence = 0
         self.ball_table = NetworkTables.getTable("BallCam")
+        self.lidar = Lidar()
+        self.lidar_meas = None
 
 
         # we can config the colorsensor resolution and the rate
@@ -76,15 +78,34 @@ class Peripherals(Subsystem):
         return math.sqrt(
             (color_1.red - color_2.red) ** 2 + (color_1.green - color_2.green) ** 2 +(color_1.blue - color_2.blue) ** 2)
 
+    def lidar_distance(self):
+        return self.lidar.dist() # distance in cm
+
     def log(self):
         self.counter += 1
         if self.counter % 5 == 0:
             detected_color = self.color_sensor.getColor()
             color_string = self.get_color_str(detected_color)
+            self.lidar_meas = self.lidar_distance()
 
             SmartDashboard.putString('Detected Color', color_string)
             SmartDashboard.putNumber("Red", detected_color.red)
             SmartDashboard.putNumber("Green", detected_color.green)
             SmartDashboard.putNumber("Blue", detected_color.blue)
             SmartDashboard.putNumber("Confidence", self.match_confidence)
+            SmartDashboard.putNumber("Lidar Distance", self.lidar_meas)
             #SmartDashboard.putNumber("Cam distance", self.ball_table.getNumber("distance", 0))
+
+
+class Lidar:
+    def __init__(self):
+        self.i2c = wpilib.I2C(wpilib.I2C.Port.kOnboard, 0x62)
+        self.i2c.write(0x11, 0xff) # OUTER_LOOP_COUNT; enable free running mode
+        self.i2c.write(0x04, 0x28) # ACQ_CONFIG_REG; use MEASURE_DELAY
+        self.i2c.write(0x00, 0x04) # ACQ_COMMAND; take distance with receiver bias corr
+        self.buf = bytearray(2) # for reading distance 2 bytes
+
+    def dist(self):
+        self.i2c.writeBulk(bytearray([0x8f])) # don't use repeated start; write address only, then read
+        self.i2c.readOnly(self.buf) # MSB, LSB of distance measurement in cm
+        return self.buf[0]*2**8 + self.buf[1]
