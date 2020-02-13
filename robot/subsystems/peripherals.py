@@ -82,11 +82,11 @@ class Peripherals(Subsystem):
         return self.lidar.dist() # distance in cm
 
     def log(self):
+        self.lidar_meas = self.lidar_distance()
         self.counter += 1
         if self.counter % 5 == 0:
             detected_color = self.color_sensor.getColor()
             color_string = self.get_color_str(detected_color)
-            self.lidar_meas = self.lidar_distance()
 
             SmartDashboard.putString('Detected Color', color_string)
             SmartDashboard.putNumber("Red", detected_color.red)
