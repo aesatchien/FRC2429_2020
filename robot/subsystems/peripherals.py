@@ -98,14 +98,23 @@ class Peripherals(Subsystem):
 
 
 class Lidar:
+    addr = 0x62 # I2C bus address
+    OUTER_LOOP_COUNT = 0x11
+    ACQ_CONFIG_REG = 0x04
+    ACQ_COMMAND = 0x00
+    FULL_DELAYword = 0x8f
     def __init__(self):
-        self.i2c = wpilib.I2C(wpilib.I2C.Port.kOnboard, 0x62)
-        self.i2c.write(0x11, 0xff) # OUTER_LOOP_COUNT; enable free running mode
-        self.i2c.write(0x04, 0x28) # ACQ_CONFIG_REG; use MEASURE_DELAY
-        self.i2c.write(0x00, 0x04) # ACQ_COMMAND; take distance with receiver bias corr
+        self.i2c = wpilib.I2C(wpilib.I2C.Port.kOnboard, Lidar.addr)
+        err = self.i2c.write(Lidar.OUTER_LOOP_COUNT, 0xff) # enable free running mode
+        err += self.i2c.write(Lidar.ACQ_CONFIG_REG, 0x28) # use MEASURE_DELAY
+        err += self.i2c.write(Lidar.ACQ_COMMAND, 0x04) # take distance with receiver bias corr
         self.buf = bytearray(2) # for reading distance 2 bytes
+        if err:
+            outstr = "Lidar_Lite_V3 write error or not found"
+            wpilib.DriverStation.reportError(outstr, False)
+            print(outstr)
 
     def dist(self):
-        self.i2c.writeBulk(bytearray([0x8f])) # don't use repeated start; write address only, then read
-        self.i2c.readOnly(self.buf) # MSB, LSB of distance measurement in cm
-        return self.buf[0]*2**8 + self.buf[1]
+        err = self.i2c.writeBulk(bytearray([Lidar.FULL_DELAYword])) # don't use repeated start; write address only, then read
+        err += self.i2c.readOnly(self.buf) # MSB, LSB of distance measurement in cm
+        return self.buf[0]*2**8 + self.buf[1] if not err else -1
