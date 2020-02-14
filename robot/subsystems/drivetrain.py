@@ -34,7 +34,7 @@ class DriveTrain(Subsystem):
                              'kMinOutput': -0.99}
         self.PID_dict_vel = {'kP': 0.00015, 'kI': 8.0e-7, 'kD': 0.00, 'kIz': 0, 'kFF': 0.00022, 'kMaxOutput': 0.99,
                              'kMinOutput': -0.99}
-        # something in the newest settings is broken, not sure what.
+        self.encoder_offsets = [0, 0, 0, 0]  # added because the encoders do not reset fast enough for autonomous
 
         # Smart Motion Coefficients - these don't seem to be writing for some reason... python is old?  just set with rev's program for now
         self.maxvel = 500  # rpm
@@ -220,18 +220,27 @@ class DriveTrain(Subsystem):
     def goToSetPoint(self, set_point, reset=True):
         if reset:
             self.reset()
+        else:
+            self.reset(hard=False)
         multipliers = [1.0, 1.0, -1.0, -1.0]
         for multiplier, controller in zip(multipliers, self.pid_controllers):
             # controller.setReference(multiplier * set_point, rev.ControlType.kPosition)
             controller.setReference(multiplier * set_point, rev.ControlType.kSmartMotion, pidSlot=1)
 
-    def reset(self):
-        if self.robot.isReal():
+    def reset(self, hard=True):
+        # There is an issue with the lag in encoder resets for autonomous.
+        # TODO: Need to see if it is a CAN lag issue
+        if hard:
+            self.encoder_offsets = [0, 0, 0, 0]
+            if self.robot.isReal():
+                for ix, encoder in enumerate(self.encoders):
+                    can_error = encoder.setPosition(0)
+                    self.error_dict.update({'ResetPos_' + str(ix): can_error})
+                    if can_error != rev.CANError.kOk:
+                        print(f"Warning: drivetrain reset issue with {encoder} returning {can_error}")
+        else:
             for ix, encoder in enumerate(self.encoders):
-                can_error = encoder.setPosition(0)
-                self.error_dict.update({'ResetPos_' + str(ix): can_error})
-                if can_error != rev.CANError.kOk:
-                    print(f"Warning: drivetrain reset issue with {encoder} returning {can_error}")
+                self.encoder_offsets[ix] = encoder.getPosition()
         self.x = 0
         self.y = 0
         # wpilib.Timer.delay(0.02)
@@ -330,14 +339,17 @@ class DriveTrain(Subsystem):
             # send values to the dash to make sure encoders are working well
             SmartDashboard.putNumber("Robot X", round(self.x, 2))
             SmartDashboard.putNumber("Robot Y", round(self.y, 2))
-            SmartDashboard.putNumber("Position Enc1", round(self.sparkneo_encoder_1.getPosition(), 2))
-            SmartDashboard.putNumber("Position Enc2", round(self.sparkneo_encoder_2.getPosition(), 2))
-            SmartDashboard.putNumber("Position Enc3", round(self.sparkneo_encoder_3.getPosition(), 2))
-            SmartDashboard.putNumber("Position Enc4", round(self.sparkneo_encoder_4.getPosition(), 2))
-            SmartDashboard.putNumber("Velocity Enc1", round(self.sparkneo_encoder_1.getVelocity(), 2))
-            SmartDashboard.putNumber("Velocity Enc2", round(self.sparkneo_encoder_2.getVelocity(), 2))
-            SmartDashboard.putNumber("Velocity Enc3", round(self.sparkneo_encoder_3.getVelocity(), 2))
-            SmartDashboard.putNumber("Velocity Enc4", round(self.sparkneo_encoder_4.getVelocity(), 2))
+            for ix, encoder in enumerate(self.encoders):
+                SmartDashboard.putNumber(f"Position Enc{str(int(1+ix))}", round(encoder.getPosition()-self.encoder_offsets[ix], 2))
+                SmartDashboard.putNumber(f"Velocity Enc{str(int(1+ix))}", round(encoder.getVelocity(), 2))
+            #SmartDashboard.putNumber("Position Enc1", round(self.sparkneo_encoder_1.getPosition(), 2))
+            #SmartDashboard.putNumber("Position Enc2", round(self.sparkneo_encoder_2.getPosition(), 2))
+            #SmartDashboard.putNumber("Position Enc3", round(self.sparkneo_encoder_3.getPosition(), 2))
+            #SmartDashboard.putNumber("Position Enc4", round(self.sparkneo_encoder_4.getPosition(), 2))
+            #SmartDashboard.putNumber("Velocity Enc1", round(self.sparkneo_encoder_1.getVelocity(), 2))
+            #SmartDashboard.putNumber("Velocity Enc2", round(self.sparkneo_encoder_2.getVelocity(), 2))
+            #SmartDashboard.putNumber("Velocity Enc3", round(self.sparkneo_encoder_3.getVelocity(), 2))
+            #SmartDashboard.putNumber("Velocity Enc4", round(self.sparkneo_encoder_4.getVelocity(), 2))
             SmartDashboard.putNumber("Current M1", round(self.spark_neo_left_front.getOutputCurrent(), 2))
             SmartDashboard.putNumber("Current M3", round(self.spark_neo_right_front.getOutputCurrent(), 2))
             SmartDashboard.putBoolean('AccLimit', self.is_limited)
