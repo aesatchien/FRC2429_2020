@@ -217,8 +217,9 @@ class DriveTrain(Subsystem):
         for multiplier, controller in zip(multipliers, self.pid_controllers):
             controller.setReference(multiplier * velocity, rev.ControlType.kVelocity, 1)
 
-    def goToSetPoint(self, set_point):
-        self.reset()
+    def goToSetPoint(self, set_point, reset=True):
+        if reset:
+            self.reset()
         multipliers = [1.0, 1.0, -1.0, -1.0]
         for multiplier, controller in zip(multipliers, self.pid_controllers):
             # controller.setReference(multiplier * set_point, rev.ControlType.kPosition)

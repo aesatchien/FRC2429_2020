@@ -40,8 +40,7 @@ class AutonomousDrive(Command):
     def initialize(self):
         """Called just before this Command runs the first time."""
         self.start_time = round(Timer.getFPGATimestamp() - self.robot.enabled_time, 1)
-        print("\n" + f"** Started {self.getName()} with setpoint {self.setpoint} and control_type {self.control_type} at {self.start_time} s **")
-        SmartDashboard.putString("alert", f"** Started {self.getName()} with setpoint {self.setpoint} and control_type {self.control_type} at {self.start_time} s **")
+
         self.has_arrived = False
         self.telemetry = {'time':[], 'position':[], 'velocity':[], 'current':[], 'output':[]}
         self.counter = 0
@@ -61,14 +60,18 @@ class AutonomousDrive(Command):
                 self.setpoint = 0  # this should end us
                 self.has_arrived = True
             print(f"Autonomous drive found {ball_table.getNumber('targets', 0)} targets on BallCam and dist is {self.setpoint}...")
-
+        print(
+            "\n" + f"** Started {self.getName()} with setpoint {self.setpoint} and control_type {self.control_type} at {self.start_time} s **")
+        SmartDashboard.putString("alert",
+                                 f"** Started {self.getName()} with setpoint {self.setpoint} and control_type {self.control_type} at {self.start_time} s **")
         if self.control_type == 'position':
-            self.robot.drivetrain.goToSetPoint(self.setpoint)
+            self.robot.drivetrain.goToSetPoint(self.setpoint, reset=False)
         elif self.control_type == 'velocity':
             self.robot.drivetrain.set_velocity(self.setpoint)
         else:
             print(f"Invalid control type sent to automous_drive: {self.control_type}")
 
+        self.starting_position = self.robot.drivetrain.get_position()
 
     def execute(self):
         """Called repeatedly when this Command is scheduled to run"""
@@ -92,7 +95,10 @@ class AutonomousDrive(Command):
         # TODO: get more opinions on how to do this better
 
         if self.control_type == 'position' and not self.has_arrived:
-            if setpoint_sign*(self.setpoint - self.robot.drivetrain.get_position()) <= self.tolerance:
+            pos = self.robot.drivetrain.get_position() - self.starting_position
+            error = setpoint_sign*(self.setpoint - pos)
+            print(f"Error is : {error:4.1f}  Position is : {pos:4.1f}")
+            if error <= self.tolerance:
                 self.has_arrived = True
                 self.setTimeout( self.timeSinceInitialized() + self.extra_time)
                 print(f"** We have arrived at setpoint! (at {round(self.timeSinceInitialized(), 2)})")
@@ -117,7 +123,6 @@ class AutonomousDrive(Command):
         for key in self.telemetry:
             SmartDashboard.putNumberArray("telemetry_" + str(key), self.telemetry[key])
         self.robot.drivetrain.stop()
-        self.has_arrived = False
 
     def interrupted(self):
         self.end()
