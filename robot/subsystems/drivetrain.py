@@ -18,6 +18,7 @@ class DriveTrain(Subsystem):
 
     def __init__(self, robot):
         super().__init__("drivetrain")
+        #Subsystem.__init__("drivetrain")
         self.robot = robot
         self.error_dict = {}
         # Add constants and helper variables
@@ -251,6 +252,10 @@ class DriveTrain(Subsystem):
                 self.error_dict.update({'Idle_'+str(i):controller.setIdleMode(rev.IdleMode.kBrake)})
                 self.error_dict.update({'CurLimit_'+str(i):controller.setSmartCurrentLimit(self.current_limit)})
                 self.error_dict.update({'VoltComp_'+str(i):controller.enableVoltageCompensation(12)})
+                # defaults are 10, 20, 20 on the frame rates - trying to cut down a bit on CAN bandwidth
+                #self.error_dict.update({'PeriodicStatus0_'+str(i):controller.setPeriodicFramePeriod(rev.CANSparkMax.PeriodicFrame.kStatus0, 20)})
+                #self.error_dict.update({'PeriodicStatus1_'+str(i):controller.setPeriodicFramePeriod(rev.CANSparkMax.PeriodicFrame.kStatus1, 40)})
+                #self.error_dict.update({'PeriodicStatus2_'+str(i):controller.setPeriodicFramePeriod(rev.CANSparkMax.PeriodicFrame.kStatus2, 20)})
 
         for i, controller in enumerate(self.pid_controllers):
             self.error_dict.update({'kP0_'+str(i):controller.setP(self.PID_dict_pos['kP'], 0)})
