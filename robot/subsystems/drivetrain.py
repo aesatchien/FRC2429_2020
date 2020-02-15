@@ -27,13 +27,11 @@ class DriveTrain(Subsystem):
         self.current_strafe = 0
         self.acceleration_limit = 0.05
         self.counter = 0
-        self.mecanum_power_limit = 0.6
+        self.mecanum_power_limit = 0.9
         # due to limitations in displaying digits in the Shuffleboard, we'll multiply these by 1000 and divide when updating the controllers
         self.PID_multiplier = 1000.
-        self.PID_dict_pos = {'kP': 0.010, 'kI': 5.0e-7, 'kD': 0.40, 'kIz': 0, 'kFF': 0.002, 'kMaxOutput': 0.99,
-                             'kMinOutput': -0.99}
-        self.PID_dict_vel = {'kP': 0.00015, 'kI': 8.0e-7, 'kD': 0.00, 'kIz': 0, 'kFF': 0.00022, 'kMaxOutput': 0.99,
-                             'kMinOutput': -0.99}
+        self.PID_dict_pos = {'kP': 0.010, 'kI': 5.0e-7, 'kD': 0.40, 'kIz': 0, 'kFF': 0.002, 'kMaxOutput': 0.99, 'kMinOutput': -0.99}
+        self.PID_dict_vel = {'kP': 0.00015, 'kI': 8.0e-7, 'kD': 0.00, 'kIz': 0, 'kFF': 0.00022, 'kMaxOutput': 0.99, 'kMinOutput': -0.99}
         self.encoder_offsets = [0, 0, 0, 0]  # added because the encoders do not reset fast enough for autonomous
 
         # Smart Motion Coefficients - these don't seem to be writing for some reason... python is old?  just set with rev's program for now
@@ -48,7 +46,6 @@ class DriveTrain(Subsystem):
         self.deadband = 0.05
 
         # Configure drive motors
-
         if True: # or could be if self.robot.isReal():
             self.spark_neo_right_front = rev.CANSparkMax(1, rev.MotorType.kBrushless)
             self.spark_neo_right_rear = rev.CANSparkMax(2, rev.MotorType.kBrushless)
@@ -75,8 +72,11 @@ class DriveTrain(Subsystem):
 
             # Configure encoders and controllers
             # should be wheel_diameter * pi / gear_ratio - and for the old double reduction gear box
-            # the gear ratio was either  5.67:1 or 4.17:1.  With the shifter (low gear) I think it was a 12.26.
-            conversion_factor = 8.0 * 3.141 / 4.17
+            # the gear ratio was 4.17:1.  With the shifter (low gear) I think it was a 12.26.
+            # then new 2020 gearbox is 9.52
+            gear_ratio = 9.52
+            conversion_factor = 8.0 * 3.141 / gear_ratio
+
             for ix, encoder in enumerate(self.encoders):
                 self.error_dict.update({'conv_'+ str(ix): encoder.setPositionConversionFactor(conversion_factor)})
 
@@ -99,9 +99,9 @@ class DriveTrain(Subsystem):
 
         # Not sure if speedcontrollergroups work with the single sparkmax in python - seems to complain
         drive_type = 'mechanum'
-        print("Enabling mechanum drive!")
         if drive_type == 'wcd':
             # WCD
+            print("Enabling WCD drive!")
             err_1 = self.spark_neo_left_rear.follow(self.spark_neo_left_front)
             err_2 = self.spark_neo_right_rear.follow(self.spark_neo_right_front)
             if err_1 != rev.CANError.kOk or err_2 != rev.CANError.kOk:
@@ -114,6 +114,7 @@ class DriveTrain(Subsystem):
         if drive_type == 'mechanum':
             # Mechanum
             # TODO: Reset followers in software
+            print("Enabling mechanum drive!")
             self.speedgroup_lfront = SpeedControllerGroup(self.spark_neo_left_front)
             self.speedgroup_lrear = SpeedControllerGroup(self.spark_neo_left_rear)
             self.speedgroup_rfront = SpeedControllerGroup(self.spark_neo_right_front)
@@ -139,7 +140,7 @@ class DriveTrain(Subsystem):
         self.setDefaultCommand(DriveByJoystick(self.robot))
 
     def spark_with_stick(self, thrust=0, strafe=0, z_rotation=0, gyroAngle=0):
-        '''Simplest way to drive with a joystick'''
+        """Simplest way to drive with a joystick"""
         # self.differential_drive.arcadeDrive(x_speed, self.twist_sensitivity * z_rotation, False)
         self.mechanum_drive.driveCartesian(xSpeed=thrust, ySpeed=strafe, zRotation=self.twist_sensitivity * z_rotation)
 
@@ -148,11 +149,11 @@ class DriveTrain(Subsystem):
         self.mechanum_drive.driveCartesian(0, 0, 0)
 
     def smooth_drive(self, thrust, strafe, twist):
-        '''A less jittery way to drive with a joystick
+        """A less jittery way to drive with a joystick
         TODO: See if this can be implemented in hardware - seems like the acceleration limit can be set there
         TODO: Should be ok to slow down quickly, but not speed up - check this code
         TODO: Set a smartdash to see if we are in software limit mode - like with a boolean
-        '''
+        """
         deadzone = 0.05
         self.is_limited = False
         # thrust section
@@ -204,12 +205,12 @@ class DriveTrain(Subsystem):
                                            zRotation=self.current_twist)
 
     def tank_drive(self, left, right):
-        '''Not sure why we would ever need this, but it's here if we do'''
+        """Not sure why we would ever need this, but it's here if we do"""
         pass
         # self.differential_drive.tankDrive(left, right)
 
     def get_position(self):
-        ''':returns: The encoder position of one of the Neos'''
+        """:returns: The encoder position of one of the Neos"""
         return self.sparkneo_encoder_1.getPosition()
 
     def set_velocity(self, velocity):
@@ -218,11 +219,7 @@ class DriveTrain(Subsystem):
             controller.setReference(multiplier * velocity, rev.ControlType.kVelocity, 1)
 
     def goToSetPoint(self, set_point, reset=True):
-        if reset:
-            self.reset()
-        else:
-            self.reset()
-            #self.reset(hard=False)
+        self.reset()
         multipliers = [1.0, 1.0, -1.0, -1.0]
         for multiplier, controller in zip(multipliers, self.pid_controllers):
             # controller.setReference(multiplier * set_point, rev.ControlType.kPosition)
@@ -247,14 +244,13 @@ class DriveTrain(Subsystem):
         # wpilib.Timer.delay(0.02)
 
     def configure_controllers(self, pid_only=False):
-        '''Set the PIDs, etc for the controllers, slot 0 is position and slot 1 is velocity'''
+        """Set the PIDs, etc for the controllers, slot 0 is position and slot 1 is velocity"""
         if not pid_only:
             for i, controller in enumerate(self.controllers):
                 # error_dict.append(controller.restoreFactoryDefaults())
                 self.error_dict.update({'Idle_'+str(i):controller.setIdleMode(rev.IdleMode.kBrake)})
                 self.error_dict.update({'CurLimit_'+str(i):controller.setSmartCurrentLimit(self.current_limit)})
                 self.error_dict.update({'VoltComp_'+str(i):controller.enableVoltageCompensation(12)})
-
 
         for i, controller in enumerate(self.pid_controllers):
             self.error_dict.update({'kP0_'+str(i):controller.setP(self.PID_dict_pos['kP'], 0)})
@@ -274,25 +270,26 @@ class DriveTrain(Subsystem):
             self.error_dict.update({'Vel0_'+str(i):controller.setSmartMotionMaxAccel(self.maxacc, 0)})
             self.error_dict.update({'Vel1_'+str(i):controller.setSmartMotionMaxAccel(self.maxacc, 1)})
 
-
         # if 1 in error_dict or 2 in error_dict:
         #    print(f'Issue in configuring controllers: {error_dict}')
         # else:
         #print(f'Results of configuring controllers: {self.error_dict}')
-        print('\n*Sparkmax setting*     *Response*')
-        for key in sorted(self.error_dict.keys()):
-            print(f'     {key:15} \t {self.error_dict[key]}')
+        if len(set(self.error_dict)) > 1:
+            print('\n*Sparkmax setting*     *Response*')
+            for key in sorted(self.error_dict.keys()):
+                print(f'     {key:15} \t {self.error_dict[key]}')
+        else:
+            print(f'\n *All SparkMax report {list(set(self.error_dict))[0]}')
         burn_flash = False
         if burn_flash:
             for i, controller in enumerate(self.controllers):
                 can_error = controller.burnFlash()
                 print(f'Burn flash on controller {i}: {can_error}')
 
-
     def change_PIDs(self, factor=1, dict_0=None, dict_1=None):
-        '''Pass a value to the and update the PIDs, probably use 1.5 and 0.67 to see how they change
+        """Pass a value to the and update the PIDs, probably use 1.5 and 0.67 to see how they change
         can also pass it a dictionary {'kP': 0.06, 'kI': 0.0, 'kD': 0, 'kIz': 0, 'kFF': 0} to set
-        slot 0 (position) or slot 1 (velocity) '''
+        slot 0 (position) or slot 1 (velocity) """
         keys = ['kP', 'kI', 'kD', 'kIz', 'kFF']
         for key in keys:
             if dict_0 == None:
@@ -343,14 +340,6 @@ class DriveTrain(Subsystem):
             for ix, encoder in enumerate(self.encoders):
                 SmartDashboard.putNumber(f"Position Enc{str(int(1+ix))}", round(encoder.getPosition()-self.encoder_offsets[ix], 2))
                 SmartDashboard.putNumber(f"Velocity Enc{str(int(1+ix))}", round(encoder.getVelocity(), 2))
-            #SmartDashboard.putNumber("Position Enc1", round(self.sparkneo_encoder_1.getPosition(), 2))
-            #SmartDashboard.putNumber("Position Enc2", round(self.sparkneo_encoder_2.getPosition(), 2))
-            #SmartDashboard.putNumber("Position Enc3", round(self.sparkneo_encoder_3.getPosition(), 2))
-            #SmartDashboard.putNumber("Position Enc4", round(self.sparkneo_encoder_4.getPosition(), 2))
-            #SmartDashboard.putNumber("Velocity Enc1", round(self.sparkneo_encoder_1.getVelocity(), 2))
-            #SmartDashboard.putNumber("Velocity Enc2", round(self.sparkneo_encoder_2.getVelocity(), 2))
-            #SmartDashboard.putNumber("Velocity Enc3", round(self.sparkneo_encoder_3.getVelocity(), 2))
-            #SmartDashboard.putNumber("Velocity Enc4", round(self.sparkneo_encoder_4.getVelocity(), 2))
             SmartDashboard.putNumber("Current M1", round(self.spark_neo_left_front.getOutputCurrent(), 2))
             SmartDashboard.putNumber("Current M3", round(self.spark_neo_right_front.getOutputCurrent(), 2))
             SmartDashboard.putBoolean('AccLimit', self.is_limited)
