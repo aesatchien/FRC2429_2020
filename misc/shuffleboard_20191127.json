@@ -2,8 +2,8 @@
   "tabPane": [
     {
       "title": "SmartDashboard",
-      "autoPopulate": true,
-      "autoPopulatePrefix": "SmartDashboard/",
+      "autoPopulate": false,
+      "autoPopulatePrefix": "SMB/",
       "widgetPane": {
         "gridSize": 128.0,
         "showGrid": true,
@@ -341,13 +341,24 @@
                 }
               }
             }
+          },
+          "12,0": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Lidar Distance",
+              "_title": "Lidar Distance"
+            }
           }
         }
       }
     },
     {
       "title": "LiveWindow",
-      "autoPopulate": true,
+      "autoPopulate": false,
       "autoPopulatePrefix": "LiveWindow/",
       "widgetPane": {
         "gridSize": 128.0,

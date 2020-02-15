@@ -39,7 +39,7 @@ class DriveTrain(Subsystem):
         # Smart Motion Coefficients - these don't seem to be writing for some reason... python is old?  just set with rev's program for now
         self.maxvel = 500  # rpm
         self.maxacc = 500
-        self.current_limit = 40
+        self.current_limit = 100
         # tracking the robot across the field... easier with WCD
         self.x = 0
         self.y = 0
@@ -221,7 +221,8 @@ class DriveTrain(Subsystem):
         if reset:
             self.reset()
         else:
-            self.reset(hard=False)
+            self.reset()
+            #self.reset(hard=False)
         multipliers = [1.0, 1.0, -1.0, -1.0]
         for multiplier, controller in zip(multipliers, self.pid_controllers):
             # controller.setReference(multiplier * set_point, rev.ControlType.kPosition)

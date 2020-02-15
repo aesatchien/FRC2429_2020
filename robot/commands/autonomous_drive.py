@@ -36,6 +36,7 @@ class AutonomousDrive(Command):
         self.control_type = control_type
         self.button = button
         self.max_thrust = 0.25
+        self.encoders_have_reset = False
 
     def initialize(self):
         """Called just before this Command runs the first time."""
@@ -72,16 +73,21 @@ class AutonomousDrive(Command):
             print(f"Invalid control type sent to automous_drive: {self.control_type}")
 
         self.starting_position = self.robot.drivetrain.get_position()
+        self.start_counter = 0
 
     def execute(self):
         """Called repeatedly when this Command is scheduled to run"""
         self.robot.drivetrain.drive.feed()
+        if self.start_counter < 2:
+            print(f"Waiting for {self.start_counter} iterations for encoder to clear (because encoder at {self.robot.drivetrain.get_position():4.1f})...")
+            self.start_counter += 1
+            return
 
         # track telemetry so we can grab it with jupyter notebook
         if self.counter % 2 == 0:
             #self.telemetry['time'].append(Timer.getFPGATimestamp() - self.robot.enabled_time)
             self.telemetry['time'].append(self.timeSinceInitialized())
-            self.telemetry['position'].append(self.robot.drivetrain.get_position())
+            self.telemetry['position'].append(self.robot.drivetrain.get_position() - self.starting_position )
             self.telemetry['velocity'].append(self.robot.drivetrain.sparkneo_encoder_1.getVelocity())
             self.telemetry['current'].append(self.robot.drivetrain.spark_neo_left_front.getOutputCurrent())
             self.telemetry['output'].append(self.robot.drivetrain.spark_neo_left_front.getAppliedOutput())
@@ -95,7 +101,8 @@ class AutonomousDrive(Command):
         # TODO: get more opinions on how to do this better
 
         if self.control_type == 'position' and not self.has_arrived:
-            pos = self.robot.drivetrain.get_position() - self.starting_position
+            #pos = self.robot.drivetrain.get_position() - self.starting_position
+            pos = self.robot.drivetrain.get_position()
             error = setpoint_sign*(self.setpoint - pos)
             print(f"Error is : {error:4.1f}  Position is : {pos:4.1f}")
             if error <= self.tolerance:
