@@ -89,10 +89,10 @@ class Peripherals(Subsystem):
             color_string = self.get_color_str(detected_color)
 
             SmartDashboard.putString('Detected Color', color_string)
-            SmartDashboard.putNumber("Red", detected_color.red)
-            SmartDashboard.putNumber("Green", detected_color.green)
-            SmartDashboard.putNumber("Blue", detected_color.blue)
-            SmartDashboard.putNumber("Confidence", self.match_confidence)
+            SmartDashboard.putNumber("Red", round(detected_color.red, 3))
+            SmartDashboard.putNumber("Green", round(detected_color.green, 3))
+            SmartDashboard.putNumber("Blue", round(detected_color.blue, 3))
+            SmartDashboard.putNumber("Confidence", round(self.match_confidence, 3))
             SmartDashboard.putNumber("Lidar Distance", self.lidar_meas)
             #SmartDashboard.putNumber("Cam distance", self.ball_table.getNumber("distance", 0))
 
@@ -103,6 +103,7 @@ class Lidar:
     ACQ_CONFIG_REG = 0x04
     ACQ_COMMAND = 0x00
     FULL_DELAYword = 0x8f
+
     def __init__(self):
         self.i2c = wpilib.I2C(wpilib.I2C.Port.kOnboard, Lidar.addr)
         err = self.i2c.write(Lidar.OUTER_LOOP_COUNT, 0xff) # enable free running mode
@@ -115,6 +116,6 @@ class Lidar:
             print(outstr)
 
     def dist(self):
-        err = self.i2c.writeBulk(bytearray([Lidar.FULL_DELAYword])) # don't use repeated start; write address only, then read
+        err = self.i2c.writeBulk(bytearray([Lidar.FULL_DELAYword]))  # don't use repeated start; write address only, then read
         err += self.i2c.readOnly(self.buf) # MSB, LSB of distance measurement in cm
         return self.buf[0]*2**8 + self.buf[1] if not err else -1

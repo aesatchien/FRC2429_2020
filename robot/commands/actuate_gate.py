@@ -7,7 +7,7 @@ class ActuateGate(Command):
     """
 
     def __init__(self, robot, direction=None):
-        super().__init__()
+        Command.__init__(self, name='ActuateGate')
         self.robot = robot
         self.direction = direction
         strip_name = lambda x: str(x)[1 + str(x).rfind('.'):-2]

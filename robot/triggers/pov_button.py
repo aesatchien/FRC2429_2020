@@ -14,7 +14,10 @@ class POVButton(Button):
     """
 
     def __init__(self, joystick, angle):
+        # Button.__init() does not work...
+        #Button.__init__()
         super().__init__()
+
         self.joystick = joystick
         self.angle = angle
 

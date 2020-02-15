@@ -19,6 +19,7 @@ class Robot(CommandBasedRobot):
 
     def robotInit(self):
         super().__init__()
+        #CommandBasedRobot.__init__()
         """
         This function is run when the robot is first started up and should be
         used for any initialization code.
@@ -69,6 +70,7 @@ class Robot(CommandBasedRobot):
         self.enabled_time = Timer.getFPGATimestamp()
         if self.autonomousCommand is not None:
             self.autonomousCommand.cancel()
+        print(f" robot.isSimulation() is {self.isSimulation()} robot.isReal() is {self.isReal()}")
 
     def teleopPeriodic(self):
         """This function is called periodically during operator control."""
@@ -88,10 +90,11 @@ class Robot(CommandBasedRobot):
         self.log()
 
     def log(self):
+
+        self.navigation.log()
+        self.peripherals.log()
         if self.isReal():
             self.drivetrain.log()
-            self.navigation.log()
-            self.peripherals.log()
 
     def reset(self):
         self.drivetrain.reset()

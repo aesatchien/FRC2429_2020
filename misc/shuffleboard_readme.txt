@@ -31,4 +31,7 @@ You can change this value in the file preferences menu
 Prefs are here - autoload last save file and location of save file:
 Computer\HKEY_CURRENT_USER\Software\JavaSoft\Prefs\edu\wpi\first\shuffleboard\app\prefs
 
+BIGGEST IMPACT:
+Kill the livewindow widgets.  The shuffleboard becomes far more robust and only takes a few seconds (6ish) to reconnect to a rebooted robot.
+
 

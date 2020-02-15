@@ -9,6 +9,7 @@ class AxisButton(Button):
     """
 
     def __init__(self, joystick, axis):
+        #Button.__init__()
         super().__init__()
         self.joystick = joystick
         self.axis = axis
