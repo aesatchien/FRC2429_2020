@@ -44,11 +44,11 @@ class Peripherals(Subsystem):
         self.control_panel_spark.set(power)
 
     def close_gate(self):
-        self.left_dispenser_gate.setAngle(0)
+        self.left_dispenser_gate.setAngle(145)
         self.right_dispenser_gate.setAngle(0)
 
     def open_gate(self):
-        self.left_dispenser_gate.setAngle(145)
+        self.left_dispenser_gate.setAngle(0)
         self.right_dispenser_gate.setAngle(145)
 
     def panel_clockwise(self, power):

@@ -64,8 +64,8 @@ class OI(object):
         # binding button to commands
         self.axisButtonRT.whenPressed(Intake(robot, power=0, button=self.axisButtonRT))
         self.axisButtonLT.whenPressed(Intake(robot, power=0, button=self.axisButtonLT))
-        self.buttonRB.whenPressed(ActuateGate(robot, direction='open'))
-        self.buttonLB.whenPressed(ActuateGate(robot, direction='close'))
+        self.buttonRB.whenPressed(ActuateGate(robot, direction='close'))
+        self.buttonLB.whenPressed(ActuateGate(robot, direction='open'))
         #self.buttonA.whenPressed(UpdatePIDs(robot,1.5, from_dashboard=False))
         #self.buttonB.whenPressed(UpdatePIDs(robot,0.66, from_dashboard=False))
         self.buttonA.whenPressed(Intake(robot, power=0.5, button=self.buttonA))
