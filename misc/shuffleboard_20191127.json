@@ -286,7 +286,7 @@
           "0,0": {
             "size": [
               3,
-              3
+              4
             ],
             "content": {
               "_type": "Camera Stream",

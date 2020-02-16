@@ -16,6 +16,7 @@ from commands.panel_spinner import PanelSpinner
 from commands.actuate_gate import ActuateGate
 from commands.spin_to_color import SpinToColor
 from commands.autonomous_group import AutonomousGroup
+from commands.raise_climber import RaiseClimber
 
 class OI(object):
     """
@@ -68,11 +69,12 @@ class OI(object):
         self.buttonLB.whenPressed(ActuateGate(robot, direction='open'))
         #self.buttonA.whenPressed(UpdatePIDs(robot,1.5, from_dashboard=False))
         #self.buttonB.whenPressed(UpdatePIDs(robot,0.66, from_dashboard=False))
-        self.buttonA.whenPressed(Intake(robot, power=0.5, button=self.buttonA))
         self.buttonB.whenPressed(Intake(robot, power=-0.5, button=self.buttonB))
+        self.buttonA.whenPressed(Intake(robot, power=0.5, button=self.buttonA))
         self.buttonX.whenPressed(PanelSpinner(robot, button=self.buttonX, power=0.4))
         #self.buttonX.whenPressed(PneumaticPiston(robot, 'open'))
-        self.buttonY.whenPressed(SpinToColor(robot, color_name='blue', power=0.3))
+        #self.buttonY.whenPressed(SpinToColor(robot, color_name='blue', power=0.3))
+        self.buttonY.whenPressed(RaiseClimber(robot, power=0.3, button=self.buttonY))
 
         self.buttonStart.whenPressed(AutonomousDrive(robot, setpoint=250, control_type='velocity', button= self.buttonStart, source=None))
         self.buttonBack.whenPressed(AutonomousDrive(robot, setpoint=500, control_type='velocity', button=self.buttonBack, source=None))
@@ -86,7 +88,7 @@ class OI(object):
         self.povButtonLeft.whenPressed(DpadDrive(robot, 'left', self.povButtonLeft))
 
         # add/change bindings if we are using more than one joystick
-        self.competition_mode = False
+        self.competition_mode = True
         if self.competition_mode:
             self.co_stick = wpilib.Joystick(1)
             self.co_buttonA = JoystickButton(self.co_stick, 1)
@@ -107,6 +109,8 @@ class OI(object):
             # co-pilot joystick to commands
             self.co_axisButtonRT.whenPressed(Intake(robot, power=0, button=self.co_axisButtonRT))
             self.co_axisButtonLT.whenPressed(Intake(robot, power=0, button=self.co_axisButtonLT))
+            self.co_buttonB.whenPressed(Intake(robot, power=-0.5, button=self.co_buttonB))
+            self.co_buttonA.whenPressed(Intake(robot, power=0.5, button=self.co_buttonA))
             self.co_buttonRB.whenPressed(ActuateGate(robot, direction='open'))
             self.co_buttonLB.whenPressed(ActuateGate(robot, direction='close'))
             self.co_buttonA.whenPressed(PanelSpinner(robot, button=self.co_buttonA, power=0))

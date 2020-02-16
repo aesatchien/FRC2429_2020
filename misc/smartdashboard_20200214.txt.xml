@@ -1,22 +1,31 @@
 <xml version="1.0">
 <dashboard>
+	<widget field="NavX" type="Boolean" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="0" y="100"/>
+	</widget>
+	<widget field="Simulation" type="Boolean" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="0" y="79"/>
+	</widget>
+	<widget field="error" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="0" y="58"/>
+	</widget>
 	<widget field="Rotate X" type="Command" class="edu.wpi.first.smartdashboard.gui.elements.Command">
-		<location x="278" y="199"/>
+		<location x="618" y="108"/>
 	</widget>
 	<widget field="Drive Forward" type="Command" class="edu.wpi.first.smartdashboard.gui.elements.Command">
-		<location x="278" y="165"/>
+		<location x="619" y="70"/>
 	</widget>
 	<widget field="Autonomous Test" type="Command" class="edu.wpi.first.smartdashboard.gui.elements.Command">
-		<location x="278" y="131"/>
+		<location x="500" y="141"/>
 	</widget>
 	<widget field="Update Vel PIDs" type="Command" class="edu.wpi.first.smartdashboard.gui.elements.Command">
-		<location x="278" y="97"/>
+		<location x="227" y="642"/>
 	</widget>
 	<widget field="Update Pos PIDs" type="Command" class="edu.wpi.first.smartdashboard.gui.elements.Command">
-		<location x="278" y="63"/>
+		<location x="217" y="603"/>
 	</widget>
 	<widget field="Auto Rotation" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
-		<location x="278" y="42"/>
+		<location x="438" y="114"/>
 	</widget>
 	<widget field="kI_1" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
 		<location x="278" y="21"/>
@@ -25,19 +34,19 @@
 		<location x="278" y="0"/>
 	</widget>
 	<widget field="Position Enc1" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
-		<location x="116" y="0"/>
+		<location x="232" y="221"/>
 	</widget>
 	<widget field="Position Enc4" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
-		<location x="0" y="693"/>
+		<location x="232" y="298"/>
 	</widget>
 	<widget field="Position Enc3" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
-		<location x="0" y="672"/>
+		<location x="236" y="270"/>
 	</widget>
 	<widget field="Position Enc2" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
-		<location x="0" y="651"/>
+		<location x="232" y="244"/>
 	</widget>
 	<widget field="Timestamp" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
-		<location x="0" y="630"/>
+		<location x="17" y="392"/>
 	</widget>
 	<widget field="kP_1" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
 		<location x="0" y="609"/>
@@ -46,7 +55,7 @@
 		<location x="0" y="588"/>
 	</widget>
 	<widget field="IsConnected" type="Boolean" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
-		<location x="0" y="567"/>
+		<location x="22" y="415"/>
 	</widget>
 	<widget field="kIz_1" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
 		<location x="0" y="546"/>
@@ -55,25 +64,25 @@
 		<location x="0" y="525"/>
 	</widget>
 	<widget field="Red" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
-		<location x="0" y="504"/>
+		<location x="222" y="390"/>
 	</widget>
 	<widget field="Angle" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
-		<location x="0" y="483"/>
+		<location x="38" y="464"/>
 	</widget>
 	<widget field="Pitch" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
-		<location x="0" y="462"/>
+		<location x="45" y="440"/>
 	</widget>
 	<widget field="Velocity Enc3" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
-		<location x="0" y="441"/>
+		<location x="239" y="167"/>
 	</widget>
 	<widget field="Velocity Enc4" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
-		<location x="0" y="420"/>
+		<location x="235" y="191"/>
 	</widget>
 	<widget field="Velocity Enc2" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
-		<location x="0" y="399"/>
+		<location x="237" y="142"/>
 	</widget>
 	<widget field="Velocity Enc1" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
-		<location x="0" y="378"/>
+		<location x="236" y="115"/>
 	</widget>
 	<widget field="kFF_1" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
 		<location x="0" y="357"/>
@@ -91,13 +100,14 @@
 		<location x="0" y="273"/>
 	</widget>
 	<widget field="alert" type="String" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
-		<location x="0" y="252"/>
+		<location x="445" y="177"/>
+		<width>318</width>
 	</widget>
 	<widget field="Confidence" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
-		<location x="0" y="231"/>
+		<location x="204" y="494"/>
 	</widget>
 	<widget field="Auto Distance" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
-		<location x="0" y="210"/>
+		<location x="442" y="79"/>
 	</widget>
 	<widget field="Current M3" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
 		<location x="0" y="189"/>
@@ -106,28 +116,29 @@
 		<location x="0" y="168"/>
 	</widget>
 	<widget field="Detected Color" type="String" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
-		<location x="0" y="147"/>
+		<location x="194" y="517"/>
 	</widget>
 	<widget field="Yaw" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
-		<location x="0" y="126"/>
+		<location x="47" y="505"/>
 	</widget>
 	<widget field="Blue" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
-		<location x="0" y="105"/>
+		<location x="220" y="445"/>
 	</widget>
 	<widget field="Robot Y" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
-		<location x="0" y="84"/>
+		<location x="24" y="37"/>
 	</widget>
 	<widget field="Robot X" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
-		<location x="0" y="63"/>
+		<location x="21" y="11"/>
 	</widget>
 	<widget field="Lidar Distance" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
-		<location x="0" y="42"/>
+		<location x="196" y="554"/>
 	</widget>
 	<widget field="Green" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
-		<location x="0" y="21"/>
+		<location x="212" y="416"/>
+		<height>20</height>
 	</widget>
 	<widget field="Roll" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
-		<location x="0" y="0"/>
+		<location x="42" y="488"/>
 	</widget>
 </dashboard>
 <live-window>

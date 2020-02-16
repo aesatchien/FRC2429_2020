@@ -14,10 +14,7 @@ from networktables import NetworkTables
 class Peripherals(Subsystem):
     def __init__(self, robot):
         Subsystem.__init__(self, "peripherals")
-        self.intake_spark = Spark(6)
         self.control_panel_spark = Spark(5)
-        self.left_dispenser_gate = Servo(7)
-        self.right_dispenser_gate = Servo(8)
         self.counter = 0
         self.color_sensor = ColorSensorV3(I2C.Port.kOnboard)
         self.match_confidence = 0
@@ -37,19 +34,9 @@ class Peripherals(Subsystem):
         self.kYellowTarget = Color(0.326, 0.519, 0.154)
         self.color_dict = {"blue":self.kBlueTarget, "green":self.kGreenTarget, "red":self.kRedTarget, "yellow":self.kYellowTarget}
 
-    def run_intake(self, power=0):
-        self.intake_spark.set(power)
 
     def run_spinner(self, power=0):
         self.control_panel_spark.set(power)
-
-    def close_gate(self):
-        self.left_dispenser_gate.setAngle(145)
-        self.right_dispenser_gate.setAngle(0)
-
-    def open_gate(self):
-        self.left_dispenser_gate.setAngle(0)
-        self.right_dispenser_gate.setAngle(145)
 
     def panel_clockwise(self, power):
         self.control_panel_spark.set(power)

@@ -22,13 +22,17 @@ class DriveTrain(Subsystem):
         self.robot = robot
         self.error_dict = {}
         # Add constants and helper variables
-        self.twist_sensitivity = 0.5
+        self.twist_power_maximum = 0.6
+        self.strafe_power_maximum = 0.5
+        self.thrust_power_maximum = 0.5
+        self.mecanum_power_limit = 1.0
+
         self.current_thrust = 0
         self.current_twist = 0
         self.current_strafe = 0
         self.acceleration_limit = 0.05
         self.counter = 0
-        self.mecanum_power_limit = 0.9
+
         # due to limitations in displaying digits in the Shuffleboard, we'll multiply these by 1000 and divide when updating the controllers
         self.PID_multiplier = 1000.
         self.PID_dict_pos = {'kP': 0.010, 'kI': 5.0e-7, 'kD': 0.40, 'kIz': 0, 'kFF': 0.002, 'kMaxOutput': 0.99, 'kMinOutput': -0.99}
@@ -143,7 +147,7 @@ class DriveTrain(Subsystem):
     def spark_with_stick(self, thrust=0, strafe=0, z_rotation=0, gyroAngle=0):
         """Simplest way to drive with a joystick"""
         # self.differential_drive.arcadeDrive(x_speed, self.twist_sensitivity * z_rotation, False)
-        self.mechanum_drive.driveCartesian(xSpeed=thrust, ySpeed=strafe, zRotation=self.twist_sensitivity * z_rotation)
+        self.mechanum_drive.driveCartesian(xSpeed=thrust*self.thrust_power_maximum, ySpeed=strafe*self.strafe_power_maximum, zRotation=self.twist_power_maximum * z_rotation)
 
     def stop(self):
         # self.differential_drive.arcadeDrive(0, 0)
@@ -202,8 +206,8 @@ class DriveTrain(Subsystem):
                     self.current_twist = self.current_twist - self.acceleration_limit
         # self.differential_drive.arcadeDrive(self.current_thrust, self.current_twist, True)
         # TODO - fix this for mechanum x and y
-        self.mechanum_drive.driveCartesian(xSpeed=self.current_thrust, ySpeed=self.current_strafe,
-                                           zRotation=self.current_twist)
+        self.mechanum_drive.driveCartesian(xSpeed=self.thrust_power_maximum * self.current_thrust, ySpeed=self.strafe_power_maximum * self.current_strafe,
+                                           zRotation=self.twist_power_maximum * self.current_twist)
 
     def tank_drive(self, left, right):
         """Not sure why we would ever need this, but it's here if we do"""

@@ -2,7 +2,7 @@ from wpilib.command import Command
 from wpilib import Timer
 from wpilib import SmartDashboard
 from networktables import NetworkTables
-
+import math
 from commands.track_telemetry import TrackTelemetry
 
 class AutonomousDrive(Command):
@@ -56,7 +56,7 @@ class AutonomousDrive(Command):
         elif self.source == "camera":
             ball_table = NetworkTables.getTable("BallCam")
             if ball_table.getNumber("targets", 0) > 0:
-                self.setpoint = ball_table.getNumber("distance", 0)
+                self.setpoint = math.sqrt(ball_table.getNumber("distance", 0) ** 2 - 37.0^2)
             else:
                 self.setpoint = 0  # this should end us
                 self.has_arrived = True
