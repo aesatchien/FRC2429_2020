@@ -5,7 +5,7 @@ from wpilib import SmartDashboard
 from wpilib.command import Subsystem
 from wpilib import SpeedControllerGroup
 from wpilib.drive import DifferentialDrive
-from wpilib.drive import MecanumDrive
+from wpilib.drive import MecanumDrive, RobotDriveBase, Vector2d
 import rev
 from wpilib import Timer
 from commands.drive_by_joystick import DriveByJoystick
@@ -26,6 +26,7 @@ class DriveTrain(Subsystem):
         self.strafe_power_maximum = 0.5
         self.thrust_power_maximum = 0.5
         self.mecanum_power_limit = 1.0
+        self.max_velocity = 500  # rpm for mecanum velocity
 
         self.current_thrust = 0
         self.current_twist = 0
@@ -40,8 +41,8 @@ class DriveTrain(Subsystem):
         self.encoder_offsets = [0, 0, 0, 0]  # added because the encoders do not reset fast enough for autonomous
 
         # Smart Motion Coefficients - these don't seem to be writing for some reason... python is old?  just set with rev's program for now
-        self.maxvel = 500  # rpm
-        self.maxacc = 500
+        self.smartmotion_maxvel = 500  # rpm
+        self.smartmotion_maxacc = 500
         self.current_limit = 100
         # tracking the robot across the field... easier with WCD
         self.x = 0
@@ -148,6 +149,54 @@ class DriveTrain(Subsystem):
         """Simplest way to drive with a joystick"""
         # self.differential_drive.arcadeDrive(x_speed, self.twist_sensitivity * z_rotation, False)
         self.mechanum_drive.driveCartesian(xSpeed=thrust*self.thrust_power_maximum, ySpeed=strafe*self.strafe_power_maximum, zRotation=self.twist_power_maximum * z_rotation)
+
+    def mecanum_velocity_cartesian(
+            self, thrust: float, strafe: float, z_rotation: float, gyroAngle: float = 0.0
+    ) -> None:
+        """ CJH Trying to implement a velocity control loop on the mecanum vs. % output"""
+
+        # Compensate for gyro angle
+        input = Vector2d(thrust, strafe)
+        input.rotate(gyroAngle)
+        # apply a deadband
+        for val in [input.x, input.y, z_rotation]:
+            if val < self.deadband:
+                val = 0
+
+        wheel_speeds = [
+            # Front Left
+            input.x + input.y + z_rotation,
+            # Rear Left
+            -input.x + input.y + z_rotation,
+            # Front Right
+            -input.x + input.y - z_rotation,
+            # Rear Right
+            input.x + input.y - z_rotation,
+        ]
+
+        #RobotDriveBase.normalize(wheelSpeeds)
+        maxMagnitude = max(abs(x) for x in wheel_speeds)
+        if maxMagnitude > 1.0:
+            for i in range(len(wheel_speeds)):
+                wheel_speeds[i] = wheel_speeds[i] / maxMagnitude
+        #wheel_speeds = [speed * self.maxOutput for speed in wheelSpeeds]
+
+        # put all this in the zip below
+        #self.spark_neo_left_front.set(wheel_speeds[0])
+        #self.spark_neo_left_rear.set(wheel_speeds[1])
+        #self.spark_neo_right_front.set(wheel_speeds[2] * self.rightSideInvertMultiplier)
+        #self.spark_neo_right_rear.set(wheel_speeds[3] * self.rightSideInvertMultiplier)
+
+        multipliers = [1.0, 1.0, -1.0, -1.0]
+        debug_speed=[]
+        if math.sqrt(input.x**2 + input.y**2 + z_rotation**2) < self.deadband:
+            self.mechanum_drive.driveCartesian(0, 0, 0)
+        else:
+            for speed, multiplier, controller in zip(wheel_speeds, multipliers, self.pid_controllers):
+                controller.setReference(multiplier * speed * self.max_velocity, rev.ControlType.kVelocity, 1)
+                debug_speed.append(multiplier * speed * self.max_velocity)
+        print(f"Wheel speeds set to {wheel_speeds}")
+        self.drive.feed()
 
     def stop(self):
         # self.differential_drive.arcadeDrive(0, 0)
@@ -274,10 +323,10 @@ class DriveTrain(Subsystem):
             self.error_dict.update({'kIZ_1'+str(i):controller.setIZone(self.PID_dict_vel['kIz'], 1)})
             self.error_dict.update({'MinMax0_'+str(i):controller.setOutputRange(self.PID_dict_pos['kMinOutput'], self.PID_dict_pos['kMaxOutput'], 0)})
             self.error_dict.update({'MinMax0_'+str(i):controller.setOutputRange(self.PID_dict_vel['kMinOutput'], self.PID_dict_vel['kMaxOutput'], 1)})
-            self.error_dict.update({'Accel0_'+str(i):controller.setSmartMotionMaxVelocity(self.maxvel, 0)})
-            self.error_dict.update({'Accel0_'+str(i):controller.setSmartMotionMaxVelocity(self.maxvel, 1)})
-            self.error_dict.update({'Vel0_'+str(i):controller.setSmartMotionMaxAccel(self.maxacc, 0)})
-            self.error_dict.update({'Vel1_'+str(i):controller.setSmartMotionMaxAccel(self.maxacc, 1)})
+            self.error_dict.update({'Accel0_'+str(i):controller.setSmartMotionMaxVelocity(self.smartmotion_maxvel, 0)})
+            self.error_dict.update({'Accel0_'+str(i):controller.setSmartMotionMaxVelocity(self.smartmotion_maxvel, 1)})
+            self.error_dict.update({'Vel0_'+str(i):controller.setSmartMotionMaxAccel(self.smartmotion_maxacc, 0)})
+            self.error_dict.update({'Vel1_'+str(i):controller.setSmartMotionMaxAccel(self.smartmotion_maxacc, 1)})
 
         # if 1 in error_dict or 2 in error_dict:
         #    print(f'Issue in configuring controllers: {error_dict}')

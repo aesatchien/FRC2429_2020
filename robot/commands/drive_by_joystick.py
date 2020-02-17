@@ -78,7 +78,8 @@ class DriveByJoystick(Command):
 
         else:
             #self.robot.drivetrain.smooth_drive(self.robot.oi.stick.getRawAxis(1), -self.twist_sensitivity*self.robot.oi.stick.getRawAxis(4))
-            self.robot.drivetrain.spark_with_stick(thrust=-self.robot.oi.stick.getRawAxis(1),
+            #self.robot.drivetrain.spark_with_stick(thrust=-self.robot.oi.stick.getRawAxis(1), strafe=self.robot.oi.stick.getRawAxis(0), z_rotation=self.twist_sensitivity * self.robot.oi.stick.getRawAxis(4))
+            self.robot.drivetrain.mecanum_velocity_cartesian(thrust=-self.robot.oi.stick.getRawAxis(1),
                                                strafe=self.robot.oi.stick.getRawAxis(0),
                                                z_rotation=self.twist_sensitivity * self.robot.oi.stick.getRawAxis(4))
 
