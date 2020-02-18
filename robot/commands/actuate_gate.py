@@ -6,10 +6,11 @@ class ActuateGate(Command):
     This command opens and closed the piston
     """
 
-    def __init__(self, robot, direction=None):
+    def __init__(self, robot, direction=None, button=None):
         Command.__init__(self, name='ActuateGate')
         self.robot = robot
         self.direction = direction
+        self.button = button
 
     def initialize(self):
         """Called just before this Command runs the first time."""
@@ -29,11 +30,12 @@ class ActuateGate(Command):
 
     def isFinished(self):
         """Make this return true when this Command no longer needs to run execute()"""
-        return True
+        return not self.button.get()
 
     def end(self):
         """Called once after isFinished returns true"""
         #print("\n" + f"** Ended {self.name} at {round(Timer.getFPGATimestamp() - self.robot.enabled_time, 1)} s **")
+        self.robot.ball_handler.hopper_spark.set(0)
     def interrupted(self):
         """Called when another command which requires one or more of the same subsystems is scheduled to run."""
         #print("\n" + f"** Interrupted {self.name} at {round(Timer.getFPGATimestamp() - self.robot.enabled_time, 1)} s **")

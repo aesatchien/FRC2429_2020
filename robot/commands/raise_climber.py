@@ -19,7 +19,12 @@ class RaiseClimber(Command):
 
     def execute(self):
         """Called repeatedly when this Command is scheduled to run"""
-        self.robot.climber.raise_hook(self.power)
+        if self.button == self.robot.oi.buttonY:
+            self.robot.climber.raise_hook(self.power)
+        elif self.button == self.robot.oi.buttonStart:
+            self.robot.climber.raise_robot(self.power)
+        elif self.button == self.robot.oi.buttonBack:
+            self.robot.climber.lock_robot()
 
     def isFinished(self):
         """Make this return true when this Command no longer needs to run execute()"""
@@ -29,6 +34,7 @@ class RaiseClimber(Command):
         """Called once after isFinished returns true"""
         #print("\n" + f"** Ended {self.name} at {round(Timer.getFPGATimestamp() - self.robot.enabled_time, 1)} s **")
         self.robot.climber.stop_hook()
+        self.robot.climber.stop_winch()
     def interrupted(self):
         """Called when another command which requires one or more of the same subsystems is scheduled to run."""
         #print("\n" + f"** Interrupted {self.name} at {round(Timer.getFPGATimestamp() - self.robot.enabled_time, 1)} s **")

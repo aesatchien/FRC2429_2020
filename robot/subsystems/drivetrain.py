@@ -26,7 +26,7 @@ class DriveTrain(Subsystem):
         self.strafe_power_maximum = 0.5
         self.thrust_power_maximum = 0.5
         self.mecanum_power_limit = 1.0
-        self.max_velocity = 500  # rpm for mecanum velocity
+        self.max_velocity = 2000  # rpm for mecanum velocity
 
         self.current_thrust = 0
         self.current_twist = 0
@@ -43,7 +43,7 @@ class DriveTrain(Subsystem):
         # Smart Motion Coefficients - these don't seem to be writing for some reason... python is old?  just set with rev's program for now
         self.smartmotion_maxvel = 500  # rpm
         self.smartmotion_maxacc = 500
-        self.current_limit = 100
+        self.current_limit = 60
         # tracking the robot across the field... easier with WCD
         self.x = 0
         self.y = 0
@@ -81,6 +81,7 @@ class DriveTrain(Subsystem):
             # the gear ratio was 4.17:1.  With the shifter (low gear) I think it was a 12.26.
             # then new 2020 gearbox is 9.52
             gear_ratio = 9.52
+            #gear_ratio = 12.75
             conversion_factor = 8.0 * 3.141 / gear_ratio
 
             for ix, encoder in enumerate(self.encoders):
@@ -156,12 +157,8 @@ class DriveTrain(Subsystem):
         """ CJH Trying to implement a velocity control loop on the mecanum vs. % output"""
 
         # Compensate for gyro angle
-        input = Vector2d(thrust, strafe)
+        input = Vector2d(strafe, thrust)
         input.rotate(gyroAngle)
-        # apply a deadband
-        for val in [input.x, input.y, z_rotation]:
-            if val < self.deadband:
-                val = 0
 
         wheel_speeds = [
             # Front Left
@@ -195,7 +192,9 @@ class DriveTrain(Subsystem):
             for speed, multiplier, controller in zip(wheel_speeds, multipliers, self.pid_controllers):
                 controller.setReference(multiplier * speed * self.max_velocity, rev.ControlType.kVelocity, 1)
                 debug_speed.append(multiplier * speed * self.max_velocity)
-        print(f"Wheel speeds set to {wheel_speeds}")
+        if self.counter % 20 == 0:
+            pass
+            # print(f"Wheel speeds set to {wheel_speeds} from thrust {thrust:2.4f} strafe {strafe:2.4f} rot {z_rotation:2.4f}")
         self.drive.feed()
 
     def stop(self):

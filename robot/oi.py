@@ -65,8 +65,8 @@ class OI(object):
         # binding button to commands
         self.axisButtonRT.whenPressed(Intake(robot, power=0, button=self.axisButtonRT))
         self.axisButtonLT.whenPressed(Intake(robot, power=0, button=self.axisButtonLT))
-        self.buttonRB.whenPressed(ActuateGate(robot, direction='close'))
-        self.buttonLB.whenPressed(ActuateGate(robot, direction='open'))
+        self.buttonRB.whenPressed(ActuateGate(robot, direction='close', button=self.buttonRB))
+        self.buttonLB.whenPressed(ActuateGate(robot, direction='open', button=self.buttonLB))
         #self.buttonA.whenPressed(UpdatePIDs(robot,1.5, from_dashboard=False))
         #self.buttonB.whenPressed(UpdatePIDs(robot,0.66, from_dashboard=False))
         self.buttonB.whenPressed(Intake(robot, power=-0.5, button=self.buttonB))
@@ -74,10 +74,12 @@ class OI(object):
         self.buttonX.whenPressed(PanelSpinner(robot, button=self.buttonX, power=0.4))
         #self.buttonX.whenPressed(PneumaticPiston(robot, 'open'))
         #self.buttonY.whenPressed(SpinToColor(robot, color_name='blue', power=0.3))
-        self.buttonY.whenPressed(RaiseClimber(robot, power=0.3, button=self.buttonY))
+        self.buttonY.whenPressed(RaiseClimber(robot, power=0.7, button=self.buttonY))
+        self.buttonStart.whenPressed(RaiseClimber(robot, power=0.75, button=self.buttonStart))
+        self.buttonBack.whenPressed(RaiseClimber(robot, button=self.buttonBack))
 
-        self.buttonStart.whenPressed(AutonomousDrive(robot, setpoint=250, control_type='velocity', button= self.buttonStart, source=None))
-        self.buttonBack.whenPressed(AutonomousDrive(robot, setpoint=500, control_type='velocity', button=self.buttonBack, source=None))
+        #self.buttonStart.whenPressed(AutonomousDrive(robot, setpoint=250, control_type='velocity', button= self.buttonStart, source=None))
+        #self.buttonBack.whenPressed(AutonomousDrive(robot, setpoint=500, control_type='velocity', button=self.buttonBack, source=None))
         #self.buttonBack.whenPressed()
         # self.buttonStart.whenPressed
         # self.axisButtonLT.whenPressed
@@ -111,8 +113,8 @@ class OI(object):
             self.co_axisButtonLT.whenPressed(Intake(robot, power=0, button=self.co_axisButtonLT))
             self.co_buttonB.whenPressed(Intake(robot, power=-0.5, button=self.co_buttonB))
             self.co_buttonA.whenPressed(Intake(robot, power=0.5, button=self.co_buttonA))
-            self.co_buttonRB.whenPressed(ActuateGate(robot, direction='open'))
-            self.co_buttonLB.whenPressed(ActuateGate(robot, direction='close'))
+            self.co_buttonRB.whenPressed(ActuateGate(robot, direction='open', button=self.co_buttonRB))
+            self.co_buttonLB.whenPressed(ActuateGate(robot, direction='close', button=self.co_buttonLB))
             self.co_buttonA.whenPressed(PanelSpinner(robot, button=self.co_buttonA, power=0))
             self.co_povButtonUp.whenPressed(DpadDrive(robot, 'up', self.co_povButtonUp))
             self.co_povButtonDown.whenPressed(DpadDrive(robot, 'down', self.co_povButtonDown))

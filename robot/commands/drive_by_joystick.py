@@ -19,6 +19,7 @@ class DriveByJoystick(Command):
         self.heading = 0
         self.corrected_twist = 0
         self.twist_deadzone = 0.05
+        self.deadzone = 0.03
         self.xy_deadzone = 0.15
         self.leadtime = 0.1
         self.execution_count = 0
@@ -79,9 +80,12 @@ class DriveByJoystick(Command):
         else:
             #self.robot.drivetrain.smooth_drive(self.robot.oi.stick.getRawAxis(1), -self.twist_sensitivity*self.robot.oi.stick.getRawAxis(4))
             #self.robot.drivetrain.spark_with_stick(thrust=-self.robot.oi.stick.getRawAxis(1), strafe=self.robot.oi.stick.getRawAxis(0), z_rotation=self.twist_sensitivity * self.robot.oi.stick.getRawAxis(4))
-            self.robot.drivetrain.mecanum_velocity_cartesian(thrust=-self.robot.oi.stick.getRawAxis(1),
-                                               strafe=self.robot.oi.stick.getRawAxis(0),
-                                               z_rotation=self.twist_sensitivity * self.robot.oi.stick.getRawAxis(4))
+            joystick_values = [-self.robot.oi.stick.getRawAxis(1), self.robot.oi.stick.getRawAxis(0),
+                                       self.twist_sensitivity * self.robot.oi.stick.getRawAxis(4)]
+            for ix, val in enumerate(joystick_values):
+                if abs(val) < self.deadzone:
+                    joystick_values[ix] = 0
+            self.robot.drivetrain.mecanum_velocity_cartesian(thrust=joystick_values[0], strafe=joystick_values[1], z_rotation=joystick_values[2])
 
     def isFinished(self):
         """Make this return true when this Command no longer needs to run execute()"""
