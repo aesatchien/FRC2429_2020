@@ -4,7 +4,7 @@ from wpilib.command import Subsystem
 from wpilib import Spark
 from wpilib import Servo
 from rev.color import ColorSensorV3
-from rev.color import ColorMatch
+from wpilib import PowerDistributionPanel
 from wpilib import Color
 from wpilib import I2C
 from wpilib import SmartDashboard
@@ -21,6 +21,7 @@ class Peripherals(Subsystem):
         self.ball_table = NetworkTables.getTable("BallCam")
         self.lidar = Lidar()
         self.lidar_meas = None
+        self.PDB = PowerDistributionPanel()
 
 
         # we can config the colorsensor resolution and the rate
@@ -71,7 +72,7 @@ class Peripherals(Subsystem):
     def log(self):
         self.lidar_meas = self.lidar_distance()
         self.counter += 1
-        if self.counter % 5 == 0:
+        if self.counter % 10 == 0:
             detected_color = self.color_sensor.getColor()
             color_string = self.get_color_str(detected_color)
 
@@ -82,6 +83,11 @@ class Peripherals(Subsystem):
             SmartDashboard.putNumber("Confidence", round(self.match_confidence, 3))
             SmartDashboard.putNumber("Lidar Distance", self.lidar_meas)
             #SmartDashboard.putNumber("Cam distance", self.ball_table.getNumber("distance", 0))
+            currents = ""
+            for i in range(16):
+                currents = currents + " " + str(int(self.PDB.getCurrent(i)))
+            currents = currents + " = " + str(int(self.PDB.getTotalCurrent()))
+            SmartDashboard.putString("PDB Status", currents)
 
 
 class Lidar:

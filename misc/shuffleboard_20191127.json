@@ -352,6 +352,17 @@
               "_source0": "network_table:///SmartDashboard/Lidar Distance",
               "_title": "Lidar Distance"
             }
+          },
+          "9,3": {
+            "size": [
+              3,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/PDB Status",
+              "_title": "PDB Status"
+            }
           }
         }
       }
