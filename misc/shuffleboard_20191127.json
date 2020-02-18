@@ -353,15 +353,26 @@
               "_title": "Lidar Distance"
             }
           },
-          "9,3": {
+          "10,3": {
             "size": [
-              3,
+              2,
               1
             ],
             "content": {
               "_type": "Text View",
               "_source0": "network_table:///SmartDashboard/PDB Status",
               "_title": "PDB Status"
+            }
+          },
+          "8,3": {
+            "size": [
+              2,
+              1
+            ],
+            "content": {
+              "_type": "ComboBox Chooser",
+              "_source0": "network_table:///SmartDashboard/Autonomous",
+              "_title": "Autonomous"
             }
           }
         }
