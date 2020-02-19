@@ -2,7 +2,7 @@ from wpilib.command import Command
 from wpilib import Timer
 from wpilib import SmartDashboard
 from networktables import NetworkTables
-
+import math
 from commands.track_telemetry import TrackTelemetry
 
 class AutonomousDrive(Command):
@@ -36,12 +36,12 @@ class AutonomousDrive(Command):
         self.control_type = control_type
         self.button = button
         self.max_thrust = 0.25
+        self.encoders_have_reset = False
 
     def initialize(self):
         """Called just before this Command runs the first time."""
         self.start_time = round(Timer.getFPGATimestamp() - self.robot.enabled_time, 1)
-        print("\n" + f"** Started {self.getName()} with setpoint {self.setpoint} and control_type {self.control_type} at {self.start_time} s **")
-        SmartDashboard.putString("alert", f"** Started {self.getName()} with setpoint {self.setpoint} and control_type {self.control_type} at {self.start_time} s **")
+
         self.has_arrived = False
         self.telemetry = {'time':[], 'position':[], 'velocity':[], 'current':[], 'output':[]}
         self.counter = 0
@@ -56,29 +56,38 @@ class AutonomousDrive(Command):
         elif self.source == "camera":
             ball_table = NetworkTables.getTable("BallCam")
             if ball_table.getNumber("targets", 0) > 0:
-                self.setpoint = ball_table.getNumber("distance", 0)
+                self.setpoint = math.sqrt(ball_table.getNumber("distance", 0) ** 2 - 37.0^2)
             else:
                 self.setpoint = 0  # this should end us
                 self.has_arrived = True
             print(f"Autonomous drive found {ball_table.getNumber('targets', 0)} targets on BallCam and dist is {self.setpoint}...")
-
+        print(
+            "\n" + f"** Started {self.getName()} with setpoint {self.setpoint} and control_type {self.control_type} at {self.start_time} s **")
+        SmartDashboard.putString("alert",
+                                 f"** Started {self.getName()} with setpoint {self.setpoint} and control_type {self.control_type} at {self.start_time} s **")
         if self.control_type == 'position':
-            self.robot.drivetrain.goToSetPoint(self.setpoint)
+            self.robot.drivetrain.goToSetPoint(self.setpoint, reset=False)
         elif self.control_type == 'velocity':
             self.robot.drivetrain.set_velocity(self.setpoint)
         else:
             print(f"Invalid control type sent to automous_drive: {self.control_type}")
 
+        self.starting_position = self.robot.drivetrain.get_position()
+        self.start_counter = 0
 
     def execute(self):
         """Called repeatedly when this Command is scheduled to run"""
         self.robot.drivetrain.drive.feed()
+        if self.start_counter < 2:
+            print(f"Waiting for {self.start_counter} iterations for encoder to clear (because encoder at {self.robot.drivetrain.get_position():4.1f})...")
+            self.start_counter += 1
+            return
 
         # track telemetry so we can grab it with jupyter notebook
         if self.counter % 2 == 0:
             #self.telemetry['time'].append(Timer.getFPGATimestamp() - self.robot.enabled_time)
             self.telemetry['time'].append(self.timeSinceInitialized())
-            self.telemetry['position'].append(self.robot.drivetrain.get_position())
+            self.telemetry['position'].append(self.robot.drivetrain.get_position() - self.starting_position )
             self.telemetry['velocity'].append(self.robot.drivetrain.sparkneo_encoder_1.getVelocity())
             self.telemetry['current'].append(self.robot.drivetrain.spark_neo_left_front.getOutputCurrent())
             self.telemetry['output'].append(self.robot.drivetrain.spark_neo_left_front.getAppliedOutput())
@@ -92,7 +101,11 @@ class AutonomousDrive(Command):
         # TODO: get more opinions on how to do this better
 
         if self.control_type == 'position' and not self.has_arrived:
-            if setpoint_sign*(self.setpoint - self.robot.drivetrain.get_position()) <= self.tolerance:
+            #pos = self.robot.drivetrain.get_position() - self.starting_position
+            pos = self.robot.drivetrain.get_position()
+            error = setpoint_sign*(self.setpoint - pos)
+            print(f"Error is : {error:4.1f}  Position is : {pos:4.1f}")
+            if error <= self.tolerance:
                 self.has_arrived = True
                 self.setTimeout( self.timeSinceInitialized() + self.extra_time)
                 print(f"** We have arrived at setpoint! (at {round(self.timeSinceInitialized(), 2)})")
@@ -117,7 +130,6 @@ class AutonomousDrive(Command):
         for key in self.telemetry:
             SmartDashboard.putNumberArray("telemetry_" + str(key), self.telemetry[key])
         self.robot.drivetrain.stop()
-        self.has_arrived = False
 
     def interrupted(self):
         self.end()

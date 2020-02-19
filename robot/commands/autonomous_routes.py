@@ -7,7 +7,7 @@ from wpilib import Sendable
 
 class AutonomousRoutes(CommandGroup):
     def __init__(self, robot, route_a, route_b, timeout=None):
-        super().__init__()
+        CommandGroup.__init__(self, name='AutonomousRoutes')
 
         self.robot = robot
         self.route_a = route_a

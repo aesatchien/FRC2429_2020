@@ -11,7 +11,10 @@ from subsystems.drivetrain import DriveTrain
 from subsystems.navigation import Navigation
 from subsystems.pneumatics import Pneumatics
 from subsystems.peripherals import Peripherals
-#from subsystems.distance import Distance
+from subsystems.ball_handler import Ball_Handler
+from subsystems.climber import Climber
+from wpilib import SendableChooser
+from commands.autonomous_group import AutonomousGroup
 
 
 class Robot(CommandBasedRobot):
@@ -19,6 +22,7 @@ class Robot(CommandBasedRobot):
 
     def robotInit(self):
         super().__init__()
+        #CommandBasedRobot.__init__()
         """
         This function is run when the robot is first started up and should be
         used for any initialization code.
@@ -31,6 +35,9 @@ class Robot(CommandBasedRobot):
         self.navigation = Navigation(self)
         #self.pneumatics = Pneumatics(self)
         self.peripherals = Peripherals(self)
+        self.ball_handler = Ball_Handler(self)
+        self.climber = Climber(self)
+        self.auto_chooser = SendableChooser()
         #self.distance = Distance(self)
         #wpilib.SmartDashboard.putData(self.drivetrain)
         #wpilib.SmartDashboard.putData(self.pneumatics)
@@ -46,11 +53,15 @@ class Robot(CommandBasedRobot):
         #wpilib.SmartDashboard.putData(Scheduler.getInstance())
         # instantiate the command used for the autonomous period
         self.autonomousCommand = None
-
+        self.auto_chooser.addOption("Option 1", AutonomousGroup(self))
+        self.auto_chooser.addOption("Option 2", AutonomousGroup(self))
+        wpilib.SmartDashboard.putData('Autonomous', self.auto_chooser)
 
     def autonomousInit(self):
         self.reset()
         self.enabled_time = Timer.getFPGATimestamp()
+
+
     # self.autonomousCommand = self.autoChooser.getSelected()
     # self.autonomousCommand.start()
 
@@ -69,6 +80,7 @@ class Robot(CommandBasedRobot):
         self.enabled_time = Timer.getFPGATimestamp()
         if self.autonomousCommand is not None:
             self.autonomousCommand.cancel()
+        print(f" robot.isSimulation() is {self.isSimulation()} robot.isReal() is {self.isReal()}")
 
     def teleopPeriodic(self):
         """This function is called periodically during operator control."""
@@ -88,10 +100,11 @@ class Robot(CommandBasedRobot):
         self.log()
 
     def log(self):
+
+        self.navigation.log()
+        self.peripherals.log()
         if self.isReal():
             self.drivetrain.log()
-            self.navigation.log()
-            self.peripherals.log()
 
     def reset(self):
         self.drivetrain.reset()

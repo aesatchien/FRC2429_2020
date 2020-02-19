@@ -4,7 +4,7 @@ from wpilib.command import Subsystem
 from wpilib import Spark
 from wpilib import Servo
 from rev.color import ColorSensorV3
-from rev.color import ColorMatch
+from wpilib import PowerDistributionPanel
 from wpilib import Color
 from wpilib import I2C
 from wpilib import SmartDashboard
@@ -14,16 +14,14 @@ from networktables import NetworkTables
 class Peripherals(Subsystem):
     def __init__(self, robot):
         Subsystem.__init__(self, "peripherals")
-        self.intake_spark = Spark(6)
         self.control_panel_spark = Spark(5)
-        self.left_dispenser_gate = Servo(7)
-        self.right_dispenser_gate = Servo(8)
         self.counter = 0
         self.color_sensor = ColorSensorV3(I2C.Port.kOnboard)
         self.match_confidence = 0
         self.ball_table = NetworkTables.getTable("BallCam")
         self.lidar = Lidar()
         self.lidar_meas = None
+        self.PDB = PowerDistributionPanel()
 
 
         # we can config the colorsensor resolution and the rate
@@ -37,19 +35,9 @@ class Peripherals(Subsystem):
         self.kYellowTarget = Color(0.326, 0.519, 0.154)
         self.color_dict = {"blue":self.kBlueTarget, "green":self.kGreenTarget, "red":self.kRedTarget, "yellow":self.kYellowTarget}
 
-    def run_intake(self, power=0):
-        self.intake_spark.set(power)
 
     def run_spinner(self, power=0):
         self.control_panel_spark.set(power)
-
-    def close_gate(self):
-        self.left_dispenser_gate.setAngle(120)
-        self.right_dispenser_gate.setAngle(135)
-
-    def open_gate(self):
-        self.left_dispenser_gate.setAngle(0)
-        self.right_dispenser_gate.setAngle(0)
 
     def panel_clockwise(self, power):
         self.control_panel_spark.set(power)
@@ -84,28 +72,43 @@ class Peripherals(Subsystem):
     def log(self):
         self.lidar_meas = self.lidar_distance()
         self.counter += 1
-        if self.counter % 5 == 0:
+        if self.counter % 10 == 0:
             detected_color = self.color_sensor.getColor()
             color_string = self.get_color_str(detected_color)
 
             SmartDashboard.putString('Detected Color', color_string)
-            SmartDashboard.putNumber("Red", detected_color.red)
-            SmartDashboard.putNumber("Green", detected_color.green)
-            SmartDashboard.putNumber("Blue", detected_color.blue)
-            SmartDashboard.putNumber("Confidence", self.match_confidence)
+            SmartDashboard.putNumber("Red", round(detected_color.red, 3))
+            SmartDashboard.putNumber("Green", round(detected_color.green, 3))
+            SmartDashboard.putNumber("Blue", round(detected_color.blue, 3))
+            SmartDashboard.putNumber("Confidence", round(self.match_confidence, 3))
             SmartDashboard.putNumber("Lidar Distance", self.lidar_meas)
             #SmartDashboard.putNumber("Cam distance", self.ball_table.getNumber("distance", 0))
+            currents = ""
+            for i in range(16):
+                currents = currents + " " + str(int(self.PDB.getCurrent(i)))
+            currents = currents + " = " + str(int(self.PDB.getTotalCurrent()))
+            SmartDashboard.putString("PDB Status", currents)
 
 
 class Lidar:
+    addr = 0x62 # I2C bus address
+    OUTER_LOOP_COUNT = 0x11
+    ACQ_CONFIG_REG = 0x04
+    ACQ_COMMAND = 0x00
+    FULL_DELAYword = 0x8f
+
     def __init__(self):
-        self.i2c = wpilib.I2C(wpilib.I2C.Port.kOnboard, 0x62)
-        self.i2c.write(0x11, 0xff) # OUTER_LOOP_COUNT; enable free running mode
-        self.i2c.write(0x04, 0x28) # ACQ_CONFIG_REG; use MEASURE_DELAY
-        self.i2c.write(0x00, 0x04) # ACQ_COMMAND; take distance with receiver bias corr
+        self.i2c = wpilib.I2C(wpilib.I2C.Port.kOnboard, Lidar.addr)
+        err = self.i2c.write(Lidar.OUTER_LOOP_COUNT, 0xff) # enable free running mode
+        err += self.i2c.write(Lidar.ACQ_CONFIG_REG, 0x28) # use MEASURE_DELAY
+        err += self.i2c.write(Lidar.ACQ_COMMAND, 0x04) # take distance with receiver bias corr
         self.buf = bytearray(2) # for reading distance 2 bytes
+        if err:
+            outstr = "Lidar_Lite_V3 write error or not found"
+            wpilib.DriverStation.reportError(outstr, False)
+            print(outstr)
 
     def dist(self):
-        self.i2c.writeBulk(bytearray([0x8f])) # don't use repeated start; write address only, then read
-        self.i2c.readOnly(self.buf) # MSB, LSB of distance measurement in cm
-        return self.buf[0]*2**8 + self.buf[1]
+        err = self.i2c.writeBulk(bytearray([Lidar.FULL_DELAYword]))  # don't use repeated start; write address only, then read
+        err += self.i2c.readOnly(self.buf) # MSB, LSB of distance measurement in cm
+        return self.buf[0]*2**8 + self.buf[1] if not err else -1

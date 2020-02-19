@@ -2,8 +2,8 @@
   "tabPane": [
     {
       "title": "SmartDashboard",
-      "autoPopulate": true,
-      "autoPopulatePrefix": "SmartDashboard/",
+      "autoPopulate": false,
+      "autoPopulatePrefix": "SMB/",
       "widgetPane": {
         "gridSize": 128.0,
         "showGrid": true,
@@ -122,8 +122,8 @@
                 },
                 {
                   "_type": "Boolean Box",
-                  "_source0": "network_table:///SmartDashboard/IsConnected",
-                  "_title": "IsConnected",
+                  "_source0": "network_table:///SmartDashboard/NavX",
+                  "_title": "NavX",
                   "Colors/Color when true": "#7CFC00FF",
                   "Colors/Color when false": "#8B0000FF"
                 }
@@ -153,11 +153,6 @@
               "Layout/Number of rows": 7,
               "Layout/Label position": "BOTTOM",
               "_children": {
-                "1,0": {
-                  "_type": "Text View",
-                  "_source0": "network_table:///SmartDashboard/Position Enc3",
-                  "_title": "Position Enc3"
-                },
                 "0,0": {
                   "_type": "Text View",
                   "_source0": "network_table:///SmartDashboard/Position Enc1",
@@ -188,11 +183,6 @@
                   "_source0": "network_table:///SmartDashboard/Drive Forward",
                   "_title": "Drive Forward"
                 },
-                "1,6": {
-                  "_type": "Command",
-                  "_source0": "network_table:///SmartDashboard/Rotate X",
-                  "_title": "Rotate X"
-                },
                 "1,5": {
                   "_type": "Text View",
                   "_source0": "network_table:///SmartDashboard/Auto Rotation",
@@ -222,6 +212,16 @@
                   "_type": "Text View",
                   "_source0": "network_table:///SmartDashboard/Auto Distance",
                   "_title": "Auto Distance"
+                },
+                "1,6": {
+                  "_type": "Command",
+                  "_source0": "network_table:///SmartDashboard/Rotate X",
+                  "_title": "Rotate X"
+                },
+                "1,0": {
+                  "_type": "Text View",
+                  "_source0": "network_table:///SmartDashboard/Position Enc3",
+                  "_title": "Position Enc3"
                 }
               }
             }
@@ -286,7 +286,7 @@
           "0,0": {
             "size": [
               3,
-              3
+              4
             ],
             "content": {
               "_type": "Camera Stream",
@@ -341,188 +341,53 @@
                 }
               }
             }
+          },
+          "11,2": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Lidar Distance",
+              "_title": "Lidar Distance"
+            }
+          },
+          "10,3": {
+            "size": [
+              2,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/PDB Status",
+              "_title": "PDB Status"
+            }
+          },
+          "8,3": {
+            "size": [
+              2,
+              1
+            ],
+            "content": {
+              "_type": "ComboBox Chooser",
+              "_source0": "network_table:///SmartDashboard/Autonomous",
+              "_title": "Autonomous"
+            }
           }
         }
       }
     },
     {
       "title": "LiveWindow",
-      "autoPopulate": true,
+      "autoPopulate": false,
       "autoPopulatePrefix": "LiveWindow/",
       "widgetPane": {
         "gridSize": 128.0,
         "showGrid": true,
         "hgap": 16.0,
         "vgap": 16.0,
-        "tiles": {
-          "0,0": {
-            "size": [
-              2,
-              4
-            ],
-            "content": {
-              "_type": "Subsystem Layout",
-              "_source0": "network_table:///LiveWindow/Ungrouped",
-              "_title": "Ungrouped",
-              "Layout/Label position": "BOTTOM",
-              "_children": [
-                {
-                  "_type": "Basic Subsystem",
-                  "_source0": "network_table:///LiveWindow/Ungrouped/DriveTrain",
-                  "_title": "DriveTrain"
-                },
-                {
-                  "_type": "Differential Drivebase",
-                  "_source0": "network_table:///LiveWindow/Ungrouped/DifferentialDrive[1]",
-                  "_title": "DifferentialDrive[1]",
-                  "Wheels/Number of wheels": 4,
-                  "Wheels/Wheel diameter": 80.0,
-                  "Visuals/Show velocity vectors": true
-                },
-                {
-                  "_type": "Voltage View",
-                  "_source0": "network_table:///LiveWindow/Ungrouped/AnalogInput[4]",
-                  "_title": "AnalogInput[4]",
-                  "Range/Min": 0.0,
-                  "Range/Max": 5.0,
-                  "Range/Center": 0.0,
-                  "Visuals/Orientation": "HORIZONTAL",
-                  "Visuals/Number of tick marks": 5
-                },
-                {
-                  "_type": "Text View",
-                  "_source0": "network_table:///LiveWindow/Ungrouped/DoubleSolenoid[0,0]/Value",
-                  "_title": "DoubleSolenoid[0,0]/Value"
-                },
-                {
-                  "_type": "Basic Subsystem",
-                  "_source0": "network_table:///LiveWindow/Ungrouped/Pneumatics",
-                  "_title": "Pneumatics"
-                },
-                {
-                  "_type": "Boolean Box",
-                  "_source0": "network_table:///LiveWindow/Ungrouped/Compressor[0]/Enabled",
-                  "_title": "Compressor[0]/Enabled",
-                  "Colors/Color when true": "#7CFC00FF",
-                  "Colors/Color when false": "#8B0000FF"
-                },
-                {
-                  "_type": "Boolean Box",
-                  "_source0": "network_table:///LiveWindow/Ungrouped/Compressor[0]/Pressure switch",
-                  "_title": "Compressor[0]/Pressure switch",
-                  "Colors/Color when true": "#7CFC00FF",
-                  "Colors/Color when false": "#8B0000FF"
-                },
-                {
-                  "_type": "Mecanum Drivebase",
-                  "_source0": "network_table:///LiveWindow/Ungrouped/MecanumDrive[1]",
-                  "_title": "MecanumDrive[1]",
-                  "Visuals/Show velocity vectors": true
-                },
-                {
-                  "_type": "Basic Subsystem",
-                  "_source0": "network_table:///LiveWindow/Ungrouped/Peripherals",
-                  "_title": "Peripherals"
-                },
-                {
-                  "_type": "Speed Controller",
-                  "_source0": "network_table:///LiveWindow/Ungrouped/Spark[1]",
-                  "_title": "Spark[1]",
-                  "Visuals/Orientation": "HORIZONTAL"
-                },
-                {
-                  "_type": "Speed Controller",
-                  "_source0": "network_table:///LiveWindow/Ungrouped/Spark[0]",
-                  "_title": "Spark[0]",
-                  "Visuals/Orientation": "HORIZONTAL"
-                },
-                {
-                  "_type": "Speed Controller",
-                  "_source0": "network_table:///LiveWindow/Ungrouped/Spark[6]",
-                  "_title": "Spark[6]",
-                  "Visuals/Orientation": "HORIZONTAL"
-                },
-                {
-                  "_type": "Speed Controller",
-                  "_source0": "network_table:///LiveWindow/Ungrouped/Spark[5]",
-                  "_title": "Spark[5]",
-                  "Visuals/Orientation": "HORIZONTAL"
-                },
-                {
-                  "_type": "Text View",
-                  "_source0": "network_table:///LiveWindow/Ungrouped/Servo[7]/Value",
-                  "_title": "Servo[7]/Value"
-                },
-                {
-                  "_type": "Text View",
-                  "_source0": "network_table:///LiveWindow/Ungrouped/Servo[8]/Value",
-                  "_title": "Servo[8]/Value"
-                },
-                {
-                  "_type": "Gyro",
-                  "_source0": "network_table:///LiveWindow/Ungrouped/navX-Sensor",
-                  "_title": "navX-Sensor",
-                  "Visuals/Major tick spacing": 45.0,
-                  "Visuals/Starting angle": 180.0,
-                  "Visuals/Show tick mark ring": true,
-                  "Visuals/Counter clockwise": false
-                }
-              ]
-            }
-          },
-          "2,0": {
-            "size": [
-              2,
-              4
-            ],
-            "content": {
-              "_type": "Subsystem Layout",
-              "_source0": "network_table:///LiveWindow/peripherals",
-              "_title": "peripherals",
-              "Layout/Label position": "BOTTOM",
-              "_children": []
-            }
-          },
-          "4,0": {
-            "size": [
-              2,
-              4
-            ],
-            "content": {
-              "_type": "Subsystem Layout",
-              "_source0": "network_table:///LiveWindow/pneumatics",
-              "_title": "pneumatics",
-              "Layout/Label position": "BOTTOM",
-              "_children": []
-            }
-          },
-          "6,0": {
-            "size": [
-              2,
-              4
-            ],
-            "content": {
-              "_type": "Subsystem Layout",
-              "_source0": "network_table:///LiveWindow/drivetrain",
-              "_title": "drivetrain",
-              "Layout/Label position": "BOTTOM",
-              "_children": []
-            }
-          },
-          "8,0": {
-            "size": [
-              2,
-              4
-            ],
-            "content": {
-              "_type": "Subsystem Layout",
-              "_source0": "network_table:///LiveWindow/navigation",
-              "_title": "navigation",
-              "Layout/Label position": "BOTTOM",
-              "_children": []
-            }
-          }
-        }
+        "tiles": {}
       }
     }
   ],
