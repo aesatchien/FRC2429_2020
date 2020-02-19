@@ -2,9 +2,11 @@ from wpilib.command import CommandGroup, WaitCommand
 from .track_telemetry import TrackTelemetry
 from .actuate_gate import ActuateGate
 from .autonomous_drive import AutonomousDrive
+from .autonomous_rotate import AutonomousRotate
 from wpilib import Sendable
+from wpilib import SmartDashboard
 
-class AutonomousRoutes(CommandGroup):
+class AutonomousRoutes(CommandGroup): 
     def __init__(self, robot, route_a, route_b, timeout=None):
         CommandGroup.__init__(self, name='AutonomousRoutes')
 
@@ -12,6 +14,9 @@ class AutonomousRoutes(CommandGroup):
         self.route_a = route_a
         self.route_b = route_b
 
+        position = self.robot.position_chooser.getSelected()
+        route_a = self.robot.scoring_chooser.getSelected()
+        route_b = self.robot.backoff_chooser.getSelected()
 
         self.addParallel(TrackTelemetry(robot, timeout=timeout))
 
@@ -64,7 +69,7 @@ class AutonomousRoutes(CommandGroup):
         Drive backward 30"
         """
 
-        self.addSequential(AutonomousDrive(self.robot, setpoint=30))
+        self.addSequential(AutonomousDrive(self.robot, setpoint=-30))
 
     def port_side_b(self):
         """
@@ -75,6 +80,9 @@ class AutonomousRoutes(CommandGroup):
         Move forward 100"
         """
 
+        self.addSequential(AutonomousRotate(self.robot, setpoint=90))
+        self.addSequential(AutonomousDrive(self.robot, setpoint=65))
+        self.addSequential(AutonomousRotate(self.robot, setpoint=-90))
         self.addSequential(AutonomousDrive(self.robot, setpoint=100))
 
     def trench_side_b(self):
@@ -98,6 +106,9 @@ class AutonomousRoutes(CommandGroup):
         Stop intake
         """
 
+        self.addSequential(AutonomousRotate(self.robot, setpoint=-90))
+        self.addSequential(AutonomousDrive(self.robot, setpoint=67))
+        self.addSequential(AutonomousRotate(self.robot, setpoint=90))
         self.robot.peripherals.run_intake(0.1)
         self.addSequential(AutonomousDrive(self.robot, setpoint=200))
         self.robot.peripherals.run_intake(0)
