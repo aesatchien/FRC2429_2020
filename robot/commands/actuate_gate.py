@@ -37,5 +37,7 @@ class ActuateGate(Command):
         #print("\n" + f"** Ended {self.name} at {round(Timer.getFPGATimestamp() - self.robot.enabled_time, 1)} s **")
         self.robot.ball_handler.hopper_spark.set(0)
     def interrupted(self):
-        """Called when another command which requires one or more of the same subsystems is scheduled to run."""
+        """Called w
+
+        hen another command which requires one or more of the same subsystems is scheduled to run."""
         #print("\n" + f"** Interrupted {self.name} at {round(Timer.getFPGATimestamp() - self.robot.enabled_time, 1)} s **")

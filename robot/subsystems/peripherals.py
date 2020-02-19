@@ -21,7 +21,7 @@ class Peripherals(Subsystem):
         self.ball_table = NetworkTables.getTable("BallCam")
         self.lidar = Lidar()
         self.lidar_meas = None
-        self.PDB = PowerDistributionPanel()
+        #self.PDB = PowerDistributionPanel()
 
 
         # we can config the colorsensor resolution and the rate
@@ -83,12 +83,15 @@ class Peripherals(Subsystem):
             SmartDashboard.putNumber("Confidence", round(self.match_confidence, 3))
             SmartDashboard.putNumber("Lidar Distance", self.lidar_meas)
             #SmartDashboard.putNumber("Cam distance", self.ball_table.getNumber("distance", 0))
-            currents = ""
-            for i in range(16):
-                currents = currents + " " + str(int(self.PDB.getCurrent(i)))
-            currents = currents + " = " + str(int(self.PDB.getTotalCurrent()))
-            SmartDashboard.putString("PDB Status", currents)
 
+'''
+currents = ""
+for i in range(16):
+    currents = currents + " " + str(round(self.PDB.getCurrent(i),1))
+currents = currents + " = " + str(int(self.PDB.getTotalCurrent()))
+SmartDashboard.putString("PDB Status", currents)
+self.PDB.clearStickyFaults()
+'''
 
 class Lidar:
     addr = 0x62 # I2C bus address

@@ -22,7 +22,7 @@ class DriveTrain(Subsystem):
         self.robot = robot
         self.error_dict = {}
         # Add constants and helper variables
-        self.twist_power_maximum = 0.6
+        self.twist_power_maximum = 0.5
         self.strafe_power_maximum = 0.5
         self.thrust_power_maximum = 0.5
         self.mecanum_power_limit = 1.0
