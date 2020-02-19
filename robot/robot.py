@@ -15,9 +15,11 @@ from subsystems.ball_handler import Ball_Handler
 from subsystems.climber import Climber
 from wpilib import SendableChooser
 from commands.autonomous_group import AutonomousGroup
+from commands.autonomous_routes import AutonomousRoutes
 
 
 class Robot(CommandBasedRobot):
+
     """This is the main class for running the PacGoat code."""
 
     def robotInit(self):
@@ -37,7 +39,9 @@ class Robot(CommandBasedRobot):
         self.peripherals = Peripherals(self)
         self.ball_handler = Ball_Handler(self)
         self.climber = Climber(self)
-        self.auto_chooser = SendableChooser()
+        self.position_chooser = SendableChooser()
+        self.scoring_chooser = SendableChooser()
+        self.backoff_chooser = SendableChooser()
         #self.distance = Distance(self)
         #wpilib.SmartDashboard.putData(self.drivetrain)
         #wpilib.SmartDashboard.putData(self.pneumatics)
@@ -55,6 +59,10 @@ class Robot(CommandBasedRobot):
         self.autonomousCommand = None
         self.auto_chooser.addOption("Option 1", AutonomousGroup(self))
         self.auto_chooser.addOption("Option 2", AutonomousGroup(self))
+
+        for scoring_route in AutonomousRoutes.scoring_routes:
+            self.scoring_chooser.addOption(scoring_route, scoring_route)
+
         wpilib.SmartDashboard.putData('Autonomous', self.auto_chooser)
 
     def autonomousInit(self):

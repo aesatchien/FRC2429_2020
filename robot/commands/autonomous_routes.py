@@ -4,8 +4,9 @@ from .actuate_gate import ActuateGate
 from .autonomous_drive import AutonomousDrive
 from .autonomous_rotate import AutonomousRotate
 from wpilib import Sendable
+from wpilib import SmartDashboard
 
-class AutonomousRoutes(CommandGroup):
+class AutonomousRoutes(CommandGroup): 
     def __init__(self, robot, route_a, route_b, timeout=None):
         CommandGroup.__init__(self, name='AutonomousRoutes')
 
@@ -13,6 +14,9 @@ class AutonomousRoutes(CommandGroup):
         self.route_a = route_a
         self.route_b = route_b
 
+        position = self.robot.position_chooser.getSelected()
+        route_a = self.robot.scoring_chooser.getSelected()
+        route_b = self.robot.backoff_chooser.getSelected()
 
         self.addParallel(TrackTelemetry(robot, timeout=timeout))
 
