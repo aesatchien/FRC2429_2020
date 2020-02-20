@@ -4,6 +4,7 @@ from wpilib.command import Subsystem
 from wpilib import SmartDashboard
 from wpilib import Spark
 from wpilib import Servo
+from wpilib import Encoder
 from ctre import VictorSPX
 from ctre import ControlMode
 import math
@@ -13,10 +14,12 @@ class Climber(Subsystem):
     def __init__(self, robot):
         Subsystem.__init__(self, "climber")
         self.hook_lifter = VictorSPX(7)
+        self.hook_encoder = Encoder(0, 1)
         self.robot_lifter = Spark(4)
-        self.locking_servo = Servo(1)
+#        self.locking_servo = Servo(1)
         self.counter = 0
         self.hook_max_power = 0.5
+        self.hook_encoder.reset()
 
     def raise_hook(self, power=0):
         self.hook_lifter.set(ControlMode.PercentOutput, power)
@@ -40,5 +43,6 @@ class Climber(Subsystem):
     def log(self):
         self.counter += 1
         if self.counter % 10 == 0:
+            SmartDashboard.putNumber("climber position", self.hook_encoder.get())
             pass
             #SmartDashboard.putNumber("Cam distance", self.ball_table.getNumber("distance", 0))
