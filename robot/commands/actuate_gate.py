@@ -11,14 +11,23 @@ class ActuateGate(Command):
         self.robot = robot
         self.direction = direction
         self.button = button
+        self.max_power = 0.3
+        self.kp = self.max_power / 15. # max power when distance from target = 15
+        self.ki = self.max_power / 10. # max power when integral error is 10 * 1 s
+        self.kd = self.max_power / 100. # max power when rate of change is 100 * 1/s
+        self.timeout = 1
 
     def initialize(self):
         """Called just before this Command runs the first time."""
         self.start_time = round(Timer.getFPGATimestamp() - self.robot.enabled_time, 1)
+        self.gate_prev_err = 0.
+        self.gate_err_sum = 0.
         if self.direction == "open":
             self.robot.ball_handler.open_gate()
+            self.gate_targ = 70.
         elif self.direction == "close":
             self.robot.ball_handler.close_gate()
+            self.gate_targ = 0.
         else:
             print("Something happened that I didn't understand in Ball Gate")
 
@@ -26,11 +35,24 @@ class ActuateGate(Command):
 
     def execute(self):
         """Called repeatedly when this Command is scheduled to run"""
+        gate_pos = self.robot.ball_handler.gate_pos()
+        self.gate_err = self.gate_targ - gate_pos
+
+        self.gate_power = self.kp * self.gate_err + self.ki * self.gate_err_sum + self.kd * (
+                    self.gate_err - self.gate_prev_err) / 0.02
+        self.prev_error = self.error
+        self.gate_err_sum += self.gate_err * 0.02
+        if self.gate_power > 0:
+            self.gate_power = min(self.max_power, self.gate_power)
+        else:
+            self.gate_power = max(-self.max_power, self.gate_power)
+        self.robot.ball_handler.gate_power(self.gate_power)
         pass
 
     def isFinished(self):
         """Make this return true when this Command no longer needs to run execute()"""
-        return not self.button.get()
+        current_time = round(Timer.getFPGATimestamp() - self.robot.enabled_time, 1)
+        return current_time - self.start_time > self.timeout
 
     def end(self):
         """Called once after isFinished returns true"""

@@ -25,6 +25,12 @@ class Ball_Handler(Subsystem):
     def open_gate(self):
         self.hopper_spark.set(0.3)
 
+    def gate_pos(self):
+        return self.gate_encoder.get()
+
+    def gate_power(self, power):
+        self.hopper_spark.set(power)
+
     def log(self):
         self.counter += 1
         if self.counter % 10 == 0:
