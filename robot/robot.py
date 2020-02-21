@@ -57,6 +57,7 @@ class Robot(CommandBasedRobot):
         #wpilib.SmartDashboard.putData(Scheduler.getInstance())
         # instantiate the command used for the autonomous period
         self.autonomousCommand = None
+        """
         self.auto_chooser.addOption("Option 1", AutonomousGroup(self))
         self.auto_chooser.addOption("Option 2", AutonomousGroup(self))
 
@@ -64,6 +65,7 @@ class Robot(CommandBasedRobot):
             self.scoring_chooser.addOption(scoring_route, scoring_route)
 
         wpilib.SmartDashboard.putData('Autonomous', self.auto_chooser)
+        """
 
     def autonomousInit(self):
         self.reset()
