@@ -30,12 +30,12 @@ class ActuateGate(Command):
 
     def isFinished(self):
         """Make this return true when this Command no longer needs to run execute()"""
-        return not self.button.get()
+        return not self.button or not self.button.get()
 
     def end(self):
         """Called once after isFinished returns true"""
         #print("\n" + f"** Ended {self.name} at {round(Timer.getFPGATimestamp() - self.robot.enabled_time, 1)} s **")
-        self.robot.ball_handler.hopper_spark.set(0)
+        #self.robot.ball_handler.hopper_spark.set(0)
     def interrupted(self):
         """Called w
 

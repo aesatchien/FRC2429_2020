@@ -3,7 +3,8 @@ from .track_telemetry import TrackTelemetry
 from .actuate_gate import ActuateGate
 from .autonomous_drive import AutonomousDrive
 from .autonomous_rotate import AutonomousRotate
-from wpilib import Sendable
+from .intake import Intake
+from wpilib import Timer
 from wpilib import SmartDashboard
 
 class AutonomousRoutes(CommandGroup):
@@ -59,6 +60,9 @@ class AutonomousRoutes(CommandGroup):
         Close gate
         """
 
+        time = round(Timer.getFPGATimestamp() - self.robot.enabled_time, 1)
+        print("\n" + f"** Started scoring route at {time} s **")
+
         self.addSequential(AutonomousDrive(self.robot, setpoint=-305))
 
         self.addSequential(ActuateGate(self.robot, direction='open'))
@@ -73,6 +77,9 @@ class AutonomousRoutes(CommandGroup):
         Drive backward 30"
         """
 
+        time = round(Timer.getFPGATimestamp() - self.robot.enabled_time, 1)
+        print("\n" + f"** Started non-scoring route at {time} s **")
+
         self.addSequential(AutonomousDrive(self.robot, setpoint=-30))
 
     def port_side_b(self):
@@ -83,6 +90,9 @@ class AutonomousRoutes(CommandGroup):
         Strafe right 65"
         Move forward 100"
         """
+
+        time = round(Timer.getFPGATimestamp() - self.robot.enabled_time, 1)
+        print("\n" + f"** Started port-side-backoff route at {time} s **")
 
         self.addSequential(AutonomousRotate(self.robot, setpoint=90))
         self.addSequential(AutonomousDrive(self.robot, setpoint=65))
@@ -97,6 +107,9 @@ class AutonomousRoutes(CommandGroup):
         Move forward 100"
         """
 
+        time = round(Timer.getFPGATimestamp() - self.robot.enabled_time, 1)
+        print("\n" + f"** Started trench-side-backoff route at {time} s **")
+
         self.addSequential(AutonomousDrive(self.robot, setpoint=100))
 
     def trench_b(self):
@@ -110,9 +123,25 @@ class AutonomousRoutes(CommandGroup):
         Stop intake
         """
 
+        time = round(Timer.getFPGATimestamp() - self.robot.enabled_time, 1)
+        print("\n" + f"** Started trench-backoff route at {time} s **")
+
         self.addSequential(AutonomousRotate(self.robot, setpoint=-90))
         self.addSequential(AutonomousDrive(self.robot, setpoint=67))
         self.addSequential(AutonomousRotate(self.robot, setpoint=90))
-        self.robot.peripherals.run_intake(0.1)
+        self.addSequential(Intake(self.robot, end_power=0.1))
         self.addSequential(AutonomousDrive(self.robot, setpoint=200))
-        self.robot.peripherals.run_intake(0)
+        self.addSequential(Intake(self.robot, power=0, end_power=0))
+
+    def initialize(self):
+        self.start_time = round(Timer.getFPGATimestamp() - self.robot.enabled_time, 1)
+        print("\n" + f"** Started {self.getName()} at {self.start_time} s **")
+
+    def end(self):
+        end_time = round(Timer.getFPGATimestamp() - self.robot.enabled_time, 1)
+        print("\n" + f"** Ended {self.getName()} at {end_time} s with a duration of {round(end_time - self.start_time, 1)} s **")
+
+    def interrupted(self):
+        print("\n" + f"** Interrupted {self.getName()} at {round(Timer.getFPGATimestamp() - self.robot.enabled_time, 1)} s **")
+
+        self.end()

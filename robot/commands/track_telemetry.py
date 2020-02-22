@@ -37,7 +37,7 @@ class TrackTelemetry(Command):
             self.telemetry['time'].append(self.timeSinceInitialized())
             self.telemetry['position'].append(self.robot.drivetrain.get_position())
             self.telemetry['velocity'].append(self.robot.drivetrain.sparkneo_encoder_1.getVelocity())
-            self.telemetry['current'].append(self.robot.drivetrain.spark_neo_l1.getAppliedOutput())
+            #self.telemetry['current'].append(self.robot.drivetrain.spark_neo_l1.getAppliedOutput())
         self.counter += 1
 
     def isFinished(self):

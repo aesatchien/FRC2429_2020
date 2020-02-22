@@ -75,6 +75,10 @@ class AutonomousDrive(Command):
         self.starting_position = self.robot.drivetrain.get_position()
         self.start_counter = 0
 
+        pos = self.robot.drivetrain.get_position()
+        error = (self.setpoint - pos)
+        print(f"Error is : {error:4.1f}  Position is : {pos:4.1f}")
+
     def execute(self):
         """Called repeatedly when this Command is scheduled to run"""
         self.robot.drivetrain.drive.feed()
@@ -104,7 +108,7 @@ class AutonomousDrive(Command):
             #pos = self.robot.drivetrain.get_position() - self.starting_position
             pos = self.robot.drivetrain.get_position()
             error = setpoint_sign*(self.setpoint - pos)
-            print(f"Error is : {error:4.1f}  Position is : {pos:4.1f}")
+            #print(f"Error is : {error:4.1f}  Position is : {pos:4.1f}")
             if error <= self.tolerance:
                 self.has_arrived = True
                 self.setTimeout( self.timeSinceInitialized() + self.extra_time)

@@ -72,7 +72,6 @@ class Robot(CommandBasedRobot):
         wpilib.SmartDashboard.putData('Autonomous Starting Position', self.position_chooser)
         wpilib.SmartDashboard.putData('Autonomous Scoring Route', self.scoring_chooser)
         wpilib.SmartDashboard.putData('Autonomous Backoff Route', self.backoff_chooser)
-        wpilib.SmartDashboard.putData('Autonomous', self.auto_chooser)
 
     def autonomousInit(self):
         self.reset()
@@ -80,7 +79,7 @@ class Robot(CommandBasedRobot):
 
         self.autonomousCommand = AutonomousRoutes(self)
 
-        self.autonomous_command.start()
+        self.autonomousCommand.start()
 
 
     # self.autonomousCommand = self.autoChooser.getSelected()
