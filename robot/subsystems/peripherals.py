@@ -20,7 +20,7 @@ class Peripherals(Subsystem):
         self.match_confidence = 0
         self.ball_table = NetworkTables.getTable("BallCam")
         self.lidar = Lidar()
-        self.lidar_meas = None
+        s  = None
         #self.PDB = PowerDistributionPanel()
 
 

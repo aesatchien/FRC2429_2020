@@ -6,33 +6,35 @@ from .autonomous_rotate import AutonomousRotate
 from wpilib import Sendable
 from wpilib import SmartDashboard
 
-class AutonomousRoutes(CommandGroup): 
-    def __init__(self, robot, route_a, route_b, timeout=None):
+class AutonomousRoutes(CommandGroup):
+    positions = 'left', 'middle', 'right'
+    scoring_routes = 'scoring', 'non-scoring'
+    backoff_routes = 'shield generator port side', 'shield generator trench side', 'trench'
+
+    def __init__(self, robot, timeout=None):
         CommandGroup.__init__(self, name='AutonomousRoutes')
 
         self.robot = robot
-        self.route_a = route_a
-        self.route_b = route_b
 
-        position = self.robot.position_chooser.getSelected()
-        route_a = self.robot.scoring_chooser.getSelected()
-        route_b = self.robot.backoff_chooser.getSelected()
+        self.position = self.robot.position_chooser.getSelected()
+        self.route_a = self.robot.scoring_chooser.getSelected()
+        self.route_b = self.robot.backoff_chooser.getSelected()
 
         self.addParallel(TrackTelemetry(robot, timeout=timeout))
 
-        if route_a == 'scoring':
+        if self.route_a == 'scoring':
             self.scoring_a()
-        elif route_a == 'non-scoring':
+        elif self.route_a == 'non-scoring':
             self.non_scoring_a()
         else:
             print('invalid route name for phase A')
 
-        if route_a != 'non-scoring':
-            if route_b == 'shield generator port side':
+        if self.route_a != 'non-scoring':
+            if self.route_b == 'shield generator port side':
                 self.port_side_b()
-            elif route_b == 'shield generator trench side':
+            elif self.route_b == 'shield generator trench side':
                 self.trench_side_b()
-            elif route_b == 'trench':
+            elif self.route_b == 'trench':
                 self.trench_b()
             else:
                 print('invalid route name for phase B')
@@ -56,6 +58,8 @@ class AutonomousRoutes(CommandGroup):
         Wait ~5 seconds (or shake)
         Close gate
         """
+
+        self.addSequential(AutonomousDrive(self.robot, setpoint=-305))
 
         self.addSequential(ActuateGate(self.robot, direction='open'))
         self.addSequential(WaitCommand(5))

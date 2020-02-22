@@ -57,17 +57,25 @@ class Robot(CommandBasedRobot):
         #wpilib.SmartDashboard.putData(Scheduler.getInstance())
         # instantiate the command used for the autonomous period
         self.autonomousCommand = None
-        self.auto_chooser.addOption("Option 1", AutonomousGroup(self))
-        self.auto_chooser.addOption("Option 2", AutonomousGroup(self))
 
+        for position in AutonomousRoutes.positions:
+            self.position_chooser.addOption(position, position)
         for scoring_route in AutonomousRoutes.scoring_routes:
             self.scoring_chooser.addOption(scoring_route, scoring_route)
+        for backoff_route in AutonomousRoutes.backoff_routes:
+            self.backoff_chooser.addOption(backoff_route, backoff_route)
 
-        wpilib.SmartDashboard.putData('Autonomous', self.auto_chooser)
+        wpilib.SmartDashboard.putData('Autonomous Starting Position', self.position_chooser)
+        wpilib.SmartDashboard.putData('Autonomous Scoring Route', self.scoring_chooser)
+        wpilib.SmartDashboard.putData('Autonomous Backoff Route', self.backoff_chooser)
 
     def autonomousInit(self):
         self.reset()
         self.enabled_time = Timer.getFPGATimestamp()
+
+        self.autonomousCommand = AutonomousRoutes(self)
+
+        self.autonomous_command.start()
 
 
     # self.autonomousCommand = self.autoChooser.getSelected()
