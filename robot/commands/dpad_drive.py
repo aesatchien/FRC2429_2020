@@ -55,9 +55,9 @@ class DpadDrive(Command):
                 thrust=0; strafe=self.co_strafe_power * self.direction; twist=twist_correction
 
 
-        #self.robot.drivetrain.spark_with_stick(thrust=thrust, strafe=strafe, z_rotation=z_rotation)
+        self.robot.drivetrain.spark_with_stick(thrust=thrust, strafe=strafe, z_rotation=twist)
 
-        self.robot.drivetrain.smooth_drive(thrust=thrust, strafe=strafe, twist=twist)
+        #self.robot.drivetrain.smooth_drive(thrust=thrust, strafe=strafe, twist=twist)
 
     def isFinished(self):
         """Make this return true when this Command no longer needs to run execute()"""
