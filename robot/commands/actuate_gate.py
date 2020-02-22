@@ -49,12 +49,13 @@ class ActuateGate(Command):
 
         self.gate_power = self.kp * self.gate_err + self.ki * self.gate_err_sum + self.kd * (
                     self.gate_err - self.gate_prev_err) / 0.02
-        self.prev_error = self.error
         self.gate_err_sum += self.gate_err * 0.02
         if self.gate_power > 0:
             self.gate_power = min(self.max_power, self.gate_power)
         else:
             self.gate_power = max(-self.max_power, self.gate_power)
+        print(f"Pos {gate_pos} err {self.gate_err} pow {self.gate_power} int {self.gate_err_sum} deriv {self.gate_err - self.gate_prev_err}")
+        self.gate_prev_err = self.gate_err
         self.robot.ball_handler.gate_power(self.gate_power)
         pass
 
@@ -63,6 +64,7 @@ class ActuateGate(Command):
         if (self.direction == "open") and not self.robot.ball_handler.gate_encoder_initialized:
             return True # exit if open button is pushed but encoder is not initialized
         current_time = round(Timer.getFPGATimestamp() - self.robot.enabled_time, 1)
+        print(f"delta time {current_time - self.start_time}")
         return current_time - self.start_time > self.timeout
 
     def end(self):
