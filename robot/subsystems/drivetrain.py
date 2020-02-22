@@ -43,7 +43,7 @@ class DriveTrain(Subsystem):
         # Smart Motion Coefficients - these don't seem to be writing for some reason... python is old?  just set with rev's program for now
         self.smartmotion_maxvel = 500  # rpm
         self.smartmotion_maxacc = 500
-        self.current_limit = 60
+        self.current_limit = 100
         # tracking the robot across the field... easier with WCD
         self.x = 0
         self.y = 0
@@ -82,7 +82,7 @@ class DriveTrain(Subsystem):
             # the gear ratio was 4.17:1.  With the shifter (low gear) I think it was a 12.26.
             # then new 2020 gearbox is 9.52
             gear_ratio = 9.52
-            gear_ratio = 12.75
+            #gear_ratio = 12.75
             conversion_factor = 8.0 * 3.141 / gear_ratio
 
             for ix, encoder in enumerate(self.encoders):

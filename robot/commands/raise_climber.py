@@ -25,6 +25,10 @@ class RaiseClimber(Command):
             self.robot.climber.raise_robot(self.power)
         elif self.button == self.robot.oi.buttonBack:
             self.robot.climber.lock_robot()
+        elif self.button == self.robot.oi.co_povButtonLeft:
+            self.robot.climber.robot_roller_left()
+        elif self.button == self.robot.oi.co_povButtonRight:
+            self.robot.climber.robot_roller_right()
 
     def isFinished(self):
         """Make this return true when this Command no longer needs to run execute()"""
@@ -35,6 +39,7 @@ class RaiseClimber(Command):
         #print("\n" + f"** Ended {self.name} at {round(Timer.getFPGATimestamp() - self.robot.enabled_time, 1)} s **")
         self.robot.climber.stop_hook()
         self.robot.climber.stop_winch()
+        self.robot.climber.robot_roller_stop()
     def interrupted(self):
         """Called when another command which requires one or more of the same subsystems is scheduled to run."""
         #print("\n" + f"** Interrupted {self.name} at {round(Timer.getFPGATimestamp() - self.robot.enabled_time, 1)} s **")

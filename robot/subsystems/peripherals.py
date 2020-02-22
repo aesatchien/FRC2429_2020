@@ -14,14 +14,13 @@ from networktables import NetworkTables
 class Peripherals(Subsystem):
     def __init__(self, robot):
         Subsystem.__init__(self, "peripherals")
-        self.control_panel_spark = Spark(5)
+        self.control_panel_spark = Spark(8)
         self.counter = 0
         self.color_sensor = ColorSensorV3(I2C.Port.kOnboard)
         self.match_confidence = 0
         self.ball_table = NetworkTables.getTable("BallCam")
         self.lidar = Lidar()
-        s  = None
-        #self.PDB = PowerDistributionPanel()
+        self.PDB = PowerDistributionPanel()
 
 
         # we can config the colorsensor resolution and the rate
@@ -83,15 +82,15 @@ class Peripherals(Subsystem):
             SmartDashboard.putNumber("Confidence", round(self.match_confidence, 3))
             SmartDashboard.putNumber("Lidar Distance", self.lidar_meas)
             #SmartDashboard.putNumber("Cam distance", self.ball_table.getNumber("distance", 0))
+            #SmartDashboard.putString('PDB Status', str(self.PDB.getTotalCurrent()))
 
-'''
-currents = ""
-for i in range(16):
-    currents = currents + " " + str(round(self.PDB.getCurrent(i),1))
-currents = currents + " = " + str(int(self.PDB.getTotalCurrent()))
-SmartDashboard.putString("PDB Status", currents)
-self.PDB.clearStickyFaults()
-'''
+            currents = ""
+            for i in range(16):
+                currents = currents + " " + str(round(self.PDB.getCurrent(i),1))
+            currents = currents + " = " + str(int(self.PDB.getTotalCurrent()))
+            SmartDashboard.putString("PDB Status", currents)
+            self.PDB.clearStickyFaults()
+
 
 class Lidar:
     addr = 0x62 # I2C bus address

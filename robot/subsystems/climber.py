@@ -16,6 +16,8 @@ class Climber(Subsystem):
         self.hook_lifter = VictorSPX(7)
         self.hook_encoder = Encoder(0, 1)
         self.robot_lifter = Spark(4)
+        self.left_robot_roller = VictorSPX(8)
+        self.right_robot_roller = VictorSPX(9)
 #        self.locking_servo = Servo(1)
         self.counter = 0
         self.hook_max_power = 0.5
@@ -38,6 +40,16 @@ class Climber(Subsystem):
 
     def stop_winch(self):
         self.robot_lifter.set(0)
+
+    def robot_roller_left(self, power=0):
+        self.left_robot_roller(ControlMode.PercentOutput, power)
+
+    def robot_roller_right(self, power=0):
+        self.right_robot_roller(ControlMode.PercentOutput, power)
+
+    def robot_roller_stop(self):
+        self.right_robot_roller(ControlMode.PercentOutput, 0)
+
 
 
     def log(self):

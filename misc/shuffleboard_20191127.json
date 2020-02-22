@@ -278,9 +278,9 @@
               "_title": "Lidar Distance"
             }
           },
-          "10,3": {
+          "9,3": {
             "size": [
-              2,
+              4,
               1
             ],
             "content": {
@@ -291,7 +291,7 @@
           },
           "8,3": {
             "size": [
-              2,
+              1,
               1
             ],
             "content": {
@@ -308,7 +308,7 @@
             "content": {
               "_type": "ComboBox Chooser",
               "_source0": "network_table:///SmartDashboard/Autonomous Backoff Route",
-              "_title": "SmartDashboard/Autonomous Backoff Route"
+              "_title": "Autonomous Backoff Route"
             }
           },
           "3,1": {
@@ -319,7 +319,7 @@
             "content": {
               "_type": "ComboBox Chooser",
               "_source0": "network_table:///SmartDashboard/Autonomous Scoring Route",
-              "_title": "SmartDashboard/Autonomous Scoring Route"
+              "_title": "Autonomous Scoring Route"
             }
           },
           "3,2": {
@@ -330,7 +330,7 @@
             "content": {
               "_type": "ComboBox Chooser",
               "_source0": "network_table:///SmartDashboard/Autonomous Starting Position",
-              "_title": "SmartDashboard/Autonomous Starting Position"
+              "_title": "Autonomous Starting Position"
             }
           }
         }
@@ -350,9 +350,9 @@
     }
   ],
   "windowGeometry": {
-    "x": 2.4000000953674316,
+    "x": 2.0,
     "y": 8.0,
     "width": 1920.0,
-    "height": 721.5999755859375
+    "height": 739.0
   }
 }

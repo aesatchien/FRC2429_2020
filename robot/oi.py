@@ -116,10 +116,10 @@ class OI(object):
             self.co_buttonRB.whenPressed(ActuateGate(robot, direction='open', button=self.co_buttonRB))
             self.co_buttonLB.whenPressed(ActuateGate(robot, direction='close', button=self.co_buttonLB))
             self.co_buttonA.whenPressed(PanelSpinner(robot, button=self.co_buttonA, power=0))
-            self.co_povButtonUp.whenPressed(DpadDrive(robot, 'up', self.co_povButtonUp))
-            self.co_povButtonDown.whenPressed(DpadDrive(robot, 'down', self.co_povButtonDown))
-            self.co_povButtonRight.whenPressed(DpadDrive(robot, 'right', self.co_povButtonRight))
-            self.co_povButtonLeft.whenPressed(DpadDrive(robot, 'left', self.co_povButtonLeft))
+            #self.co_povButtonUp.whenPressed(DpadDrive(robot, 'up', self.co_povButtonUp))
+            #self.co_povButtonDown.whenPressed(DpadDrive(robot, 'down', self.co_povButtonDown))
+            self.co_povButtonRight.whenPressed(RaiseClimber(robot, power=0.6, button=self.co_povButtonRight))
+            self.co_povButtonLeft.whenPressed(RaiseClimber(robot, power=-0.6, button=self.co_povButtonLeft))
 
 
 

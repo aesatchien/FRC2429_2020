@@ -16,7 +16,7 @@ class DpadDrive(Command):
         self.button = button
         self.drive_power = 0.3
         self.co_drive_power = 0.1
-        self.strafe_power = 0.5
+        self.strafe_power = 0.99
         self.co_strafe_power = 0.25
         self.kp_twist = 0.03
         self.direction = 1 # change this to -1 change all directions quickly
