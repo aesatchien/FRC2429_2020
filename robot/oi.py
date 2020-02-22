@@ -90,7 +90,7 @@ class OI(object):
         self.povButtonLeft.whenPressed(DpadDrive(robot, 'left', self.povButtonLeft))
 
         # add/change bindings if we are using more than one joystick
-        self.competition_mode = True
+        self.competition_mode = False
         if self.competition_mode:
             self.co_stick = wpilib.Joystick(1)
             self.co_buttonA = JoystickButton(self.co_stick, 1)

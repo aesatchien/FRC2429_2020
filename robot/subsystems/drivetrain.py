@@ -26,7 +26,7 @@ class DriveTrain(Subsystem):
         self.strafe_power_maximum = 0.5
         self.thrust_power_maximum = 0.5
         self.mecanum_power_limit = 1.0
-        self.max_velocity = 2000  # rpm for mecanum velocity
+        self.max_velocity = 1000  # rpm for mecanum velocity
 
         self.current_thrust = 0
         self.current_twist = 0
@@ -53,10 +53,11 @@ class DriveTrain(Subsystem):
 
         # Configure drive motors
         if True: # or could be if self.robot.isReal():
-            self.spark_neo_right_front = rev.CANSparkMax(1, rev.MotorType.kBrushless)
-            self.spark_neo_right_rear = rev.CANSparkMax(2, rev.MotorType.kBrushless)
-            self.spark_neo_left_front = rev.CANSparkMax(3, rev.MotorType.kBrushless)
-            self.spark_neo_left_rear = rev.CANSparkMax(4, rev.MotorType.kBrushless)
+            motor_type = rev.MotorType.kBrushless
+            self.spark_neo_right_front = rev.CANSparkMax(1, motor_type)
+            self.spark_neo_right_rear = rev.CANSparkMax(2, motor_type)
+            self.spark_neo_left_front = rev.CANSparkMax(3, motor_type)
+            self.spark_neo_left_rear = rev.CANSparkMax(4, motor_type)
             self.controllers = [self.spark_neo_left_front, self.spark_neo_left_rear,
                                 self.spark_neo_right_front, self.spark_neo_right_rear]
 
@@ -81,7 +82,7 @@ class DriveTrain(Subsystem):
             # the gear ratio was 4.17:1.  With the shifter (low gear) I think it was a 12.26.
             # then new 2020 gearbox is 9.52
             gear_ratio = 9.52
-            #gear_ratio = 12.75
+            gear_ratio = 12.75
             conversion_factor = 8.0 * 3.141 / gear_ratio
 
             for ix, encoder in enumerate(self.encoders):
@@ -89,13 +90,14 @@ class DriveTrain(Subsystem):
 
             # wpilib.Timer.delay(0.02)
             # TODO - figure out if I want to invert the motors or the encoders
-            self.spark_neo_left_front.setInverted(False)
-            self.spark_neo_left_rear.setInverted(False)
-            self.spark_neo_right_front.setInverted(False)
-            self.spark_neo_right_rear.setInverted(False)
+            inverted = False  # needs this to be true for the toughbox
+            self.spark_neo_left_front.setInverted(inverted)
+            self.spark_neo_left_rear.setInverted(inverted)
+            self.spark_neo_right_front.setInverted(inverted)
+            self.spark_neo_right_rear.setInverted(inverted)
 
-            self.configure_controllers()
-            self.display_PIDs()
+            #self.configure_controllers()
+            #self.display_PIDs()
 
         else: # for simulation only, but the CANSpark is getting closer to behaving in sim
             # get a pretend drivetrain for the simulator
