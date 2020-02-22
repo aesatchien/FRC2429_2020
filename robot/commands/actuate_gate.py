@@ -38,7 +38,7 @@ class ActuateGate(Command):
         """Called repeatedly when this Command is scheduled to run"""
         if not self.robot.ball_handler.gate_encoder_initialized:
             if self.direction == "close":
-                button_pressed = self.button_get()
+                button_pressed = self.button.get()
                 if not button_pressed:
                     self.robot.ball_handler.gate_encoder.reset()
                     self.robot.ball_handler.gate_encoder_initialized = True
@@ -54,7 +54,7 @@ class ActuateGate(Command):
             self.gate_power = min(self.max_power, self.gate_power)
         else:
             self.gate_power = max(-self.max_power, self.gate_power)
-        print(f"Pos {gate_pos} err {self.gate_err} pow {self.gate_power} int {self.gate_err_sum} deriv {self.gate_err - self.gate_prev_err}")
+        print(f"Pos {self.gate_pos} err {self.gate_err} pow {self.gate_power} int {self.gate_err_sum} deriv {self.gate_err - self.gate_prev_err}")
         self.gate_prev_err = self.gate_err
         self.robot.ball_handler.gate_power(self.gate_power)
         pass
