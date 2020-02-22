@@ -14,6 +14,7 @@ class Ball_Handler(Subsystem):
         self.hopper_spark = Spark(7)
         self.counter = 0
         self.gate_encoder = Encoder(8,9)
+        self.gate_encoder_initialized = False
 
 
     def run_intake(self, power=0):

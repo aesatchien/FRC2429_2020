@@ -23,10 +23,11 @@ class ActuateGate(Command):
         self.gate_prev_err = 0.
         self.gate_err_sum = 0.
         if self.direction == "open":
-            self.robot.ball_handler.open_gate()
+#            self.robot.ball_handler.open_gate()
             self.gate_targ = 70.
         elif self.direction == "close":
-            self.robot.ball_handler.close_gate()
+            if not self.robot.ball_handler.gate_encoder_initialized:  # first time button is pushed
+                self.robot.ball_handler.close_gate() # drive against whatever stops it
             self.gate_targ = 0.
         else:
             print("Something happened that I didn't understand in Ball Gate")
@@ -35,8 +36,16 @@ class ActuateGate(Command):
 
     def execute(self):
         """Called repeatedly when this Command is scheduled to run"""
-        gate_pos = self.robot.ball_handler.gate_pos()
-        self.gate_err = self.gate_targ - gate_pos
+        if not self.robot.ball_handler.gate_encoder_initialized:
+            if self.direction == "close":
+                button_pressed = self.button_get()
+                if not button_pressed:
+                    self.robot.ball_handler.gate_encoder.reset()
+                    self.robot.ball_handler.gate_encoder_initialized = True
+            else: return # do nothing to open if not initialized
+
+        self.gate_pos = self.robot.ball_handler.gate_pos()
+        self.gate_err = self.gate_targ - self.gate_pos
 
         self.gate_power = self.kp * self.gate_err + self.ki * self.gate_err_sum + self.kd * (
                     self.gate_err - self.gate_prev_err) / 0.02
@@ -51,6 +60,8 @@ class ActuateGate(Command):
 
     def isFinished(self):
         """Make this return true when this Command no longer needs to run execute()"""
+        if (self.direction == "open") and not self.robot.ball_handler.gate_encoder_initialized:
+            return True # exit if open button is pushed but encoder is not initialized
         current_time = round(Timer.getFPGATimestamp() - self.robot.enabled_time, 1)
         return current_time - self.start_time > self.timeout
 
@@ -58,6 +69,7 @@ class ActuateGate(Command):
         """Called once after isFinished returns true"""
         #print("\n" + f"** Ended {self.name} at {round(Timer.getFPGATimestamp() - self.robot.enabled_time, 1)} s **")
         self.robot.ball_handler.hopper_spark.set(0)
+
     def interrupted(self):
         """Called w
 
