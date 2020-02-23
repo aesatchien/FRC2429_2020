@@ -41,7 +41,7 @@ class DriveTrain(Subsystem):
         self.encoder_offsets = [0, 0, 0, 0]  # added because the encoders do not reset fast enough for autonomous
 
         # Smart Motion Coefficients - these don't seem to be writing for some reason... python is old?  just set with rev's program for now
-        self.smartmotion_maxvel = 500  # rpm
+        self.smartmotion_maxvel = 1000  # rpm
         self.smartmotion_maxacc = 500
         self.current_limit = 100
         # tracking the robot across the field... easier with WCD

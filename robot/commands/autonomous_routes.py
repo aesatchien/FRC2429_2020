@@ -3,6 +3,7 @@ from .track_telemetry import TrackTelemetry
 from .actuate_gate import ActuateGate
 from .autonomous_drive import AutonomousDrive
 from .autonomous_rotate import AutonomousRotate
+from commands.autonomous_wait import AutonomousWait
 from .intake import Intake
 from wpilib import Timer
 from wpilib import SmartDashboard
@@ -12,16 +13,18 @@ class AutonomousRoutes(CommandGroup):
     scoring_routes = 'scoring', 'non-scoring'
     backoff_routes = 'shield generator port side', 'shield generator trench side', 'trench'
 
+
     def __init__(self, robot, timeout=None):
         CommandGroup.__init__(self, name='AutonomousRoutes')
 
         self.robot = robot
+        self.scoring_distance = -120
 
         self.position = self.robot.position_chooser.getSelected()
         self.route_a = self.robot.scoring_chooser.getSelected()
         self.route_b = self.robot.backoff_chooser.getSelected()
 
-        self.addParallel(TrackTelemetry(robot, timeout=timeout))
+        #self.addParallel(TrackTelemetry(robot, timeout=timeout))
 
         if self.route_a == 'scoring':
             self.scoring_a()
@@ -32,11 +35,14 @@ class AutonomousRoutes(CommandGroup):
 
         if self.route_a != 'non-scoring':
             if self.route_b == 'shield generator port side':
-                self.port_side_b()
+                #self.port_side_b()
+                pass
             elif self.route_b == 'shield generator trench side':
-                self.trench_side_b()
+                #self.trench_side_b()
+                pass
             elif self.route_b == 'trench':
-                self.trench_b()
+                pass
+                #self.trench_b()
             else:
                 print('invalid route name for phase B')
         else:
@@ -63,10 +69,10 @@ class AutonomousRoutes(CommandGroup):
         time = round(Timer.getFPGATimestamp() - self.robot.enabled_time, 1)
         print("\n" + f"** Started scoring route at {time} s **")
 
-        self.addSequential(AutonomousDrive(self.robot, setpoint=-305))
+        self.addSequential(AutonomousDrive(self.robot, setpoint=self.scoring_distance))
 
         self.addSequential(ActuateGate(self.robot, direction='open'))
-        self.addSequential(WaitCommand(5))
+        self.addSequential(AutonomousWait(self.robot, timeout=3))  #  we have to have a wait command that feeds the drivetrain!
         self.addSequential(ActuateGate(self.robot, direction='close'))
 
     def non_scoring_a(self):
