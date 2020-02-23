@@ -13,7 +13,7 @@ class DriveByJoystick(Command):
         Command.__init__(self, name='DriveByJoystick')
         self.requires(robot.drivetrain)
         self.robot = robot
-        self.twist_sensitivity = 1.0
+        self.twist_sensitivity = 0.7
         # correction variables
         self.is_twist_active = False
         self.heading = 0
@@ -81,9 +81,12 @@ class DriveByJoystick(Command):
             #self.robot.drivetrain.smooth_drive(self.robot.oi.stick.getRawAxis(1), -self.twist_sensitivity*self.robot.oi.stick.getRawAxis(4))
             joystick_values = [-self.robot.oi.stick.getRawAxis(1), self.robot.oi.stick.getRawAxis(0),
                                        self.twist_sensitivity * self.robot.oi.stick.getRawAxis(4)]
+            sq = lambda x: x ** 2 if (x > 0) else -1.0 * x ** 2
             for ix, val in enumerate(joystick_values):
                 if abs(val) < self.deadzone:
                     joystick_values[ix] = 0
+                else:
+                    joystick_values[ix] = sq(joystick_values[ix])
             #self.robot.drivetrain.mecanum_velocity_cartesian(thrust=joystick_values[0], strafe=joystick_values[1], z_rotation=joystick_values[2])
             self.robot.drivetrain.spark_with_stick(thrust=joystick_values[0], strafe=joystick_values[1], z_rotation=joystick_values[2])
 

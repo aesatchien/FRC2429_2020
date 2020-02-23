@@ -13,7 +13,6 @@ from subsystems.pneumatics import Pneumatics
 from subsystems.peripherals import Peripherals
 from subsystems.ball_handler import Ball_Handler
 from subsystems.climber import Climber
-from wpilib import SendableChooser
 from commands.autonomous_group import AutonomousGroup
 from commands.autonomous_routes import AutonomousRoutes
 
@@ -39,13 +38,6 @@ class Robot(CommandBasedRobot):
         self.peripherals = Peripherals(self)
         self.ball_handler = Ball_Handler(self)
         self.climber = Climber(self)
-        self.position_chooser = SendableChooser()
-        self.scoring_chooser = SendableChooser()
-        self.backoff_chooser = SendableChooser()
-        #self.distance = Distance(self)
-        #wpilib.SmartDashboard.putData(self.drivetrain)
-        #wpilib.SmartDashboard.putData(self.pneumatics)
-        #wpilib.SmartDashboard.putData(self.peripherals)
 
         # This MUST be here. If the OI creates Commands (which it very likely
         # will), constructing it during the construction of CommandBase (from
@@ -57,21 +49,7 @@ class Robot(CommandBasedRobot):
         #wpilib.SmartDashboard.putData(Scheduler.getInstance())
         # instantiate the command used for the autonomous period
         self.autonomousCommand = None
-        """
-        self.auto_chooser.addOption("Option 1", AutonomousGroup(self))
-        self.auto_chooser.addOption("Option 2", AutonomousGroup(self))
-        """
 
-        for position in AutonomousRoutes.positions:
-            self.position_chooser.addOption(position, position)
-        for scoring_route in AutonomousRoutes.scoring_routes:
-            self.scoring_chooser.addOption(scoring_route, scoring_route)
-        for backoff_route in AutonomousRoutes.backoff_routes:
-            self.backoff_chooser.addOption(backoff_route, backoff_route)
-
-        wpilib.SmartDashboard.putData('Autonomous Starting Position', self.position_chooser)
-        wpilib.SmartDashboard.putData('Autonomous Scoring Route', self.scoring_chooser)
-        wpilib.SmartDashboard.putData('Autonomous Backoff Route', self.backoff_chooser)
 
     def autonomousInit(self):
         self.reset()

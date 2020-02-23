@@ -16,7 +16,7 @@ class DpadDrive(Command):
         self.button = button
         self.drive_power = 0.3
         self.co_drive_power = 0.1
-        self.strafe_power = 0.99
+        self.strafe_power = 0.8
         self.co_strafe_power = 0.25
         self.kp_twist = 0.03
         self.direction = 1 # change this to -1 change all directions quickly
@@ -34,6 +34,7 @@ class DpadDrive(Command):
         """
         # easy to correct for heading drift - we know we're driving straight
         twist_correction = self.kp_twist*(self.heading-self.robot.navigation.get_angle())
+        twist_correction = 0
         if self.button == self.robot.oi.povButtonUp:
             thrust=self.drive_power*self.direction; strafe=0; twist=twist_correction
         if self.button == self.robot.oi.povButtonDown:
@@ -55,7 +56,8 @@ class DpadDrive(Command):
                 thrust=0; strafe=self.co_strafe_power * self.direction; twist=twist_correction
 
         #really need to decide on how we're going to drive - smooth or pure stick or velocity
-        self.robot.drivetrain.spark_with_stick(thrust=thrust, strafe=strafe, z_rotation=twist)
+        #self.robot.drivetrain.spark_with_stick(thrust=thrust, strafe=strafe, z_rotation=twist)
+        self.robot.drivetrain.mecanum_velocity_cartesian(thrust=thrust, strafe=strafe, z_rotation=twist)
         #self.robot.drivetrain.smooth_drive(thrust=thrust, strafe=strafe, twist=twist)
 
     def isFinished(self):

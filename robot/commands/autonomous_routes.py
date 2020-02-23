@@ -9,8 +9,8 @@ from wpilib import Timer
 from wpilib import SmartDashboard
 
 class AutonomousRoutes(CommandGroup):
-    positions = 'left', 'middle', 'right'
-    scoring_routes = 'scoring', 'non-scoring'
+    positions = 'middle', 'left',  'right'
+    scoring_routes = 'non-scoring', 'scoring'
     backoff_routes = 'shield generator port side', 'shield generator trench side', 'trench'
 
 
@@ -20,9 +20,9 @@ class AutonomousRoutes(CommandGroup):
         self.robot = robot
         self.scoring_distance = -120
 
-        self.position = self.robot.position_chooser.getSelected()
-        self.route_a = self.robot.scoring_chooser.getSelected()
-        self.route_b = self.robot.backoff_chooser.getSelected()
+        self.position = self.robot.oi.position_chooser.getSelected()
+        self.route_a = self.robot.oi.scoring_chooser.getSelected()
+        self.route_b = self.robot.oi.backoff_chooser.getSelected()
 
         #self.addParallel(TrackTelemetry(robot, timeout=timeout))
 

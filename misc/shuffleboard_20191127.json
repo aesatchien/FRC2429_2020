@@ -256,13 +256,13 @@
                 },
                 "0,3": {
                   "_type": "Text View",
-                  "_source0": "network_table:///SmartDashboard/Detected Color",
-                  "_title": "Detected Color"
+                  "_source0": "network_table:///SmartDashboard/Confidence",
+                  "_title": "Confidence"
                 },
                 "0,4": {
                   "_type": "Text View",
-                  "_source0": "network_table:///SmartDashboard/Confidence",
-                  "_title": "Confidence"
+                  "_source0": "network_table:///SmartDashboard/Detected Color",
+                  "_title": "Detected Color"
                 }
               }
             }
@@ -278,7 +278,7 @@
               "_title": "Lidar Distance"
             }
           },
-          "9,3": {
+          "8,3": {
             "size": [
               4,
               1
@@ -287,17 +287,6 @@
               "_type": "Text View",
               "_source0": "network_table:///SmartDashboard/PDB Status",
               "_title": "PDB Status"
-            }
-          },
-          "8,3": {
-            "size": [
-              1,
-              1
-            ],
-            "content": {
-              "_type": "ComboBox Chooser",
-              "_source0": "network_table:///SmartDashboard/Autonomous",
-              "_title": "Autonomous"
             }
           },
           "3,0": {
@@ -331,6 +320,28 @@
               "_type": "ComboBox Chooser",
               "_source0": "network_table:///SmartDashboard/Autonomous Starting Position",
               "_title": "Autonomous Starting Position"
+            }
+          },
+          "3,3": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Command",
+              "_source0": "network_table:///SmartDashboard/Spin To",
+              "_title": "Spin To"
+            }
+          },
+          "4,3": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "ComboBox Chooser",
+              "_source0": "network_table:///SmartDashboard/Target Color",
+              "_title": "Target Color"
             }
           }
         }

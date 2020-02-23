@@ -1,6 +1,7 @@
 # OI compatible with robotpy 2020
 import wpilib
 from wpilib import SmartDashboard
+from wpilib import SendableChooser
 from wpilib.command import JoystickButton
 # Spartan-specific commands - must import if you plan to use
 from triggers.axis_button import AxisButton
@@ -15,6 +16,7 @@ from commands.panel_spinner import PanelSpinner
 from commands.actuate_gate import ActuateGate
 from commands.spin_to_color import SpinToColor
 from commands.autonomous_group import AutonomousGroup
+from commands.autonomous_routes import AutonomousRoutes
 from commands.raise_climber import RaiseClimber
 
 class OI(object):
@@ -28,7 +30,7 @@ class OI(object):
         self.robot = robot
 
         # Set single or double joystick mode
-        self.competition_mode = True
+        self.competition_mode = False
 
         self.initialize_joystics()
         self.assign_buttons()
@@ -51,7 +53,7 @@ class OI(object):
         self.buttonLB.whenPressed(ActuateGate(self.robot, direction='close', button=self.buttonLB))
         self.buttonB.whenPressed(Intake(self.robot, power=-0.5, button=self.buttonB))
         self.buttonA.whenPressed(Intake(self.robot, power=0.5, button=self.buttonA))
-        self.buttonX.whenPressed(PanelSpinner(self.robot, power=0.4, button=self.buttonX))
+        self.buttonX.whenPressed(PanelSpinner(self.robot, power=0.3, button=self.buttonX))
         # still testing climber TODO: sense tilt of bar
         self.buttonY.whenPressed(RaiseClimber(self.robot, direction='hook', power=0.7, button=self.buttonY))
         self.buttonStart.whenPressed(RaiseClimber(self.robot, direction='climb', power=0.75, button=self.buttonStart))
@@ -63,7 +65,7 @@ class OI(object):
 
         #self.buttonStart.whenPressed(AutonomousDrive(robot, setpoint=250, control_type='velocity', button= self.buttonStart, source=None))
         #self.buttonBack.whenPressed(AutonomousDrive(robot, setpoint=500, control_type='velocity', button=self.buttonBack, source=None))
-        #self.buttonY.whenPressed(SpinToColor(robot, color_name='blue', power=0.3))
+        #self.buttonY.whenPressed(SpinToColor(robot, target_color='blue', power=0.3))
 
         # co-pilot joystick to commands
         if self.competition_mode:
@@ -132,13 +134,50 @@ class OI(object):
         self.position_pids_command = UpdatePIDs(self.robot, factor=1, from_dashboard='position')
         self.velocity_pids_command = UpdatePIDs(self.robot, factor=1, from_dashboard='velocity')
         self.autonomous_test_command = AutonomousGroup(self.robot)
+        self.color_spinner_command = SpinToColor(self.robot, target_color=None, source='dash', power=0.25, thrust=-0.08)
 
         SmartDashboard.putData("Drive Forward", self.drive_fwd_command)
         SmartDashboard.putData("Rotate X", self.rotate_command)
         #SmartDashboard.putData("Update Pos PIDs", self.position_pids_command)
         #SmartDashboard.putData("Update Vel PIDs", self.velocity_pids_command)
         SmartDashboard.putData("Autonomous Test", self.autonomous_test_command)
+        SmartDashboard.putData("Spin To", self.color_spinner_command)
 
         # SmartDashboard Buttons - test some autonomous commands here
         SmartDashboard.putNumber("Auto Distance", 30)
         SmartDashboard.putNumber("Auto Rotation", 10)
+
+        self.color_chooser = SendableChooser()
+        colors = ['blue', 'green', 'red', 'yellow']
+        for ix, color in enumerate(colors):
+            if ix == 0:
+                self.color_chooser.setDefaultOption(color, color)
+            else:
+                self.color_chooser.addOption(color, color)
+        wpilib.SmartDashboard.putData('Target Color', self.color_chooser)
+
+    # set up the dashboard chooser for the autonomous options
+        self.position_chooser = SendableChooser()
+        self.scoring_chooser = SendableChooser()
+        self.backoff_chooser = SendableChooser()
+        for ix, position in enumerate(AutonomousRoutes.positions):
+            if ix==0:
+                self.position_chooser.setDefaultOption(position, position)
+            else:
+                self.position_chooser.addOption(position, position)
+
+        for ix, scoring_route in enumerate(AutonomousRoutes.scoring_routes):
+            if ix==0:
+                self.scoring_chooser.setDefaultOption(scoring_route, scoring_route)
+            else:
+                self.scoring_chooser.addOption(scoring_route, scoring_route)
+
+        for ix, backoff_route in enumerate(AutonomousRoutes.backoff_routes):
+            if ix==0:
+                self.backoff_chooser.setDefaultOption(backoff_route, backoff_route)
+            else:
+                self.backoff_chooser.addOption(backoff_route, backoff_route)
+
+        wpilib.SmartDashboard.putData('Autonomous Starting Position', self.position_chooser)
+        wpilib.SmartDashboard.putData('Autonomous Scoring Route', self.scoring_chooser)
+        wpilib.SmartDashboard.putData('Autonomous Backoff Route', self.backoff_chooser)

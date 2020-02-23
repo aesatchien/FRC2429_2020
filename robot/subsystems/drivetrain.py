@@ -26,7 +26,7 @@ class DriveTrain(Subsystem):
         self.strafe_power_maximum = 0.5
         self.thrust_power_maximum = 0.5
         self.mecanum_power_limit = 1.0
-        self.max_velocity = 1000  # rpm for mecanum velocity
+        self.max_velocity = 500  # rpm for mecanum velocity
 
         self.current_thrust = 0
         self.current_twist = 0
@@ -37,13 +37,14 @@ class DriveTrain(Subsystem):
         # due to limitations in displaying digits in the Shuffleboard, we'll multiply these by 1000 and divide when updating the controllers
         self.PID_multiplier = 1000.
         self.PID_dict_pos = {'kP': 0.010, 'kI': 5.0e-7, 'kD': 0.40, 'kIz': 0, 'kFF': 0.002, 'kMaxOutput': 0.99, 'kMinOutput': -0.99}
-        self.PID_dict_vel = {'kP': 0.00015, 'kI': 8.0e-7, 'kD': 0.00, 'kIz': 0, 'kFF': 0.00022, 'kMaxOutput': 0.99, 'kMinOutput': -0.99}
+        self.PID_dict_vel = {'kP': 2*0.00015, 'kI': 1.5*8.0e-7, 'kD': 0.00, 'kIz': 0, 'kFF': 0.00022, 'kMaxOutput': 0.99, 'kMinOutput': -0.99}
         self.encoder_offsets = [0, 0, 0, 0]  # added because the encoders do not reset fast enough for autonomous
 
         # Smart Motion Coefficients - these don't seem to be writing for some reason... python is old?  just set with rev's program for now
         self.smartmotion_maxvel = 1000  # rpm
         self.smartmotion_maxacc = 500
         self.current_limit = 100
+        self.ramp_rate = 0.0
         # tracking the robot across the field... easier with WCD
         self.x = 0
         self.y = 0
@@ -95,7 +96,7 @@ class DriveTrain(Subsystem):
             self.spark_neo_right_front.setInverted(inverted)
             self.spark_neo_right_rear.setInverted(inverted)
 
-            #self.configure_controllers()
+            self.configure_controllers()
             #self.display_PIDs()
 
         else:  # for simulation only, but the CANSpark is getting closer to behaving in sim
@@ -298,7 +299,9 @@ class DriveTrain(Subsystem):
         if not pid_only:
             for i, controller in enumerate(self.controllers):
                 # error_dict.append(controller.restoreFactoryDefaults())
-                self.error_dict.update({'Idle_'+str(i):controller.setIdleMode(rev.IdleMode.kBrake)})
+                self.error_dict.update({'OpenRamp_' + str(i): controller.setOpenLoopRampRate(self.ramp_rate)})
+                self.error_dict.update({'ClosedRamp_' + str(i): controller.setClosedLoopRampRate(self.ramp_rate)})
+                self.error_dict.update({'Idle_' + str(i): controller.setIdleMode(rev.IdleMode.kBrake)})
                 self.error_dict.update({'CurLimit_'+str(i):controller.setSmartCurrentLimit(self.current_limit)})
                 self.error_dict.update({'VoltComp_'+str(i):controller.enableVoltageCompensation(12)})
                 # defaults are 10, 20, 20 on the frame rates - trying to cut down a bit on CAN bandwidth
