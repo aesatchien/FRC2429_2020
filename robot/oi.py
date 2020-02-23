@@ -28,7 +28,7 @@ class OI(object):
         self.robot = robot
 
         # Set single or double joystick mode
-        self.competition_mode = False
+        self.competition_mode = True
 
         self.initialize_joystics()
         self.assign_buttons()
@@ -47,8 +47,8 @@ class OI(object):
         # binding button to commands
         self.axisButtonRT.whenPressed(Intake(self.robot, power=0, button=self.axisButtonRT))
         self.axisButtonLT.whenPressed(Intake(self.robot, power=0, button=self.axisButtonLT))
-        self.buttonRB.whenPressed(ActuateGate(self.robot, direction='close', button=self.buttonRB))
-        self.buttonLB.whenPressed(ActuateGate(self.robot, direction='open', button=self.buttonLB))
+        self.buttonRB.whenPressed(ActuateGate(self.robot, direction='open', button=self.buttonRB))
+        self.buttonLB.whenPressed(ActuateGate(self.robot, direction='close', button=self.buttonLB))
         self.buttonB.whenPressed(Intake(self.robot, power=-0.5, button=self.buttonB))
         self.buttonA.whenPressed(Intake(self.robot, power=0.5, button=self.buttonA))
         self.buttonX.whenPressed(PanelSpinner(self.robot, power=0.4, button=self.buttonX))
@@ -71,10 +71,10 @@ class OI(object):
             self.co_axisButtonLT.whenPressed(Intake(self.robot, power=0, button=self.co_axisButtonLT))
             self.co_buttonB.whenPressed(Intake(self.robot, power=-0.5, button=self.co_buttonB))
             self.co_buttonA.whenPressed(Intake(self.robot, power=0.5, button=self.co_buttonA))
-            self.co_buttonRB.whenPressed(ActuateGate(self.robot, direction='open', button=self.co_buttonRB))
-            self.co_buttonLB.whenPressed(ActuateGate(self.robot, direction='close', button=self.co_buttonLB))
+            self.co_buttonRB.whenPressed(ActuateGate(self.robot, direction='close', button=self.co_buttonRB))
+            self.co_buttonLB.whenPressed(ActuateGate(self.robot, direction='open', button=self.co_buttonLB))
             self.co_buttonX.whenPressed(PanelSpinner(self.robot, power=0.4, button=self.co_buttonX))
-            self.co_buttonY.whenPressed(RaiseClimber(self.robot, direction='climb', power=0.75, button=self.co_buttonY))
+            #self.co_buttonY.whenPressed(RaiseClimber(self.robot, direction='climb', power=0.75, button=self.co_buttonY))
             self.co_povButtonUp.whenPressed(RaiseClimber(self.robot, direction='hook', power=0.7, button=self.co_povButtonUp))
             self.co_povButtonDown.whenPressed(RaiseClimber(self.robot, direction='hook', power=-0.25, button=self.co_povButtonDown))
             self.co_povButtonRight.whenPressed(RaiseClimber(self.robot, power=0.6, direction='right', button=self.co_povButtonRight))
