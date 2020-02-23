@@ -14,6 +14,7 @@ from networktables import NetworkTables
 class Peripherals(Subsystem):
     def __init__(self, robot):
         Subsystem.__init__(self, "peripherals")
+        self.robot = robot
         self.control_panel_spark = Spark(8)
         self.counter = 0
         self.color_sensor = ColorSensorV3(I2C.Port.kOnboard)
@@ -89,7 +90,9 @@ class Peripherals(Subsystem):
                 currents = currents + " " + str(round(self.PDB.getCurrent(i),1))
             currents = currents + " = " + str(int(self.PDB.getTotalCurrent()))
             SmartDashboard.putString("PDB Status", currents)
-            self.PDB.clearStickyFaults()
+            #self.PDB.clearStickyFaults()
+            joystick_string = f"Y: {-self.robot.oi.stick.getRawAxis(1):+3.2f}  X: {self.robot.oi.stick.getRawAxis(0):+3.2f}  Tw: {self.robot.oi.stick.getRawAxis(4):+3.2f}"
+            SmartDashboard.putString("Joystick", joystick_string)
 
 
 class Lidar:
