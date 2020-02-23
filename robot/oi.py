@@ -26,16 +26,21 @@ class OI(object):
     def __init__(self, robot):
         super().__init__()
         self.robot = robot
-        if not robot.debug:
-            self.initialize_joystics()
-        else:
-            self.stick = wpilib.Joystick(0)
-
-        # SmartDashboard stuff
-        self.send_commands_to_dashboard()
 
         # Set single or double joystick mode
         self.competition_mode = False
+
+        self.initialize_joystics()
+        self.assign_buttons()
+
+        """        if not robot.debug:
+            self.initialize_joystics()
+            self.assign_buttons()
+        else:
+            self.stick = wpilib.Joystick(0)"""
+
+        # SmartDashboard stuff
+        self.send_commands_to_dashboard()
 
     def assign_buttons(self):
         """Assign commands to buttons here"""
@@ -46,10 +51,11 @@ class OI(object):
         self.buttonLB.whenPressed(ActuateGate(self.robot, direction='open', button=self.buttonLB))
         self.buttonB.whenPressed(Intake(self.robot, power=-0.5, button=self.buttonB))
         self.buttonA.whenPressed(Intake(self.robot, power=0.5, button=self.buttonA))
-        self.buttonX.whenPressed(PanelSpinner(self.robot, button=self.buttonX, power=0.4))
-        self.buttonY.whenPressed(RaiseClimber(self.robot, power=0.7, button=self.buttonY))
-        self.buttonStart.whenPressed(RaiseClimber(self.robot, power=0.75, button=self.buttonStart))
-        self.buttonBack.whenPressed(RaiseClimber(self.robot, button=self.buttonBack))
+        self.buttonX.whenPressed(PanelSpinner(self.robot, power=0.4, button=self.buttonX))
+        # still testing climber TODO: sense tilt of bar
+        self.buttonY.whenPressed(RaiseClimber(self.robot, direction='hook', power=0.7, button=self.buttonY))
+        self.buttonStart.whenPressed(RaiseClimber(self.robot, direction='climb', power=0.75, button=self.buttonStart))
+        self.buttonBack.whenPressed(RaiseClimber(self.robot, power=0.6, direction='right', button=self.buttonBack))
         self.povButtonUp.whenPressed(DpadDrive(self.robot, 'up', self.povButtonUp))
         self.povButtonDown.whenPressed(DpadDrive(self.robot, 'down', self.povButtonDown))
         self.povButtonRight.whenPressed(DpadDrive(self.robot, 'right', self.povButtonRight))
@@ -67,11 +73,12 @@ class OI(object):
             self.co_buttonA.whenPressed(Intake(self.robot, power=0.5, button=self.co_buttonA))
             self.co_buttonRB.whenPressed(ActuateGate(self.robot, direction='open', button=self.co_buttonRB))
             self.co_buttonLB.whenPressed(ActuateGate(self.robot, direction='close', button=self.co_buttonLB))
-            self.co_buttonA.whenPressed(PanelSpinner(self.robot, button=self.co_buttonA, power=0))
-            # self.co_povButtonUp.whenPressed(DpadDrive(self.robot, 'up', self.co_povButtonUp))
-            # self.co_povButtonDown.whenPressed(DpadDrive(self.robot, 'down', self.co_povButtonDown))
-            self.co_povButtonRight.whenPressed(RaiseClimber(self.robot, power=0.6, button=self.co_povButtonRight))
-            self.co_povButtonLeft.whenPressed(RaiseClimber(self.robot, power=-0.6, button=self.co_povButtonLeft))
+            self.co_buttonX.whenPressed(PanelSpinner(self.robot, power=0.4, button=self.co_buttonX))
+            self.co_buttonY.whenPressed(RaiseClimber(self.robot, direction='climb', power=0.75, button=self.co_buttonY))
+            self.co_povButtonUp.whenPressed(RaiseClimber(self.robot, direction='hook', power=0.7, button=self.co_povButtonUp))
+            self.co_povButtonDown.whenPressed(RaiseClimber(self.robot, direction='hook', power=-0.25, button=self.co_povButtonDown))
+            self.co_povButtonRight.whenPressed(RaiseClimber(self.robot, power=0.6, direction='right', button=self.co_povButtonRight))
+            self.co_povButtonLeft.whenPressed(RaiseClimber(self.robot, power=-0.6, direction='left', button=self.co_povButtonLeft))
 
     def initialize_joystics(self):
         """

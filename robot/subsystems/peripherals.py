@@ -23,7 +23,6 @@ class Peripherals(Subsystem):
         self.lidar = Lidar()
         self.PDB = PowerDistributionPanel()
 
-
         # we can config the colorsensor resolution and the rate
         #self.color_sensor.setGain(ColorSensorV3.GainFactor.k1x)
         #self.color_sensor.configureColorSensor(res=, rate=)

@@ -6,29 +6,30 @@ class RaiseClimber(Command):
     This command opens and closed the piston
     """
 
-    def __init__(self, robot, power=0.2, button=None):
+    def __init__(self, robot, direction=None, power=0.2, button=None):
         Command.__init__(self, name='raise_climber')
         self.robot = robot
+        self.direction = direction
         self.power = power
         self.button = button
 
     def initialize(self):
         """Called just before this Command runs the first time."""
         self.start_time = round(Timer.getFPGATimestamp() - self.robot.enabled_time, 1)
-        print("\n" + f"** Started {self.getName()} with power {self.power} at {self.start_time} s **", flush=True)
+        print("\n" + f"** Started {self.getName()} with direction {self.direction} and power {self.power} at {self.start_time} s **", flush=True)
 
     def execute(self):
         """Called repeatedly when this Command is scheduled to run"""
-        if self.button == self.robot.oi.buttonY:
+        if self.direction == 'hook':
             self.robot.climber.raise_hook(self.power)
-        elif self.button == self.robot.oi.buttonStart:
+        elif self.direction == 'climb':
             self.robot.climber.raise_robot(self.power)
-        elif self.button == self.robot.oi.buttonBack:
-            self.robot.climber.lock_robot()
-        elif self.button == self.robot.oi.co_povButtonLeft:
-            self.robot.climber.robot_roller_left()
-        elif self.button == self.robot.oi.co_povButtonRight:
-            self.robot.climber.robot_roller_right()
+        elif self.direction == 'left':
+            self.robot.climber.roll_robot(self.power)
+        elif self.direction == 'right':
+            self.robot.climber.roll_robot(self.power)
+        else:
+            print("!!! Invalid climbing option passed to raise climber !!!")
 
     def isFinished(self):
         """Make this return true when this Command no longer needs to run execute()"""
@@ -36,7 +37,7 @@ class RaiseClimber(Command):
 
     def end(self):
         """Called once after isFinished returns true"""
-        #print("\n" + f"** Ended {self.name} at {round(Timer.getFPGATimestamp() - self.robot.enabled_time, 1)} s **")
+        print("\n" + f"** Ended {self.getName()} at {round(Timer.getFPGATimestamp() - self.robot.enabled_time, 1)} s **")
         self.robot.climber.stop_hook()
         self.robot.climber.stop_winch()
         self.robot.climber.robot_roller_stop()

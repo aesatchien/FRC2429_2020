@@ -54,7 +54,7 @@ class DpadDrive(Command):
             if self.button == self.robot.oi.co_povButtonRight:
                 thrust=0; strafe=self.co_strafe_power * self.direction; twist=twist_correction
 
-        #really need to decide on how we're going to drive - smooth or pure stick
+        #really need to decide on how we're going to drive - smooth or pure stick or velocity
         self.robot.drivetrain.spark_with_stick(thrust=thrust, strafe=strafe, z_rotation=twist)
         #self.robot.drivetrain.smooth_drive(thrust=thrust, strafe=strafe, twist=twist)
 

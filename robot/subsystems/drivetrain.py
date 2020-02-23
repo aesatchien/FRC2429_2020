@@ -52,7 +52,7 @@ class DriveTrain(Subsystem):
         self.deadband = 0.05
 
         # Configure drive motors
-        if True: # or could be if self.robot.isReal():
+        if True:  # or could be if self.robot.isReal():
             motor_type = rev.MotorType.kBrushless
             self.spark_neo_right_front = rev.CANSparkMax(1, motor_type)
             self.spark_neo_right_rear = rev.CANSparkMax(2, motor_type)
@@ -84,13 +84,12 @@ class DriveTrain(Subsystem):
             gear_ratio = 9.52
             #gear_ratio = 12.75
             conversion_factor = 8.0 * 3.141 / gear_ratio
-
             for ix, encoder in enumerate(self.encoders):
                 self.error_dict.update({'conv_'+ str(ix): encoder.setPositionConversionFactor(conversion_factor)})
 
             # wpilib.Timer.delay(0.02)
             # TODO - figure out if I want to invert the motors or the encoders
-            inverted = False  # needs this to be true for the toughbox
+            inverted = False  # needs this to be True for the toughbox
             self.spark_neo_left_front.setInverted(inverted)
             self.spark_neo_left_rear.setInverted(inverted)
             self.spark_neo_right_front.setInverted(inverted)
@@ -99,7 +98,7 @@ class DriveTrain(Subsystem):
             #self.configure_controllers()
             #self.display_PIDs()
 
-        else: # for simulation only, but the CANSpark is getting closer to behaving in sim
+        else:  # for simulation only, but the CANSpark is getting closer to behaving in sim
             # get a pretend drivetrain for the simulator
             self.spark_neo_left_front = wpilib.Talon(1)
             self.spark_neo_left_rear = wpilib.Talon(2)
@@ -137,10 +136,6 @@ class DriveTrain(Subsystem):
         self.drive.setSafetyEnabled(True)
         self.drive.setExpiration(0.1)
         # self.differential_drive.setSensitivity(0.5)
-        # wpilib.LiveWindow.addActuator("DriveTrain", "spark_neo_l1", self.spark_neo_l1)
-        # wpilib.LiveWindow.addActuator("DriveTrain", "spark_neo_r3", self.spark_neo_r3)
-        # wpilib.LiveWindow.addActuator("DriveTrain", "spark_neo_l2", self.spark_neo_l2)
-        # wpilib.LiveWindow.addActuator("DriveTrain", "spark_neo_r4", self.spark_neo_r4)
 
     def initDefaultCommand(self):
         """
@@ -379,10 +374,22 @@ class DriveTrain(Subsystem):
         print(
             f"Vel: kP: {self.PID_dict_vel['kP']}  kI: {self.PID_dict_vel['kI']}  kD: {self.PID_dict_vel['kD']}  kIz: {self.PID_dict_vel['kIz']} kFF: {self.PID_dict_vel['kFF']}")
 
+    def square(self, value):
+        """Return the signed square value of a number - for drive sensitivity
+        :return: the squared value of the input retaining the sign
+        """
+        # sq = lambda x: x**2 if (x > 0) else -1.0 * x**2
+
+        sign = 1.0  # could do this all with a copysign but better to be explicit
+        if value < 0:
+            sign = -1.0
+        return sign * value**2
+
+
     def log(self):
         self.counter += 1
         if self.counter % 10 == 0:
-            # start keeping track of where the robot is with an x and y position
+            # start keeping track of where the robot is with an x and y position (only good for WCD)
             try:
                 distance = 0.5 * (self.sparkneo_encoder_1.getPosition() - self.sparkneo_encoder_3.getPosition())
             except:
@@ -407,5 +414,4 @@ class DriveTrain(Subsystem):
             self.display_PIDs()
             SmartDashboard.putString("alert",
                                      f"Position: ({round(self.x, 1)},{round(self.y, 1)})  Time: {round(Timer.getFPGATimestamp() - self.robot.enabled_time, 1)}")
-            #SmartDashboard.putString("Controller1 Idle", str(self.spark_neo_left_front.getIdleMode()))
-            #SmartDashboard.putNumber("Enc1 Conversion", self.sparkneo_encoder_1.getPositionConversionFactor())
+
