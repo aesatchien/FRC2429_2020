@@ -3,7 +3,7 @@ from wpilib import Timer
 
 class ActuateGate(Command):
     """
-    This command opens and closed the piston
+    This command opens and closed the gate to release balls
     """
 
     def __init__(self, robot, direction=None, button=None, timeout=None):

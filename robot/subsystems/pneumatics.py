@@ -1,8 +1,8 @@
 # Attempt to convert 2019 Spartan Java to Python - 11/22/2019 CJH
 import wpilib
 from wpilib.command import Subsystem
-from wpilib import DoubleSolenoid, Compressor
-from wpilib import SmartDashboard
+from wpilib import DoubleSolenoid, Compressor, SmartDashboard
+
 
 class Pneumatics(Subsystem):
     def __init__(self, robot):

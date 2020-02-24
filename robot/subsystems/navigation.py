@@ -2,8 +2,7 @@
 import wpilib
 import navx
 from wpilib.command import Subsystem
-from wpilib import SmartDashboard
-from wpilib import Timer
+from wpilib import SmartDashboard, Timer
 import math
 
 class Navigation(Subsystem):

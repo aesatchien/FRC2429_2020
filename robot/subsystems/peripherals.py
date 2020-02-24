@@ -1,13 +1,8 @@
 # Attempt to convert 2019 Spartan Java to Python - 11/22/2019 CJH
 import wpilib
 from wpilib.command import Subsystem
-from wpilib import Spark
-from wpilib import Servo
+from wpilib import Color, I2C, PowerDistributionPanel, SmartDashboard, Spark
 from rev.color import ColorSensorV3
-from wpilib import PowerDistributionPanel
-from wpilib import Color
-from wpilib import I2C
-from wpilib import SmartDashboard
 import math
 from networktables import NetworkTables
 
@@ -34,7 +29,6 @@ class Peripherals(Subsystem):
         self.kYellowTarget = Color(0.326, 0.519, 0.154)
         self.color_dict = {"blue":self.kBlueTarget, "green":self.kGreenTarget, "red":self.kRedTarget, "yellow":self.kYellowTarget}
 
-
     def run_spinner(self, power=0):
         self.control_panel_spark.set(power)
 
@@ -42,14 +36,12 @@ class Peripherals(Subsystem):
         self.control_panel_spark.set(power)
 
     def get_color_str(self, color=None):
-        detected_color = color or self.color_sensor.getColor()
-
-        '''
-        if color: 
+        #detected_color = color or self.color_sensor.getColor()
+        if color is None:
+            detected_color = self.color_sensor.getColor()
+        else:
             detected_color = color
-        else: 
-            detected_color = self.color_sensor.getColor() 
-        '''
+
         self.match_confidence = 0.5
         for key in self.color_dict:
             self.match_confidence = self.color_distance(detected_color, self.color_dict[key])
@@ -66,7 +58,7 @@ class Peripherals(Subsystem):
             (color_1.red - color_2.red) ** 2 + (color_1.green - color_2.green) ** 2 +(color_1.blue - color_2.blue) ** 2)
 
     def lidar_distance(self):
-        return self.lidar.dist() # distance in cm
+        return self.lidar.dist()  # distance in cm
 
     def log(self):
         self.lidar_meas = self.lidar_distance()
@@ -86,7 +78,7 @@ class Peripherals(Subsystem):
 
             currents = ""
             for i in range(16):
-                currents = currents + " " + str(round(self.PDB.getCurrent(i),1))
+                currents = currents + " " + str(round(self.PDB.getCurrent(i), 1))
             currents = currents + " = " + str(int(self.PDB.getTotalCurrent()))
             SmartDashboard.putString("PDB Status", currents)
             #self.PDB.clearStickyFaults()

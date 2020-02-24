@@ -1,12 +1,9 @@
 # Ball Handling subsystem - should be gate and intake
 import wpilib
 from wpilib.command import Subsystem
-from wpilib import Encoder
-from wpilib import Spark
-from wpilib import SmartDashboard
+from wpilib import Encoder, SmartDashboard, Spark
 from commands.actuate_gate import ActuateGate
-import math
-from networktables import NetworkTables
+
 
 class Ball_Handler(Subsystem):
     def __init__(self, robot):

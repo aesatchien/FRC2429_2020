@@ -26,7 +26,7 @@ class AutonomousRotate(Command):
         self.kp = 0.05
         self.kd = 0.01
         self.kf = 0.1
-        self.start_angle =0
+        self.start_angle = 0
         self.error = 0
         self.power = 0
         self.max_power = 0.25

@@ -1,7 +1,6 @@
 # OI compatible with robotpy 2020
 import wpilib
-from wpilib import SmartDashboard
-from wpilib import SendableChooser
+from wpilib import SmartDashboard, SendableChooser
 from wpilib.command import JoystickButton
 # Spartan-specific commands - must import if you plan to use
 from triggers.axis_button import AxisButton

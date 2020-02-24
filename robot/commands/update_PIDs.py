@@ -1,7 +1,5 @@
 from wpilib.command import Command
-from wpilib import Timer
-from wpilib import SmartDashboard
-
+from wpilib import SmartDashboard, Timer
 
 class UpdatePIDs(Command):
     """

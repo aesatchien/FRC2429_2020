@@ -1,13 +1,11 @@
-# Attempt to convert 2019 Spartan Java to Python - 11/22/2019 CJH
+# Drivetrain is getting crowded - it initializes all the sparkmaxes and sets up all driving functions
+# Should probalby break this into two files
 import math
 import wpilib
-from wpilib import SmartDashboard
+from wpilib import SmartDashboard, SpeedControllerGroup, Timer
 from wpilib.command import Subsystem
-from wpilib import SpeedControllerGroup
-from wpilib.drive import DifferentialDrive
-from wpilib.drive import MecanumDrive, RobotDriveBase, Vector2d
+from wpilib.drive import DifferentialDrive, MecanumDrive, Vector2d
 import rev
-from wpilib import Timer
 from commands.drive_by_joystick import DriveByJoystick
 
 class DriveTrain(Subsystem):

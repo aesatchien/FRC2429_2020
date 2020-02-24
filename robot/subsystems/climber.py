@@ -1,14 +1,8 @@
 # Attempt to convert 2019 Spartan Java to Python - 11/22/2019 CJH
 import wpilib
 from wpilib.command import Subsystem
-from wpilib import SmartDashboard
-from wpilib import Spark
-from wpilib import Servo
-from wpilib import Encoder
-from ctre import VictorSPX
-from ctre import ControlMode
-import math
-from networktables import NetworkTables
+from wpilib import Encoder, SmartDashboard, Spark
+from ctre import ControlMode, VictorSPX
 
 class Climber(Subsystem):
     def __init__(self, robot):

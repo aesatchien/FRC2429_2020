@@ -1,24 +1,22 @@
 from wpilib.command import Command
-from wpilib import Timer
-from wpilib import SmartDashboard
+from wpilib import SmartDashboard, Timer
 
 class SpinToColor(Command):
     def __init__(self, robot, target_color=None, source='dash', power=0.2, thrust=-0.06, timeout=5):
         # sometimes super()__init__ gives an error when Command._init__ does not...
         Command.__init__(self, name='SpinToColor')
         self.requires(robot.peripherals)
-        self.requires(robot.drivetrain)
+        self.requires(robot.drivetrain)  # lock out the joysticks
 
         self.robot = robot
         self.target_color = target_color
-        self.source = source
-        self.power = power
-        self.thrust = thrust
-        self.timeout = timeout
+        self.source = source  # have to either get this from the dashboard (testing) or FMS (competition)
+        self.power = power  # power for the spinner motor
+        self.thrust = thrust  # push the robot just a little bit to maintain contact with the spinner
+        self.timeout = timeout  # do not let this be a forever while loop
 
         self.old_color = "No match"
         self.current_color = "No match"
-
         self.start_time = 0
 
     def initialize(self):
