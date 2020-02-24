@@ -30,7 +30,7 @@ class OI(object):
         self.robot = robot
 
         # Set single or double joystick mode
-        self.competition_mode = False
+        self.competition_mode = True
 
         self.initialize_joystics()
         self.assign_buttons()
@@ -78,9 +78,9 @@ class OI(object):
             self.co_buttonX.whenPressed(PanelSpinner(self.robot, power=0.4, button=self.co_buttonX))
             #self.co_buttonY.whenPressed(RaiseClimber(self.robot, direction='climb', power=0.75, button=self.co_buttonY))
             self.co_povButtonUp.whenPressed(RaiseClimber(self.robot, direction='hook', power=0.7, button=self.co_povButtonUp))
-            self.co_povButtonDown.whenPressed(RaiseClimber(self.robot, direction='hook', power=-0.25, button=self.co_povButtonDown))
-            self.co_povButtonRight.whenPressed(RaiseClimber(self.robot, power=0.6, direction='right', button=self.co_povButtonRight))
-            self.co_povButtonLeft.whenPressed(RaiseClimber(self.robot, power=-0.6, direction='left', button=self.co_povButtonLeft))
+            self.co_povButtonDown.whenPressed(RaiseClimber(self.robot, direction='hook', power=0.2, button=self.co_povButtonDown))
+            self.co_povButtonRight.whenPressed(RaiseClimber(self.robot, power=0.99, direction='right', button=self.co_povButtonRight))
+            self.co_povButtonLeft.whenPressed(RaiseClimber(self.robot, power=-0.99, direction='left', button=self.co_povButtonLeft))
 
     def initialize_joystics(self):
         """
