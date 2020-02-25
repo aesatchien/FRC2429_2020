@@ -3,6 +3,7 @@ from .track_telemetry import TrackTelemetry
 from .actuate_gate import ActuateGate
 from .autonomous_drive import AutonomousDrive
 from .autonomous_rotate import AutonomousRotate
+from .pseudo_strafe import PseudoStrafe
 from commands.autonomous_wait import AutonomousWait
 from .intake import Intake
 from wpilib import Timer
@@ -10,9 +11,13 @@ from wpilib import SmartDashboard
 
 class AutonomousRoutes(CommandGroup):
     positions = 'middle', 'left',  'right'
-    scoring_routes = 'non-scoring', 'scoring'
-    backoff_routes = 'shield generator port side', 'shield generator trench side', 'trench'
+    scoring_routes = 'move only', 'pick up balls', 'direct score', 'pick up and score'
+    backoff_routes = 'none', 'shield generator port side', 'shield generator trench side', 'trench'
 
+    dists = {
+        'horizontal panel-goal': 67,
+        'line-panel': 150,
+    }
 
     def __init__(self, robot, timeout=None):
         CommandGroup.__init__(self, name='AutonomousRoutes')
@@ -26,14 +31,18 @@ class AutonomousRoutes(CommandGroup):
 
         #self.addParallel(TrackTelemetry(robot, timeout=timeout))
 
-        if self.route_a == 'scoring':
-            self.scoring_a()
-        elif self.route_a == 'non-scoring':
-            self.non_scoring_a()
+        if self.route_a == 'move only':
+            self.move_only()
+        elif self.route_a == 'pick up balls':
+            self.pick_up_balls()
+        elif self.route_a == 'direct score':
+            self.direct_score()
+        elif self.route_a == 'pick up and score':
+            self.pick_up_and_score()
         else:
             print('invalid route name for phase A')
 
-        if self.route_a != 'non-scoring':
+        if self.route_b != 'none':
             if self.route_b == 'shield generator port side':
                 #self.port_side_b()
                 pass
@@ -46,9 +55,9 @@ class AutonomousRoutes(CommandGroup):
             else:
                 print('invalid route name for phase B')
         else:
-            print('phase B was not executed because the non-scoring route was taken')
+            print('phase B was not executed because none was chosen')
 
-    def scoring_a(self):
+    def direct_score(self):
         """
         PURPOSE: for when we want to score in autonomous. This should work for any location on the initiation line.
 
@@ -67,7 +76,7 @@ class AutonomousRoutes(CommandGroup):
         """
 
         time = round(Timer.getFPGATimestamp() - self.robot.enabled_time, 1)
-        print("\n" + f"** Started scoring route at {time} s **")
+        print("\n" + f"** Started direct scoring route at {time} s **")
 
         self.addSequential(AutonomousDrive(self.robot, setpoint=self.scoring_distance))
 
@@ -75,7 +84,15 @@ class AutonomousRoutes(CommandGroup):
         self.addSequential(AutonomousWait(self.robot, timeout=3))  #  we have to have a wait command that feeds the drivetrain!
         self.addSequential(ActuateGate(self.robot, direction='close'))
 
-    def non_scoring_a(self):
+    def pick_up_and_score(self):
+        self.pick_up_balls()
+
+        self.addSequential(PseudoStrafe(self.robot, self.horizontal_panel_goal))
+        self.addSequential(AutonomousDrive(self.robot, setpoint=-80))
+
+        self.direct_score()
+
+    def move_only(self):
         """
         PURPOSE: for when we are either unable to score or we don't intend to score
 
@@ -84,9 +101,29 @@ class AutonomousRoutes(CommandGroup):
         """
 
         time = round(Timer.getFPGATimestamp() - self.robot.enabled_time, 1)
-        print("\n" + f"** Started non-scoring route at {time} s **")
+        print("\n" + f"** Started move only route at {time} s **")
 
         self.addSequential(AutonomousDrive(self.robot, setpoint=-30))
+
+    def pick_up_balls(self):
+        time = round(Timer.getFPGATimestamp() - self.robot.enabled_time, 1)
+        print("\n" + f"** Started pick up balls route at {time} s **")
+
+        if self.position == 'left':
+            dist_left = 0
+        elif self.position == 'middle':
+            dist_left = 26 * 12
+        elif self.position == 'right':
+            dist_left = 52 * 12
+
+        '''
+        if dist_left:
+            self.addSequential(PseudoStrafe(self.robot, -dist_left)) 
+        '''
+
+        self.addSequential(Intake(self.robot, end_power=0.1))
+        self.addSequential(AutonomousDrive(self.robot, setpoint=self.dists['line-panel']))
+        self.addSequential(Intake(self.robot, power=0, end_power=0))
 
     def port_side_b(self):
         """
@@ -136,7 +173,7 @@ class AutonomousRoutes(CommandGroup):
         self.addSequential(AutonomousDrive(self.robot, setpoint=67))
         self.addSequential(AutonomousRotate(self.robot, setpoint=90))
         self.addSequential(Intake(self.robot, end_power=0.1))
-        self.addSequential(AutonomousDrive(self.robot, setpoint=200))
+        self.addSequential(AutonomousDrive(self.robot, setpoint=self.dists['line-panel']))
         self.addSequential(Intake(self.robot, power=0, end_power=0))
 
     def initialize(self):
