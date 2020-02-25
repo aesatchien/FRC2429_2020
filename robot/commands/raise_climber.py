@@ -20,7 +20,9 @@ class RaiseClimber(Command):
 
     def execute(self):
         """Called repeatedly when this Command is scheduled to run"""
-        if self.direction == 'hook':
+        if self.direction == 'hookup':
+            self.robot.climber.raise_hook(self.power)
+        if self.direction == 'hookdown':
             self.robot.climber.raise_hook(self.power)
         elif self.direction == 'climb':
             self.robot.climber.raise_robot(self.power)
@@ -38,7 +40,10 @@ class RaiseClimber(Command):
     def end(self):
         """Called once after isFinished returns true"""
         print("\n" + f"** Ended {self.getName()} at {round(Timer.getFPGATimestamp() - self.robot.enabled_time, 1)} s **")
-        self.robot.climber.stop_hook()
+        if self.direction == 'hookup':
+            self.robot.climber.raise_hook(0.2)
+        else:
+            self.robot.climber.stop_hook()
         self.robot.climber.stop_winch()
         self.robot.climber.robot_roller_stop()
     def interrupted(self):

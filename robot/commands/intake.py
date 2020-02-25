@@ -13,6 +13,7 @@ class Intake(Command):
         self.button = button
         self.power = power
         self.end_power = end_power
+        self.max_power = 0.8
 
 
     def initialize(self):
@@ -28,9 +29,9 @@ class Intake(Command):
             self.power = -self.robot.oi.stick.getRawAxis(2)
         if self.robot.oi.competition_mode:
             if self.button == self.robot.oi.co_axisButtonRT:
-                self.power = self.robot.oi.co_stick.getRawAxis(3)
+                self.power = self.robot.oi.co_stick.getRawAxis(3) * self.max_power
             elif self.button == self.robot.oi.co_axisButtonLT:
-                self.power = -self.robot.oi.co_stick.getRawAxis(2)
+                self.power = -self.robot.oi.co_stick.getRawAxis(2) * self.max_power
         self.robot.ball_handler.run_intake(self.power)
 
     def isFinished(self):
