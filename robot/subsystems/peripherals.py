@@ -5,6 +5,7 @@ from wpilib import Color, I2C, PowerDistributionPanel, SmartDashboard, Spark
 from rev.color import ColorSensorV3
 import math
 from networktables import NetworkTables
+from wpilib import DriverStation
 
 class Peripherals(Subsystem):
     def __init__(self, robot):
@@ -21,8 +22,10 @@ class Peripherals(Subsystem):
         # we can config the colorsensor resolution and the rate
         #self.color_sensor.setGain(ColorSensorV3.GainFactor.k1x)
         #self.color_sensor.configureColorSensor(res=, rate=)
-        self.i2ccolor = wpilib.I2C(wpilib.I2C.Port.kOnboard, 0x52)
-        self.i2ccolor.write(0x04, 0x80) # make us read at 25ms
+        #self.i2ccolor = wpilib.I2C(wpilib.I2C.Port.kOnboard, 0x52)
+        #self.i2ccolor.write(0x04, 0x80) # make us read at 25ms
+        # This one does not kill the sim - CJH 20200225
+        #self.color_sensor.configureColorSensor(res=ColorSensorV3.ColorResolution(0x50), rate=ColorSensorV3.ColorMeasurementRate(0))
 
         # made these numbers ourselves by positioning the sensor over the target and recording the RGB
         self.kBlueTarget = Color(0.181, 0.453, 0.365)
@@ -58,6 +61,25 @@ class Peripherals(Subsystem):
     def color_distance(self, color_1, color_2):
         return math.sqrt(
             (color_1.red - color_2.red) ** 2 + (color_1.green - color_2.green) ** 2 +(color_1.blue - color_2.blue) ** 2)
+
+    def get_fms_color(self):
+        """Gets the target panel color from the gameSpecificMessage and converts it to the 90 degree pair
+        :return color string for parsing in the spin_to_color command"""
+        fms_color = DriverStation.getGameSpecificMessage()
+        # Sensor is 90 degrees to us, so Y<->G and B<->R
+        if fms_color == 'Y':
+            target_color = 'green'
+        elif fms_color == 'G':
+            target_color = 'yellow'
+        elif fms_color == 'R':
+            target_color = 'blue'
+        elif fms_color == 'B':
+            target_color = 'red'
+        else:
+            print(f"Unexpected result: getGameSpecifcMessage returned {fms_color}")
+            return 'red'  #  cop out
+        print(f"Converting fms message {fms_color} to color {target_color}")
+        return target_color
 
     def lidar_distance(self):
         return self.lidar.dist()  # distance in cm

@@ -2,7 +2,7 @@ from wpilib.command import Command
 from wpilib import SmartDashboard, Timer
 
 class SpinToColor(Command):
-    def __init__(self, robot, target_color=None, source='dash', power=0.2, thrust=-0.06, timeout=5):
+    def __init__(self, robot, target_color=None, source='dash', power=0.25, thrust=-0.10, timeout=5):
         # sometimes super()__init__ gives an error when Command._init__ does not...
         Command.__init__(self, name='SpinToColor')
         self.requires(robot.peripherals)
@@ -25,9 +25,9 @@ class SpinToColor(Command):
         self.telemetry = {'time': [], 'color': []}
         if self.source == 'dash':
             self.target_color = self.robot.oi.color_chooser.getSelected()
-        else:
-            pass
-            # TODO: get games specific message color value here
+        elif self.source == 'fms':
+            self.target_color = self.robot.peripherals.get_fms_color()
+
         self.setTimeout(self.timeout)
         self.robot.peripherals.panel_clockwise(self.power)
         print("\n" + f"** Started {self.getName()} with target color {self.target_color} and power {self.power} at {self.start_time} s **", flush=True)

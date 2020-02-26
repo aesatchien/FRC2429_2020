@@ -3,7 +3,7 @@ from wpilib import Timer
 
 class PanelSpinner(Command):
     """
-    This command opens and closed the piston
+    This just spins the panel.  Use spin_to_color for the good stuff.
     """
 
     def __init__(self, robot, button=None, power=0):
