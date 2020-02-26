@@ -14,6 +14,7 @@ class DriveByJoystick(Command):
         self.requires(robot.drivetrain)
         self.robot = robot
         self.twist_sensitivity = 0.7
+        self.thrust_sensitivity = 0.8
         # correction variables
         self.is_twist_active = False
         self.heading = 0
@@ -79,7 +80,7 @@ class DriveByJoystick(Command):
 
         else:
             #self.robot.drivetrain.smooth_drive(self.robot.oi.stick.getRawAxis(1), -self.twist_sensitivity*self.robot.oi.stick.getRawAxis(4))
-            joystick_values = [-self.robot.oi.stick.getRawAxis(1), self.robot.oi.stick.getRawAxis(0),
+            joystick_values = [-self.robot.oi.stick.getRawAxis(1) * self.thrust_sensitivity, self.robot.oi.stick.getRawAxis(0),
                                        self.twist_sensitivity * self.robot.oi.stick.getRawAxis(4)]
             sq = lambda x: x ** 2 if (x > 0) else -1.0 * x ** 2
             for ix, val in enumerate(joystick_values):

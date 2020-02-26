@@ -25,6 +25,7 @@ class Spin3x(Command):
         self.setTimeout(self.timeout)
         self.robot.peripherals.panel_clockwise(self.power)
         self.old_color = "No Match"
+        self.telemetry = {'time': [], 'color': []}
         # self.current_color = "No Match"
         self.current_color = self.robot.peripherals.get_color_str()
         print("\n" + f"** Started {self.getName()} with current color {self.current_color} and power {self.power} at {self.start_time} s **", flush=True)
@@ -39,6 +40,8 @@ class Spin3x(Command):
             self.color_transition_counter += 1
 
         self.old_color = self.current_color
+        self.telemetry['time'].append(self.timeSinceInitialized())
+        self.telemetry['color'].append(self.current_color)
 
     def isFinished(self):
         return self.color_transition_counter >= 25 or self.isTimedOut()  # correct color or timed out
@@ -46,6 +49,11 @@ class Spin3x(Command):
     def end(self):
         self.robot.peripherals.panel_clockwise(0)
         self.robot.drivetrain.stop()
+        for key in self.telemetry:
+            if key == 'time':
+                SmartDashboard.putNumberArray("color_telemetry_" + str(key), self.telemetry[key])
+            else:
+                SmartDashboard.putStringArray("color_telemetry_" + str(key), self.telemetry[key])
 
         print("\n" + f"** Ended {self.getName()} with current color {self.current_color} and {self.color_transition_counter} color transitions at {round(Timer.getFPGATimestamp() - self.robot.enabled_time, 1)} s **")
 

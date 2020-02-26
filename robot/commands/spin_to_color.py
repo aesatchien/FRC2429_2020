@@ -22,6 +22,7 @@ class SpinToColor(Command):
     def initialize(self):
         """Called just before this Command runs the first time."""
         self.start_time = round(Timer.getFPGATimestamp() - self.robot.enabled_time, 1)
+        self.telemetry = {'time': [], 'color': []}
         if self.source == 'dash':
             self.target_color = self.robot.oi.color_chooser.getSelected()
         else:
@@ -40,13 +41,18 @@ class SpinToColor(Command):
             self.setTimeout(self.timeout)
             self.old_color = self.current_color
 
+        self.telemetry['time'].append(self.timeSinceInitialized())
+        self.telemetry['color'].append(self.current_color)
+
     def isFinished(self):
         return self.current_color == self.target_color or self.isTimedOut()  # correct color or timed out
 
     def end(self):
         self.robot.peripherals.panel_clockwise(0)
         self.robot.drivetrain.stop()
-
+        for key in self.telemetry:
+            pass
+            #SmartDashboard.putStringArray("color_telemetry_" + str(key), str(self.telemetry[key]))
         print("\n" + f"** Ended {self.getName()} at {round(Timer.getFPGATimestamp() - self.robot.enabled_time, 1)} s **")
 
     def interrupted(self):
