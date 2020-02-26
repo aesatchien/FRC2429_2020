@@ -3,6 +3,7 @@ import wpilib
 from wpilib import SmartDashboard, SendableChooser
 from wpilib.command import JoystickButton
 # Spartan-specific commands - must import if you plan to use
+from commands.spin3x import Spin3x
 from triggers.axis_button import AxisButton
 from triggers.pov_button import POVButton
 from commands.dpad_drive import DpadDrive
@@ -56,7 +57,7 @@ class OI(object):
         # still testing climber TODO: sense tilt of bar
         self.buttonY.whenPressed(RaiseClimber(self.robot, direction='hook', power=0.7, button=self.buttonY))
         self.buttonStart.whenPressed(RaiseClimber(self.robot, direction='climb', power=0.75, button=self.buttonStart))
-        self.buttonBack.whenPressed(RaiseClimber(self.robot, power=0.6, direction='right', button=self.buttonBack))
+        # buttonBack.whenPressed(RaiseClimber(self.robot, power=0.6, direction='right', button=self.buttonBack))
         self.povButtonUp.whenPressed(DpadDrive(self.robot, 'up', self.povButtonUp))
         self.povButtonDown.whenPressed(DpadDrive(self.robot, 'down', self.povButtonDown))
         self.povButtonRight.whenPressed(DpadDrive(self.robot, 'right', self.povButtonRight))
@@ -75,12 +76,13 @@ class OI(object):
             self.co_buttonRB.whenPressed(ActuateGate(self.robot, direction='close', button=self.co_buttonRB))
             self.co_buttonLB.whenPressed(ActuateGate(self.robot, direction='open', button=self.co_buttonLB))
             self.co_buttonX.whenPressed(PanelSpinner(self.robot, power=0.5, button=self.co_buttonX))
-            #self.co_buttonY.whenPressed(RaiseClimber(self.robot, direction='climb', power=0.75, button=self.co_buttonY))
+            # self.co_buttonY.whenPressed(RaiseClimber(self.robot, direction='climb', power=0.75, button=self.co_buttonY))
             self.co_buttonStart.whenPressed(RaiseClimber(self.robot, direction='climb', power=0.75, button=self.co_buttonStart))
             self.co_povButtonUp.whenPressed(RaiseClimber(self.robot, direction='hookup', power=0.7, button=self.co_povButtonUp))
             self.co_povButtonDown.whenPressed(RaiseClimber(self.robot, direction='hookdown', power=-0.15, button=self.co_povButtonDown))
             self.co_povButtonRight.whenPressed(RaiseClimber(self.robot, power=0.99, direction='right', button=self.co_povButtonRight))
             self.co_povButtonLeft.whenPressed(RaiseClimber(self.robot, power=-0.99, direction='left', button=self.co_povButtonLeft))
+            self.co_buttonY.whenPressed(Spin3x(self.robot, power=0.4, thrust=-0.12))
 
     def initialize_joystics(self):
         """
@@ -134,14 +136,16 @@ class OI(object):
         self.position_pids_command = UpdatePIDs(self.robot, factor=1, from_dashboard='position')
         self.velocity_pids_command = UpdatePIDs(self.robot, factor=1, from_dashboard='velocity')
         self.autonomous_test_command = AutonomousGroup(self.robot)
-        self.color_spinner_command = SpinToColor(self.robot, target_color=None, source='dash', power=0.25, thrust=-0.12)
+        self.color_spinner_target_command = SpinToColor(self.robot, target_color=None, source='dash', power=0.25, thrust=-0.12)
+        self.color_spinner_3x_command = Spin3x(self.robot, power=0.4, thrust=-0.12)
 
         SmartDashboard.putData("Drive Forward", self.drive_fwd_command)
         SmartDashboard.putData("Rotate X", self.rotate_command)
         #SmartDashboard.putData("Update Pos PIDs", self.position_pids_command)
         #SmartDashboard.putData("Update Vel PIDs", self.velocity_pids_command)
         SmartDashboard.putData("Autonomous Test", self.autonomous_test_command)
-        SmartDashboard.putData("Spin To", self.color_spinner_command)
+        SmartDashboard.putData("Spin To", self.color_spinner_target_command)
+        SmartDashboard.putData("Spin 3x", self.color_spinner_3x_command)
 
         # SmartDashboard Buttons - test some autonomous commands here
         SmartDashboard.putNumber("Auto Distance", 30)
