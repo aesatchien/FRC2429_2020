@@ -14,7 +14,7 @@ class DriveByJoystick(Command):
         self.requires(robot.drivetrain)
         self.robot = robot
         self.twist_sensitivity = 0.7
-        self.thrust_sensitivity = 0.8
+        self.thrust_sensitivity = 0.99
         # correction variables
         self.is_twist_active = False
         self.heading = 0

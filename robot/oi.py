@@ -80,8 +80,8 @@ class OI(object):
             self.co_buttonStart.whenPressed(RaiseClimber(self.robot, direction='climb', power=0.75, button=self.co_buttonStart))
             self.co_povButtonUp.whenPressed(RaiseClimber(self.robot, direction='hookup', power=0.7, button=self.co_povButtonUp))
             self.co_povButtonDown.whenPressed(RaiseClimber(self.robot, direction='hookdown', power=-0.15, button=self.co_povButtonDown))
-            self.co_povButtonRight.whenPressed(RaiseClimber(self.robot, power=0.99, direction='right', button=self.co_povButtonRight))
-            self.co_povButtonLeft.whenPressed(RaiseClimber(self.robot, power=-0.99, direction='left', button=self.co_povButtonLeft))
+            self.co_povButtonRight.whenPressed(RaiseClimber(self.robot, power=-0.99, direction='right', button=self.co_povButtonRight))
+            self.co_povButtonLeft.whenPressed(RaiseClimber(self.robot, power=0.99, direction='left', button=self.co_povButtonLeft))
             self.co_buttonY.whenPressed(Spin3x(self.robot, power=0.4, thrust=-0.12))
 
     def initialize_joystics(self):
