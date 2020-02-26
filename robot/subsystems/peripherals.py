@@ -22,7 +22,7 @@ class Peripherals(Subsystem):
         #self.color_sensor.setGain(ColorSensorV3.GainFactor.k1x)
         #self.color_sensor.configureColorSensor(res=, rate=)
         self.i2ccolor = wpilib.I2C(wpilib.I2C.Port.kOnboard, 0x52)
-        err += self.i2ccolor.write(0x04, 0x80) #
+        self.i2ccolor.write(0x04, 0x80) # make us read at 25ms
 
         # made these numbers ourselves by positioning the sensor over the target and recording the RGB
         self.kBlueTarget = Color(0.181, 0.453, 0.365)

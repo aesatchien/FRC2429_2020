@@ -103,7 +103,7 @@ class AutonomousRoutes(CommandGroup):
         time = round(Timer.getFPGATimestamp() - self.robot.enabled_time, 1)
         print("\n" + f"** Started move only route at {time} s **")
 
-        self.addSequential(AutonomousDrive(self.robot, setpoint=-30))
+        self.addSequential(AutonomousDrive(self.robot, setpoint=40))
 
     def pick_up_balls(self):
         time = round(Timer.getFPGATimestamp() - self.robot.enabled_time, 1)
