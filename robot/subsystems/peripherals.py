@@ -21,8 +21,8 @@ class Peripherals(Subsystem):
 
         # we can config the colorsensor resolution and the rate
         #self.color_sensor.setGain(ColorSensorV3.GainFactor.k1x)
-        self.color_sensor.configureColorSensor(res=ColorSensorV3.ColorResolution.kColorSensorResolution16bit,
-                                               rate=ColorSensorV3.ColorMeasurementRate.kColorRate25ms)
+        self.color_sensor.configureColorSensor(res=ColorSensorV3.ColorResolution.k16bit,
+                                               rate=ColorSensorV3.ColorMeasurementRate.k25ms)
 
         # made these numbers ourselves by positioning the sensor over the target and recording the RGB
         self.kBlueTarget = Color(0.181, 0.453, 0.365)
