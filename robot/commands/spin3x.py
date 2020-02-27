@@ -2,7 +2,7 @@ from wpilib.command import Command
 from wpilib import SmartDashboard, Timer
 
 class Spin3x(Command):
-    def __init__(self, robot, power=0.2, thrust=-0.06, timeout=5):
+    def __init__(self, robot, power=0.2, thrust=-0.06, timeout=2):
         # sometimes super()__init__ gives an error when Command._init__ does not...
         Command.__init__(self, name='Spin3x')
         self.requires(robot.peripherals)
@@ -13,8 +13,6 @@ class Spin3x(Command):
         self.thrust = thrust  # push the robot just a little bit to maintain contact with the spinner
         self.timeout = timeout  # do not let this be a forever while loop
 
-        self.old_color = "No Match"
-        self.current_color = "No Match"
         self.start_time = 0
         self.color_transition_counter = 0
 
@@ -24,7 +22,8 @@ class Spin3x(Command):
         self.color_transition_counter = 0
         self.setTimeout(self.timeout)
         self.robot.peripherals.panel_clockwise(self.power)
-        self.old_color = "No Match"
+        self.current_color = self.robot.peripherals.get_color_str()
+        self.old_color = self.current_color # ensure that first check is not a transition
         self.telemetry = {'time': [], 'color': []}
         # self.current_color = "No Match"
         self.current_color = self.robot.peripherals.get_color_str()
@@ -34,10 +33,10 @@ class Spin3x(Command):
         self.current_color = self.robot.peripherals.get_color_str()
         self.robot.drivetrain.spark_with_stick(thrust=self.thrust)
 
-        if self.current_color == "No Match" and self.old_color != "No Match":
-            self.timeout += 1.0  # increases time left when color changes
+        if (self.current_color in self.robot.peripherals.color_dict.keys()) and (self.old_color != self.current_color):
+            self.timeout = self.timeSinceInitialized() + 1  # increases time left when color changes
             self.setTimeout(self.timeout)
-            self.color_transition_counter += 1
+            self.color_transition_counter += 1 # this happens immediately if you start on a color
 
         self.old_color = self.current_color
         self.telemetry['time'].append(self.timeSinceInitialized())

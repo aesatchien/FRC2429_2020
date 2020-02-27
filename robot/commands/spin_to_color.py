@@ -51,8 +51,10 @@ class SpinToColor(Command):
         self.robot.peripherals.panel_clockwise(0)
         self.robot.drivetrain.stop()
         for key in self.telemetry:
-            pass
-            #SmartDashboard.putStringArray("color_telemetry_" + str(key), str(self.telemetry[key]))
+            if key == 'time':
+                SmartDashboard.putNumberArray("color_telemetry_" + str(key), self.telemetry[key])
+            else:
+                SmartDashboard.putStringArray("color_telemetry_" + str(key), self.telemetry[key])
         print("\n" + f"** Ended {self.getName()} at {round(Timer.getFPGATimestamp() - self.robot.enabled_time, 1)} s **")
 
     def interrupted(self):

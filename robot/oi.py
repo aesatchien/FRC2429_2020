@@ -52,7 +52,7 @@ class OI(object):
         self.buttonRB.whenPressed(ActuateGate(self.robot, direction='open', button=self.buttonRB))
         self.buttonLB.whenPressed(ActuateGate(self.robot, direction='close', button=self.buttonLB))
         self.buttonB.whenPressed(Intake(self.robot, power=-0.65, button=self.buttonB))
-        self.buttonA.whenPressed(Intake(self.robot, power=0.65, button=self.buttonA))
+        self.buttonA.whenPressed(Intake(self.robot, power=0.5, button=self.buttonA))
         self.buttonX.whenPressed(PanelSpinner(self.robot, power=0.3, button=self.buttonX))
         # still testing climber TODO: sense tilt of bar
         self.buttonY.whenPressed(RaiseClimber(self.robot, direction='hook', power=0.7, button=self.buttonY))
@@ -74,10 +74,10 @@ class OI(object):
             self.co_buttonRB.whenPressed(ActuateGate(self.robot, direction='close', button=self.co_buttonRB))
             self.co_buttonLB.whenPressed(ActuateGate(self.robot, direction='open', button=self.co_buttonLB))
             self.co_buttonB.whenPressed(Intake(self.robot, power=-0.65, button=self.co_buttonB))
-            self.co_buttonA.whenPressed(Intake(self.robot, power=0.65, button=self.co_buttonA))
+            self.co_buttonA.whenPressed(Intake(self.robot, power=0.5, button=self.co_buttonA))
             # panel spinner functions
             self.co_buttonX.whenPressed(SpinToColor(self.robot, target_color=None, source='fms', power=0.25, thrust=-0.12))
-            self.co_buttonY.whenPressed(Spin3x(self.robot, power=0.4, thrust=-0.12))
+            self.co_buttonY.whenPressed(Spin3x(self.robot, power=0.75, thrust=-0.12))
             self.co_buttonStart.whenPressed(RaiseClimber(self.robot, direction='climb', power=0.75, button=self.co_buttonStart))
             self.co_povButtonUp.whenPressed(RaiseClimber(self.robot, direction='hookup', power=0.7, button=self.co_povButtonUp))
             self.co_povButtonDown.whenPressed(RaiseClimber(self.robot, direction='hookdown', power=-0.15, button=self.co_povButtonDown))
@@ -137,7 +137,7 @@ class OI(object):
         self.velocity_pids_command = UpdatePIDs(self.robot, factor=1, from_dashboard='velocity')
         self.autonomous_test_command = AutonomousGroup(self.robot)
         self.color_spinner_target_command = SpinToColor(self.robot, target_color=None, source='dash', power=0.25, thrust=-0.12)
-        self.color_spinner_3x_command = Spin3x(self.robot, power=0.4, thrust=-0.12)
+        self.color_spinner_3x_command = Spin3x(self.robot, power=1.0, thrust=-0.12)
 
         SmartDashboard.putData("Drive Forward", self.drive_fwd_command)
         SmartDashboard.putData("Rotate X", self.rotate_command)
