@@ -37,6 +37,14 @@ class Peripherals(Subsystem):
     def panel_clockwise(self, power):
         self.control_panel_spark.set(power)
 
+    def get_color_raw(self):
+        return self.color_sensor.getRawColor()
+
+    def color_norm(self, rawcolor):
+        rgbsum = rawcolor.red + rawcolor.green + rawcolor.blue # still integer
+        rgbsumf = float(rgbsum) if rgbsum > 0 else 1 # don't divide by zero if all values are zero; norm will be 0,0,0 anyway
+        return Color(rawcolor.red / rgbsumf, rawcolor.green / rgbsumf, rawcolor.blue / rgbsumf)
+
     def get_color_str(self, color=None):
         #detected_color = color or self.color_sensor.getColor()
         if color is None:

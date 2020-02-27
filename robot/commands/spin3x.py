@@ -1,3 +1,4 @@
+import math
 from wpilib.command import Command
 from wpilib import SmartDashboard, Timer
 
@@ -24,13 +25,14 @@ class Spin3x(Command):
         self.robot.peripherals.panel_clockwise(self.power)
         self.current_color = self.robot.peripherals.get_color_str()
         self.old_color = self.current_color # ensure that first check is not a transition
-        self.telemetry = {'time': [], 'color': []}
+        self.telemetry = {'time': [], 'color': [], 'colorraw':[]}
         # self.current_color = "No Match"
         self.current_color = self.robot.peripherals.get_color_str()
         print("\n" + f"** Started {self.getName()} with current color {self.current_color} and power {self.power} at {self.start_time} s **", flush=True)
 
     def execute(self):
-        self.current_color = self.robot.peripherals.get_color_str()
+        colorraw = self.robot.peripherals.get_color_raw()
+        self.current_color = self.robot.peripherals.color_norm(colorraw)
         self.robot.drivetrain.spark_with_stick(thrust=self.thrust)
 
         if (self.current_color in self.robot.peripherals.color_dict.keys()) and (self.old_color != self.current_color):
@@ -41,6 +43,7 @@ class Spin3x(Command):
         self.old_color = self.current_color
         self.telemetry['time'].append(self.timeSinceInitialized())
         self.telemetry['color'].append(self.current_color)
+        self.telemetry['colorraw'].append(f"{colorraw.red:5d},{colorraw.green:5d}, {colorraw.blue:5d}")
 
     def isFinished(self):
         return self.color_transition_counter >= 25 or self.isTimedOut()  # correct color or timed out
@@ -48,11 +51,13 @@ class Spin3x(Command):
     def end(self):
         self.robot.peripherals.panel_clockwise(0)
         self.robot.drivetrain.stop()
-        for key in self.telemetry:
+        for key,value in self.telemetry.items():
             if key == 'time':
-                SmartDashboard.putNumberArray("color_telemetry_" + str(key), self.telemetry[key])
+                for iarray in range(math.ceil(len(value) / 256.)):
+                    SmartDashboard.putNumberArray(f"color_telemetry_{key}_{iarray}", value[256*iarray:min(256*(iarray+1), len(value))])
             else:
-                SmartDashboard.putStringArray("color_telemetry_" + str(key), self.telemetry[key])
+                for iarray in range(math.ceil(len(value) / 256.)):
+                    SmartDashboard.putStringArray("color_telemetry_{key}_{iarray}", value[256*iarray:min(256*(iarray+1), len(value))])
 
         print("\n" + f"** Ended {self.getName()} with current color {self.current_color} and {self.color_transition_counter} color transitions at {round(Timer.getFPGATimestamp() - self.robot.enabled_time, 1)} s **")
 
