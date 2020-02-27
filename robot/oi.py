@@ -51,8 +51,8 @@ class OI(object):
         self.axisButtonLT.whenPressed(Intake(self.robot, power=0, button=self.axisButtonLT))
         self.buttonRB.whenPressed(ActuateGate(self.robot, direction='open', button=self.buttonRB))
         self.buttonLB.whenPressed(ActuateGate(self.robot, direction='close', button=self.buttonLB))
-        self.buttonB.whenPressed(Intake(self.robot, power=-0.5, button=self.buttonB))
-        self.buttonA.whenPressed(Intake(self.robot, power=0.5, button=self.buttonA))
+        self.buttonB.whenPressed(Intake(self.robot, power=-0.65, button=self.buttonB))
+        self.buttonA.whenPressed(Intake(self.robot, power=0.65, button=self.buttonA))
         self.buttonX.whenPressed(PanelSpinner(self.robot, power=0.3, button=self.buttonX))
         # still testing climber TODO: sense tilt of bar
         self.buttonY.whenPressed(RaiseClimber(self.robot, direction='hook', power=0.7, button=self.buttonY))
@@ -71,8 +71,8 @@ class OI(object):
         if self.competition_mode:
             self.co_axisButtonRT.whenPressed(Intake(self.robot, power=0, button=self.co_axisButtonRT))
             self.co_axisButtonLT.whenPressed(Intake(self.robot, power=0, button=self.co_axisButtonLT))
-            self.co_buttonB.whenPressed(Intake(self.robot, power=-0.5, button=self.co_buttonB))
-            self.co_buttonA.whenPressed(Intake(self.robot, power=0.5, button=self.co_buttonA))
+            self.co_buttonB.whenPressed(Intake(self.robot, power=-0.65, button=self.co_buttonB))
+            self.co_buttonA.whenPressed(Intake(self.robot, power=0.65, button=self.co_buttonA))
             self.co_buttonRB.whenPressed(ActuateGate(self.robot, direction='close', button=self.co_buttonRB))
             self.co_buttonLB.whenPressed(ActuateGate(self.robot, direction='open', button=self.co_buttonLB))
             self.co_buttonX.whenPressed(PanelSpinner(self.robot, power=0.5, button=self.co_buttonX))
@@ -83,6 +83,7 @@ class OI(object):
             self.co_povButtonRight.whenPressed(RaiseClimber(self.robot, power=-0.99, direction='right', button=self.co_povButtonRight))
             self.co_povButtonLeft.whenPressed(RaiseClimber(self.robot, power=0.99, direction='left', button=self.co_povButtonLeft))
             self.co_buttonY.whenPressed(Spin3x(self.robot, power=0.4, thrust=-0.12))
+            # self.co
 
     def initialize_joystics(self):
         """

@@ -26,7 +26,7 @@ class Ball_Handler(Subsystem):
         self.intake_spark.set(power)
 
     def hold_gate(self):
-        self.hopper_spark.set(0.15)
+        self.hopper_spark.set(0.2)
 
     def close_gate(self):
         print('closing gate')
