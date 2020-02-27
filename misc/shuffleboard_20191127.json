@@ -352,7 +352,7 @@
             "content": {
               "_type": "Command",
               "_source0": "network_table:///SmartDashboard/Spin 3x",
-              "_title": "/SmartDashboard/Spin 3x"
+              "_title": "Spin 3x"
             }
           }
         }
