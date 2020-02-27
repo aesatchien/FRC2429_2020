@@ -46,18 +46,23 @@ class OI(object):
 
     def assign_buttons(self):
         """Assign commands to buttons here"""
-        # binding button to commands
+        # intake functions
         self.axisButtonRT.whenPressed(Intake(self.robot, power=0, button=self.axisButtonRT))
         self.axisButtonLT.whenPressed(Intake(self.robot, power=0, button=self.axisButtonLT))
+        # hopper functions
         self.buttonRB.whenPressed(ActuateGate(self.robot, direction='open', button=self.buttonRB))
         self.buttonLB.whenPressed(ActuateGate(self.robot, direction='close', button=self.buttonLB))
+        # more intake functions
         self.buttonB.whenPressed(Intake(self.robot, power=-0.65, button=self.buttonB))
         self.buttonA.whenPressed(Intake(self.robot, power=0.5, button=self.buttonA))
+        # panel spinner functions
         self.buttonX.whenPressed(PanelSpinner(self.robot, power=0.3, button=self.buttonX))
-        # still testing climber TODO: sense tilt of bar
-        self.buttonY.whenPressed(RaiseClimber(self.robot, direction='hook', power=0.7, button=self.buttonY))
+
+        # climber functions
+        self.buttonY.whenPressed(RaiseClimber(self.robot, direction='hookup', power=0.7, button=self.buttonY))
         self.buttonStart.whenPressed(RaiseClimber(self.robot, direction='climb', power=0.75, button=self.buttonStart))
-        # buttonBack.whenPressed(RaiseClimber(self.robot, power=0.6, direction='right', button=self.buttonBack))
+
+        # dpad driving functions
         self.povButtonUp.whenPressed(DpadDrive(self.robot, 'up', self.povButtonUp))
         self.povButtonDown.whenPressed(DpadDrive(self.robot, 'down', self.povButtonDown))
         self.povButtonRight.whenPressed(DpadDrive(self.robot, 'right', self.povButtonRight))
@@ -69,15 +74,18 @@ class OI(object):
 
         # co-pilot joystick to commands
         if self.competition_mode:
+            # intake functions
             self.co_axisButtonRT.whenPressed(Intake(self.robot, power=0, button=self.co_axisButtonRT))
             self.co_axisButtonLT.whenPressed(Intake(self.robot, power=0, button=self.co_axisButtonLT))
-            self.co_buttonRB.whenPressed(ActuateGate(self.robot, direction='close', button=self.co_buttonRB))
-            self.co_buttonLB.whenPressed(ActuateGate(self.robot, direction='open', button=self.co_buttonLB))
             self.co_buttonB.whenPressed(Intake(self.robot, power=-0.65, button=self.co_buttonB))
             self.co_buttonA.whenPressed(Intake(self.robot, power=0.5, button=self.co_buttonA))
+            # hopper functions
+            self.co_buttonRB.whenPressed(ActuateGate(self.robot, direction='close', button=self.co_buttonRB))
+            self.co_buttonLB.whenPressed(ActuateGate(self.robot, direction='open', button=self.co_buttonLB))
             # panel spinner functions
             self.co_buttonX.whenPressed(SpinToColor(self.robot, target_color=None, source='fms', power=0.25, thrust=-0.12))
             self.co_buttonY.whenPressed(Spin3x(self.robot, power=0.75, thrust=-0.12))
+            # climbing functions
             self.co_buttonStart.whenPressed(RaiseClimber(self.robot, direction='climb', power=0.75, button=self.co_buttonStart))
             self.co_povButtonUp.whenPressed(RaiseClimber(self.robot, direction='hookup', power=0.7, button=self.co_povButtonUp))
             self.co_povButtonDown.whenPressed(RaiseClimber(self.robot, direction='hookdown', power=-0.15, button=self.co_povButtonDown))

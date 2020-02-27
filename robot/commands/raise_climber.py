@@ -22,7 +22,7 @@ class RaiseClimber(Command):
         """Called repeatedly when this Command is scheduled to run"""
         if self.direction == 'hookup':
             self.robot.climber.raise_hook(self.power)
-        if self.direction == 'hookdown':
+        elif self.direction == 'hookdown':
             self.robot.climber.raise_hook(self.power)
         elif self.direction == 'climb':
             self.robot.climber.raise_robot(self.power)
