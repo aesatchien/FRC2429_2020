@@ -71,19 +71,18 @@ class OI(object):
         if self.competition_mode:
             self.co_axisButtonRT.whenPressed(Intake(self.robot, power=0, button=self.co_axisButtonRT))
             self.co_axisButtonLT.whenPressed(Intake(self.robot, power=0, button=self.co_axisButtonLT))
-            self.co_buttonB.whenPressed(Intake(self.robot, power=-0.65, button=self.co_buttonB))
-            self.co_buttonA.whenPressed(Intake(self.robot, power=0.65, button=self.co_buttonA))
             self.co_buttonRB.whenPressed(ActuateGate(self.robot, direction='close', button=self.co_buttonRB))
             self.co_buttonLB.whenPressed(ActuateGate(self.robot, direction='open', button=self.co_buttonLB))
-            self.co_buttonX.whenPressed(PanelSpinner(self.robot, power=0.5, button=self.co_buttonX))
-            # self.co_buttonY.whenPressed(RaiseClimber(self.robot, direction='climb', power=0.75, button=self.co_buttonY))
+            self.co_buttonB.whenPressed(Intake(self.robot, power=-0.65, button=self.co_buttonB))
+            self.co_buttonA.whenPressed(Intake(self.robot, power=0.65, button=self.co_buttonA))
+            # panel spinner functions
+            self.co_buttonX.whenPressed(SpinToColor(self.robot, target_color=None, source='fms', power=0.25, thrust=-0.12))
+            self.co_buttonY.whenPressed(Spin3x(self.robot, power=0.4, thrust=-0.12))
             self.co_buttonStart.whenPressed(RaiseClimber(self.robot, direction='climb', power=0.75, button=self.co_buttonStart))
             self.co_povButtonUp.whenPressed(RaiseClimber(self.robot, direction='hookup', power=0.7, button=self.co_povButtonUp))
             self.co_povButtonDown.whenPressed(RaiseClimber(self.robot, direction='hookdown', power=-0.15, button=self.co_povButtonDown))
             self.co_povButtonRight.whenPressed(RaiseClimber(self.robot, power=-0.99, direction='right', button=self.co_povButtonRight))
             self.co_povButtonLeft.whenPressed(RaiseClimber(self.robot, power=0.99, direction='left', button=self.co_povButtonLeft))
-            self.co_buttonY.whenPressed(Spin3x(self.robot, power=0.4, thrust=-0.12))
-            # self.co
 
     def initialize_joystics(self):
         """
