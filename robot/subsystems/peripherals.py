@@ -62,7 +62,8 @@ class Peripherals(Subsystem):
     def get_fms_color(self):
         """Gets the target panel color from the gameSpecificMessage and converts it to the 90 degree pair
         :return color string for parsing in the spin_to_color command"""
-        fms_color = DriverStation.getGameSpecificMessage()
+        fms_color = ""
+        fms_color = fms_color + DriverStation.getGameSpecificMessage()
         # Sensor is 90 degrees to us, so Y<->G and B<->R
         if fms_color == 'Y':
             target_color = 'green'
@@ -99,7 +100,7 @@ class Peripherals(Subsystem):
 
             currents = ""
             for i in range(16):
-                currents = currents + " " + str(round(self.PDB.getCurrent(i), 1))
+                currents = currents + " " + str(round(self.PDB.getCurrent(i), 0))
             currents = currents + " = " + str(int(self.PDB.getTotalCurrent()))
             SmartDashboard.putString("PDB Status", currents)
             #self.PDB.clearStickyFaults()

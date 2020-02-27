@@ -151,7 +151,7 @@ class OI(object):
         SmartDashboard.putData("Rotate X", self.rotate_command)
         #SmartDashboard.putData("Update Pos PIDs", self.position_pids_command)
         #SmartDashboard.putData("Update Vel PIDs", self.velocity_pids_command)
-        SmartDashboard.putData("Autonomous Test", self.autonomous_test_command)
+        SmartDashboard.putData("Get Ball", self.autonomous_test_command)
         SmartDashboard.putData("Spin To", self.color_spinner_target_command)
         SmartDashboard.putData("Spin 3x", self.color_spinner_3x_command)
 
