@@ -21,12 +21,14 @@ class DpadDrive(Command):
             self.strafe_power = 0.9
             self.co_drive_power = 0.5
             self.co_strafe_power = 0.5
+            self.twist_power = 1
 
         else:
             self.drive_power = 0.25
             self.strafe_power = 0.5
             self.co_drive_power = 0.1
             self.co_strafe_power = 0.25
+            self.twist_power = 1
 
 
 
@@ -52,9 +54,9 @@ class DpadDrive(Command):
         if self.button == self.robot.oi.povButtonDown:
             thrust=-self.drive_power*self.direction; strafe=0; twist=twist_correction
         if self.button == self.robot.oi.povButtonLeft:
-            thrust=0; strafe=-self.strafe_power * self.direction; twist=twist_correction
+            thrust=0; strafe=0; twist=-self.twist_power
         if self.button == self.robot.oi.povButtonRight:
-            thrust=0; strafe=self.strafe_power * self.direction; twist=twist_correction
+            thrust=0; strafe=0; twist=self.twist_power
 
         # you guys messed this up - needs to know if there is a co stick
         if self.robot.oi.competition_mode:

@@ -50,8 +50,8 @@ class OI(object):
         self.axisButtonRT.whenPressed(Intake(self.robot, power=0, button=self.axisButtonRT))
         self.axisButtonLT.whenPressed(Intake(self.robot, power=0, button=self.axisButtonLT))
         # hopper functions
-        self.buttonRB.whenPressed(ActuateGate(self.robot, direction='open', button=self.buttonRB))
-        self.buttonLB.whenPressed(ActuateGate(self.robot, direction='close', button=self.buttonLB))
+        self.buttonRB.whenPressed(ActuateGate(self.robot, direction='open', button=self.buttonRB, timeout=2))
+        self.buttonLB.whenPressed(ActuateGate(self.robot, direction='close', button=self.buttonLB, timeout=2))
         # more intake functions
         self.buttonB.whenPressed(Intake(self.robot, power=-0.65, button=self.buttonB))
         self.buttonA.whenPressed(Intake(self.robot, power=0.5, button=self.buttonA))
@@ -80,8 +80,8 @@ class OI(object):
             self.co_buttonB.whenPressed(Intake(self.robot, power=-0.65, button=self.co_buttonB))
             self.co_buttonA.whenPressed(Intake(self.robot, power=0.5, button=self.co_buttonA))
             # hopper functions
-            self.co_buttonRB.whenPressed(ActuateGate(self.robot, direction='close', button=self.co_buttonRB))
-            self.co_buttonLB.whenPressed(ActuateGate(self.robot, direction='open', button=self.co_buttonLB))
+            self.co_buttonRB.whenPressed(ActuateGate(self.robot, direction='close', button=self.co_buttonRB, timeout=2))
+            self.co_buttonLB.whenPressed(ActuateGate(self.robot, direction='open', button=self.co_buttonLB, timeout=2))
             # panel spinner functions
             self.co_buttonX.whenPressed(SpinToColor(self.robot, target_color=None, source='fms', power=0.25, thrust=-0.12))
             self.co_buttonY.whenPressed(Spin3x(self.robot, power=0.75, thrust=-0.12))

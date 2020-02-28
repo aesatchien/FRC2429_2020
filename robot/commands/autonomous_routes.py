@@ -14,10 +14,13 @@ class AutonomousRoutes(CommandGroup):
     scoring_routes = 'move only', 'pick up balls', 'direct score', 'pick up and score'
     backoff_routes = 'none', 'shield generator port side', 'shield generator trench side', 'trench'
 
-    dists = {
-        'horizontal panel-goal': 67,
-        'line-panel': 150,
-    }
+    # more convenient than a dict
+    class dists:
+        horizontal_panel_goal = 67
+        horizontal_goal_ps = 65
+        goal_ts = 100
+        line_panel = 150
+        move_only = 40
 
     def __init__(self, robot, timeout=None):
         CommandGroup.__init__(self, name='AutonomousRoutes')
@@ -80,15 +83,15 @@ class AutonomousRoutes(CommandGroup):
 
         self.addSequential(AutonomousDrive(self.robot, setpoint=self.scoring_distance))
 
-        self.addSequential(ActuateGate(self.robot, direction='open'))
-        self.addSequential(AutonomousWait(self.robot, timeout=3))  #  we have to have a wait command that feeds the drivetrain!
-        self.addSequential(ActuateGate(self.robot, direction='close'))
+        self.addSequential(ActuateGate(self.robot, direction='open', timeout=3))
+        #self.addSequential(AutonomousWait(self.robot, timeout=3))  #  we have to have a wait command that feeds the drivetrain!
+        self.addSequential(ActuateGate(self.robot, direction='close', timeout=2))
 
     def pick_up_and_score(self):
         self.pick_up_balls()
 
-        self.addSequential(PseudoStrafe(self.robot, self.horizontal_panel_goal))
-        self.addSequential(AutonomousDrive(self.robot, setpoint=-80))
+        self.addSequential(PseudoStrafe(self.robot, self.dists.horizontal_panel_goal))
+        self.addSequential(AutonomousDrive(self.robot, setpoint=-self.dists.line_panel))
 
         self.direct_score()
 
@@ -103,7 +106,7 @@ class AutonomousRoutes(CommandGroup):
         time = round(Timer.getFPGATimestamp() - self.robot.enabled_time, 1)
         print("\n" + f"** Started move only route at {time} s **")
 
-        self.addSequential(AutonomousDrive(self.robot, setpoint=40))
+        self.addSequential(AutonomousDrive(self.robot, setpoint=self.dists.move_only))
 
     def pick_up_balls(self):
         time = round(Timer.getFPGATimestamp() - self.robot.enabled_time, 1)
@@ -122,7 +125,7 @@ class AutonomousRoutes(CommandGroup):
         '''
 
         self.addSequential(Intake(self.robot, end_power=0.1))
-        self.addSequential(AutonomousDrive(self.robot, setpoint=self.dists['line-panel']))
+        self.addSequential(AutonomousDrive(self.robot, setpoint=self.dists.line_panel))
         self.addSequential(Intake(self.robot, power=0, end_power=0))
 
     def port_side_b(self):
@@ -137,9 +140,13 @@ class AutonomousRoutes(CommandGroup):
         time = round(Timer.getFPGATimestamp() - self.robot.enabled_time, 1)
         print("\n" + f"** Started port-side-backoff route at {time} s **")
 
+        '''
         self.addSequential(AutonomousRotate(self.robot, setpoint=90))
         self.addSequential(AutonomousDrive(self.robot, setpoint=65))
-        self.addSequential(AutonomousRotate(self.robot, setpoint=-90))
+        self.addSequential(AutonomousRotate(self.robot, setpoint=-90)) 
+        '''
+
+        self.addSequential(PseudoStrafe(self.robot, self.dists.horizontal_goal_ps))
         self.addSequential(AutonomousDrive(self.robot, setpoint=100))
 
     def trench_side_b(self):
@@ -153,7 +160,7 @@ class AutonomousRoutes(CommandGroup):
         time = round(Timer.getFPGATimestamp() - self.robot.enabled_time, 1)
         print("\n" + f"** Started trench-side-backoff route at {time} s **")
 
-        self.addSequential(AutonomousDrive(self.robot, setpoint=100))
+        self.addSequential(AutonomousDrive(self.robot, setpoint=self.dists.goal_ts))
 
     def trench_b(self):
         """
@@ -169,11 +176,15 @@ class AutonomousRoutes(CommandGroup):
         time = round(Timer.getFPGATimestamp() - self.robot.enabled_time, 1)
         print("\n" + f"** Started trench-backoff route at {time} s **")
 
+        '''
         self.addSequential(AutonomousRotate(self.robot, setpoint=-90))
         self.addSequential(AutonomousDrive(self.robot, setpoint=67))
-        self.addSequential(AutonomousRotate(self.robot, setpoint=90))
+        self.addSequential(AutonomousRotate(self.robot, setpoint=90)) 
+        '''
+
+        self.addSequential(PseudoStrafe(self.robot, -self.dists.horizontal_panel_goal))
         self.addSequential(Intake(self.robot, end_power=0.1))
-        self.addSequential(AutonomousDrive(self.robot, setpoint=self.dists['line-panel']))
+        self.addSequential(AutonomousDrive(self.robot, setpoint=self.dists.line_panel))
         self.addSequential(Intake(self.robot, power=0, end_power=0))
 
     def initialize(self):
