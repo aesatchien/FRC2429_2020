@@ -32,7 +32,9 @@ class Spin3x(Command):
 
     def execute(self):
         colorraw = self.robot.peripherals.get_color_raw()
-        self.current_color = self.robot.peripherals.color_norm(colorraw)
+        colornorm = self.robot.peripherals.color_norm(colorraw)
+        self.current_color = self.robot.peripherals.get_color_str(colornorm)
+
         self.robot.drivetrain.spark_with_stick(thrust=self.thrust)
 
         if (self.current_color in self.robot.peripherals.color_dict.keys()) and (self.old_color != self.current_color):
@@ -55,9 +57,11 @@ class Spin3x(Command):
             if key == 'time':
                 for iarray in range(math.ceil(len(value) / 256.)):
                     SmartDashboard.putNumberArray(f"color_telemetry_{key}_{iarray}", value[256*iarray:min(256*(iarray+1), len(value))])
+                open(f'~/{key}.txt','ab').write('\n'.join([f"{t}" for t in value]))
             else:
                 for iarray in range(math.ceil(len(value) / 256.)):
                     SmartDashboard.putStringArray("color_telemetry_{key}_{iarray}", value[256*iarray:min(256*(iarray+1), len(value))])
+                open(f'~/{key}.txt','ab').write('\n'.join(value))
 
         print("\n" + f"** Ended {self.getName()} with current color {self.current_color} and {self.color_transition_counter} color transitions at {round(Timer.getFPGATimestamp() - self.robot.enabled_time, 1)} s **")
 
