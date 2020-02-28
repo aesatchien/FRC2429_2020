@@ -36,6 +36,10 @@ class Ball_Handler(Subsystem):
         print('opening gate')
         self.hopper_spark.set(-0.3)
 
+    def relax_gate(self):
+        print('relaxing gate')
+        self.hopper_spark.set(0)
+
     def log(self):
         self.counter += 1
         if self.counter % 10 == 0:

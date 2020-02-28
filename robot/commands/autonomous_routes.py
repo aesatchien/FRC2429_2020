@@ -80,9 +80,9 @@ class AutonomousRoutes(CommandGroup):
 
         self.addSequential(AutonomousDrive(self.robot, setpoint=self.scoring_distance))
 
-        self.addSequential(ActuateGate(self.robot, direction='open'))
-        self.addSequential(AutonomousWait(self.robot, timeout=3))  #  we have to have a wait command that feeds the drivetrain!
-        self.addSequential(ActuateGate(self.robot, direction='close'))
+        self.addSequential(ActuateGate(self.robot, direction='open', timeout=3))
+        #self.addSequential(AutonomousWait(self.robot, timeout=3))  #  we have to have a wait command that feeds the drivetrain!
+        self.addSequential(ActuateGate(self.robot, direction='close', timeout=2))
 
     def pick_up_and_score(self):
         self.pick_up_balls()
