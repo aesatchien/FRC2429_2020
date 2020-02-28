@@ -101,9 +101,9 @@ class Robot(CommandBasedRobot):
 
         self.navigation.log()
         self.peripherals.log()
-        self.drivetrain.log()
+
         if self.isReal():
-            pass
+            self.drivetrain.log()
 
 
     def reset(self):

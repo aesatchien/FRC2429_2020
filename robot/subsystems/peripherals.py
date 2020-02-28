@@ -18,6 +18,7 @@ class Peripherals(Subsystem):
         self.ball_table = NetworkTables.getTable("BallCam")
         self.lidar = Lidar()
         self.PDB = PowerDistributionPanel()
+        self.driverstation = DriverStation.getInstance()
 
         # we can config the colorsensor resolution and the rate
         #self.color_sensor.setGain(ColorSensorV3.GainFactor.k1x)
@@ -62,8 +63,9 @@ class Peripherals(Subsystem):
     def get_fms_color(self):
         """Gets the target panel color from the gameSpecificMessage and converts it to the 90 degree pair
         :return color string for parsing in the spin_to_color command"""
-        fms_color = ""
-        fms_color = fms_color + DriverStation.getGameSpecificMessage()
+
+        fms_color = self.driverstation.getGameSpecificMessage()
+        print(f'Received game specific message of {fms_color}')
         # Sensor is 90 degrees to us, so Y<->G and B<->R
         if fms_color == 'Y':
             target_color = 'green'
