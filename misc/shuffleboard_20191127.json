@@ -320,7 +320,7 @@
             "content": {
               "_type": "Command",
               "_source0": "network_table:///SmartDashboard/Get Ball",
-              "_title": "Get Ball"
+              "_title": "SmartDashboard/Get Ball"
             }
           }
         }

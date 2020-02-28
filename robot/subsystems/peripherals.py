@@ -46,8 +46,8 @@ class Peripherals(Subsystem):
             detected_color = color
 
         self.match_confidence = 0.5
-        for key in self.color_dict:
-            self.match_confidence = self.color_distance(detected_color, self.color_dict[key])
+        for key,value in self.color_dict.items():
+            self.match_confidence = self.color_distance(detected_color, value)
             if self.match_confidence < 0.05:
                 color_string = key
                 break
