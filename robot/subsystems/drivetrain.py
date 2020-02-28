@@ -402,8 +402,8 @@ class DriveTrain(Subsystem):
                 math.radians(self.robot.navigation.get_angle()))
             self.previous_distance = distance
             # send values to the dash to make sure encoders are working well
-            SmartDashboard.putNumber("Robot X", round(self.x, 2))
-            SmartDashboard.putNumber("Robot Y", round(self.y, 2))
+            #SmartDashboard.putNumber("Robot X", round(self.x, 2))
+            #SmartDashboard.putNumber("Robot Y", round(self.y, 2))
             for ix, encoder in enumerate(self.encoders):
                 SmartDashboard.putNumber(f"Position Enc{str(int(1+ix))}", round(encoder.getPosition()-self.encoder_offsets[ix], 2))
                 SmartDashboard.putNumber(f"Velocity Enc{str(int(1+ix))}", round(encoder.getVelocity(), 2))
@@ -412,7 +412,7 @@ class DriveTrain(Subsystem):
             SmartDashboard.putBoolean('AccLimit', self.is_limited)
 
         if self.counter % 1000 == 0:
-            self.display_PIDs()
+            # self.display_PIDs()
             SmartDashboard.putString("alert",
                                      f"Position: ({round(self.x, 1)},{round(self.y, 1)})  Time: {round(Timer.getFPGATimestamp() - self.robot.enabled_time, 1)}")
 

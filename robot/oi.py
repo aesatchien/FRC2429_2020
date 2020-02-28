@@ -46,18 +46,23 @@ class OI(object):
 
     def assign_buttons(self):
         """Assign commands to buttons here"""
-        # binding button to commands
+        # intake functions
         self.axisButtonRT.whenPressed(Intake(self.robot, power=0, button=self.axisButtonRT))
         self.axisButtonLT.whenPressed(Intake(self.robot, power=0, button=self.axisButtonLT))
-        self.buttonRB.whenPressed(ActuateGate(self.robot, direction='open', button=self.buttonRB))
-        self.buttonLB.whenPressed(ActuateGate(self.robot, direction='close', button=self.buttonLB))
+        # hopper functions
+        self.buttonRB.whenPressed(ActuateGate(self.robot, direction='open', button=self.buttonRB, timeout=4))
+        self.buttonLB.whenPressed(ActuateGate(self.robot, direction='close', button=self.buttonLB, timeout=2))
+        # more intake functions
         self.buttonB.whenPressed(Intake(self.robot, power=-0.65, button=self.buttonB))
         self.buttonA.whenPressed(Intake(self.robot, power=0.5, button=self.buttonA))
+        # panel spinner functions
         self.buttonX.whenPressed(PanelSpinner(self.robot, power=0.3, button=self.buttonX))
-        # still testing climber TODO: sense tilt of bar
-        self.buttonY.whenPressed(RaiseClimber(self.robot, direction='hook', power=0.7, button=self.buttonY))
+
+        # climber functions
+        self.buttonY.whenPressed(RaiseClimber(self.robot, direction='hookup', power=0.7, button=self.buttonY))
         self.buttonStart.whenPressed(RaiseClimber(self.robot, direction='climb', power=0.75, button=self.buttonStart))
-        # buttonBack.whenPressed(RaiseClimber(self.robot, power=0.6, direction='right', button=self.buttonBack))
+
+        # dpad driving functions
         self.povButtonUp.whenPressed(DpadDrive(self.robot, 'up', self.povButtonUp))
         self.povButtonDown.whenPressed(DpadDrive(self.robot, 'down', self.povButtonDown))
         self.povButtonRight.whenPressed(DpadDrive(self.robot, 'right', self.povButtonRight))
@@ -69,15 +74,18 @@ class OI(object):
 
         # co-pilot joystick to commands
         if self.competition_mode:
+            # intake functions
             self.co_axisButtonRT.whenPressed(Intake(self.robot, power=0, button=self.co_axisButtonRT))
             self.co_axisButtonLT.whenPressed(Intake(self.robot, power=0, button=self.co_axisButtonLT))
-            self.co_buttonRB.whenPressed(ActuateGate(self.robot, direction='close', button=self.co_buttonRB))
-            self.co_buttonLB.whenPressed(ActuateGate(self.robot, direction='open', button=self.co_buttonLB))
             self.co_buttonB.whenPressed(Intake(self.robot, power=-0.65, button=self.co_buttonB))
             self.co_buttonA.whenPressed(Intake(self.robot, power=0.5, button=self.co_buttonA))
+            # hopper functions
+            self.co_buttonRB.whenPressed(ActuateGate(self.robot, direction='close', button=self.co_buttonRB, timeout=2))
+            self.co_buttonLB.whenPressed(ActuateGate(self.robot, direction='open', button=self.co_buttonLB, timeout=4))
             # panel spinner functions
             self.co_buttonX.whenPressed(SpinToColor(self.robot, target_color=None, source='fms', power=0.25, thrust=-0.12))
             self.co_buttonY.whenPressed(Spin3x(self.robot, power=0.75, thrust=-0.12))
+            # climbing functions
             self.co_buttonStart.whenPressed(RaiseClimber(self.robot, direction='climb', power=0.75, button=self.co_buttonStart))
             self.co_povButtonUp.whenPressed(RaiseClimber(self.robot, direction='hookup', power=0.7, button=self.co_povButtonUp))
             self.co_povButtonDown.whenPressed(RaiseClimber(self.robot, direction='hookdown', power=-0.15, button=self.co_povButtonDown))
@@ -143,7 +151,7 @@ class OI(object):
         SmartDashboard.putData("Rotate X", self.rotate_command)
         #SmartDashboard.putData("Update Pos PIDs", self.position_pids_command)
         #SmartDashboard.putData("Update Vel PIDs", self.velocity_pids_command)
-        SmartDashboard.putData("Autonomous Test", self.autonomous_test_command)
+        SmartDashboard.putData("Get Ball", self.autonomous_test_command)
         SmartDashboard.putData("Spin To", self.color_spinner_target_command)
         SmartDashboard.putData("Spin 3x", self.color_spinner_3x_command)
 

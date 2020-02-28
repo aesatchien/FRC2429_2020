@@ -14,11 +14,23 @@ class DpadDrive(Command):
         self.robot = robot
         self.state = state
         self.button = button
-        self.drive_power = 0.5
-        self.strafe_power = 0.8
 
-        self.co_drive_power = 0.1
-        self.co_strafe_power = 0.25
+        self.mode = 'velocity'
+        if self.mode == 'velocity':
+            self.drive_power = 1.0
+            self.strafe_power = 0.9
+            self.co_drive_power = 0.5
+            self.co_strafe_power = 0.5
+            self.twist_power = 1
+
+        else:
+            self.drive_power = 0.25
+            self.strafe_power = 0.5
+            self.co_drive_power = 0.1
+            self.co_strafe_power = 0.25
+            self.twist_power = 1
+
+
 
         self.kp_twist = 0.03
         self.direction = 1 # change this to -1 change all directions quickly
@@ -42,9 +54,9 @@ class DpadDrive(Command):
         if self.button == self.robot.oi.povButtonDown:
             thrust=-self.drive_power*self.direction; strafe=0; twist=twist_correction
         if self.button == self.robot.oi.povButtonLeft:
-            thrust=0; strafe=-self.strafe_power * self.direction; twist=twist_correction
+            thrust=0; strafe=0; twist=-self.twist_power
         if self.button == self.robot.oi.povButtonRight:
-            thrust=0; strafe=self.strafe_power * self.direction; twist=twist_correction
+            thrust=0; strafe=0; twist=self.twist_power
 
         # you guys messed this up - needs to know if there is a co stick
         if self.robot.oi.competition_mode:
@@ -59,8 +71,10 @@ class DpadDrive(Command):
 
         #really need to decide on how we're going to drive - smooth or pure stick or velocity
         #self.robot.drivetrain.spark_with_stick(thrust=thrust, strafe=strafe, z_rotation=twist)
-        self.robot.drivetrain.mecanum_velocity_cartesian(thrust=thrust, strafe=strafe, z_rotation=twist)
-        #self.robot.drivetrain.smooth_drive(thrust=thrust, strafe=strafe, twist=twist)
+        if self.mode == 'velocity':
+            self.robot.drivetrain.mecanum_velocity_cartesian(thrust=thrust, strafe=strafe, z_rotation=twist)
+        else:
+            self.robot.drivetrain.smooth_drive(thrust=thrust, strafe=strafe, twist=twist)
 
     def isFinished(self):
         """Make this return true when this Command no longer needs to run execute()"""

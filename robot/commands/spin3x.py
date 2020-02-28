@@ -7,7 +7,7 @@ class Spin3x(Command):
         # sometimes super()__init__ gives an error when Command._init__ does not...
         Command.__init__(self, name='Spin3x')
         self.requires(robot.peripherals)
-        self.requires(robot.drivetrain)  # lock out the joysticks
+        self.requires(robot.drivetrain)  # use the motor to hold against the spinner
 
         self.robot = robot
         self.power = power  # power for the spinner motor
@@ -38,7 +38,7 @@ class Spin3x(Command):
         if (self.current_color in self.robot.peripherals.color_dict.keys()) and (self.old_color != self.current_color):
             self.timeout = self.timeSinceInitialized() + 1  # increases time left when color changes
             self.setTimeout(self.timeout)
-            self.color_transition_counter += 1 # this happens immediately if you start on a color
+            self.color_transition_counter += 1  # this happens immediately if you start on a color
 
         self.old_color = self.current_color
         self.telemetry['time'].append(self.timeSinceInitialized())

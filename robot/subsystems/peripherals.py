@@ -18,6 +18,7 @@ class Peripherals(Subsystem):
         self.ball_table = NetworkTables.getTable("BallCam")
         self.lidar = Lidar()
         self.PDB = PowerDistributionPanel()
+        self.driverstation = DriverStation.getInstance()
 
         # we can config the colorsensor resolution and the rate
         #self.color_sensor.setGain(ColorSensorV3.GainFactor.k1x)
@@ -53,8 +54,8 @@ class Peripherals(Subsystem):
             detected_color = color
 
         self.match_confidence = 0.5
-        for key in self.color_dict:
-            self.match_confidence = self.color_distance(detected_color, self.color_dict[key])
+        for key,value in self.color_dict.items():
+            self.match_confidence = self.color_distance(detected_color, value)
             if self.match_confidence < 0.05:
                 color_string = key
                 break
@@ -70,7 +71,9 @@ class Peripherals(Subsystem):
     def get_fms_color(self):
         """Gets the target panel color from the gameSpecificMessage and converts it to the 90 degree pair
         :return color string for parsing in the spin_to_color command"""
-        fms_color = DriverStation.getGameSpecificMessage()
+
+        fms_color = self.driverstation.getGameSpecificMessage()
+        print(f'Received game specific message of {fms_color}')
         # Sensor is 90 degrees to us, so Y<->G and B<->R
         if fms_color == 'Y':
             target_color = 'green'
@@ -107,7 +110,7 @@ class Peripherals(Subsystem):
 
             currents = ""
             for i in range(16):
-                currents = currents + " " + str(round(self.PDB.getCurrent(i), 1))
+                currents = currents + " " + str(round(self.PDB.getCurrent(i), 0))
             currents = currents + " = " + str(int(self.PDB.getTotalCurrent()))
             SmartDashboard.putString("PDB Status", currents)
             #self.PDB.clearStickyFaults()
