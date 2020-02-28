@@ -144,7 +144,7 @@ class OI(object):
         self.position_pids_command = UpdatePIDs(self.robot, factor=1, from_dashboard='position')
         self.velocity_pids_command = UpdatePIDs(self.robot, factor=1, from_dashboard='velocity')
         self.autonomous_test_command = AutonomousGroup(self.robot)
-        self.color_spinner_target_command = SpinToColor(self.robot, target_color=None, source='fms', power=0.25, thrust=-0.12)
+        self.color_spinner_target_command = SpinToColor(self.robot, target_color=None, source='dash', power=0.25, thrust=-0.12)
         self.color_spinner_3x_command = Spin3x(self.robot, power=1.0, thrust=-0.12)
 
         SmartDashboard.putData("Drive Forward", self.drive_fwd_command)

@@ -54,7 +54,7 @@ class SpinToColor(Command):
             if key == 'time':
                 SmartDashboard.putNumberArray("color_telemetry_" + str(key), self.telemetry[key])
             else:
-                print(f"color_telemeter is: {self.telemetry['color']}")
+                #print(f"color_telemetty is: {self.telemetry['color']} \n and with length {len(self.telemetry['color'])}")
                 SmartDashboard.putStringArray("color_telemetry_" + str(key), self.telemetry[key])
         print("\n" + f"** Ended {self.getName()} at {round(Timer.getFPGATimestamp() - self.robot.enabled_time, 1)} s **")
 
