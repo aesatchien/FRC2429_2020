@@ -100,7 +100,7 @@ class Robot(CommandBasedRobot):
     def log(self):
 
         self.navigation.log()
-        self.peripherals.log()
+        #self.peripherals.log()
         self.drivetrain.log()
         if self.isReal():
             pass

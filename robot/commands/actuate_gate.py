@@ -38,7 +38,7 @@ class ActuateGate(Command):
         """Make this return true when this Command no longer needs to run execute()"""
         #return not self.button or not self.button.get()
         if self.button:
-            return not self.button.get()
+            return not self.button.get() and self.isTimedOut()
         elif self.timeout:
             return self.isTimedOut()
         else:
@@ -47,7 +47,12 @@ class ActuateGate(Command):
     def end(self):
         """Called once after isFinished returns true"""
         print("\n" + f"** Ended {self.getName()} at {round(Timer.getFPGATimestamp() - self.robot.enabled_time, 1)} s **")
-        self.robot.ball_handler.hold_gate()
+
+        if self.direction == 'close':
+            self.robot.ball_handler.hold_gate()
+        elif self.direction == 'open':
+            self.robot.ball_handler.relax_gate()
+
     def interrupted(self):
         """Called when another command which requires one or more of the same subsystems is scheduled to run."""
         #print("\n" + f"** Interrupted {self.name} at {round(Timer.getFPGATimestamp() - self.robot.enabled_time, 1)} s **")
