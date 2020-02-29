@@ -6,6 +6,8 @@ class RaiseClimber(Command):
     This command opens and closed the piston
     """
 
+    unpressed_min = 5
+
     def __init__(self, robot, direction=None, power=0.2, button=None):
         Command.__init__(self, name='raise_climber')
         self.robot = robot
@@ -13,10 +15,14 @@ class RaiseClimber(Command):
         self.power = power
         self.button = button
 
+        self.unpressed_counter = 0
+
     def initialize(self):
         """Called just before this Command runs the first time."""
         self.start_time = round(Timer.getFPGATimestamp() - self.robot.enabled_time, 1)
         print("\n" + f"** Started {self.getName()} with direction {self.direction} and power {self.power} at {self.start_time} s **", flush=True)
+
+        self.unpressed_counter = 0
 
     def execute(self):
         """Called repeatedly when this Command is scheduled to run"""
@@ -33,9 +39,16 @@ class RaiseClimber(Command):
         else:
             print("!!! Invalid climbing option passed to raise climber !!!")
 
+        pressed = self.button.get()
+
+        if not pressed:
+            self.unpressed_counter += 1
+        else:
+            self.unpressed_counter = 0
+
     def isFinished(self):
         """Make this return true when this Command no longer needs to run execute()"""
-        return not self.button.get()
+        return self.unpressed_counter >= self.unpressed_min
 
     def end(self):
         """Called once after isFinished returns true"""
