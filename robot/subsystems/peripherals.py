@@ -26,10 +26,10 @@ class Peripherals(Subsystem):
                                                rate=ColorSensorV3.ColorMeasurementRate.k25ms)
 
         # made these numbers ourselves by positioning the sensor over the target and recording the RGB
-        self.kBlueTarget = Color(0.181, 0.453, 0.365)
-        self.kGreenTarget = Color(0.215, 0.529, 0.255)
-        self.kRedTarget = Color(0.417, 0.398, 0.184)
-        self.kYellowTarget = Color(0.326, 0.519, 0.154)
+        self.kBlueTarget = Color (0.191, 0.463, 0.343) #  (0.181, 0.453, 0.365)
+        self.kGreenTarget = Color(0.222, 0.524, 0.255)  # (0.215, 0.529, 0.255)
+        self.kRedTarget = Color(0.364, 0.428, 0.210) #(0.417, 0.398, 0.184)
+        self.kYellowTarget = Color(0.305, 0.522, 0.171)  #(0.326, 0.519, 0.154)
         self.color_dict = {"blue":self.kBlueTarget, "green":self.kGreenTarget, "red":self.kRedTarget, "yellow":self.kYellowTarget}
 
     def run_spinner(self, power=0):
