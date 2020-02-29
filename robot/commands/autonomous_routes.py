@@ -11,7 +11,7 @@ from wpilib import SmartDashboard
 
 class AutonomousRoutes(CommandGroup):
     positions = 'middle', 'left',  'right'
-    scoring_routes = 'move only', 'pick up balls', 'direct score', 'pick up and score'
+    scoring_routes = 'direct score', 'move only', 'pick up balls', 'pick up and score'
     backoff_routes = 'none', 'shield generator port side', 'shield generator trench side', 'trench'
 
     # more convenient than a dict
@@ -81,7 +81,7 @@ class AutonomousRoutes(CommandGroup):
         time = round(Timer.getFPGATimestamp() - self.robot.enabled_time, 1)
         print("\n" + f"** Started direct scoring route at {time} s **")
 
-        self.addSequential(AutonomousDrive(self.robot, setpoint=self.scoring_distance))
+        self.addSequential(AutonomousDrive(self.robot, setpoint=self.scoring_distance, manual_override=True))
 
         self.addSequential(ActuateGate(self.robot, direction='open', timeout=3))
         #self.addSequential(AutonomousWait(self.robot, timeout=3))  #  we have to have a wait command that feeds the drivetrain!
@@ -106,7 +106,7 @@ class AutonomousRoutes(CommandGroup):
         time = round(Timer.getFPGATimestamp() - self.robot.enabled_time, 1)
         print("\n" + f"** Started move only route at {time} s **")
 
-        self.addSequential(AutonomousDrive(self.robot, setpoint=self.dists.move_only))
+        self.addSequential(AutonomousDrive(self.robot, setpoint=self.dists.move_only, manual_override=True))
 
     def pick_up_balls(self):
         time = round(Timer.getFPGATimestamp() - self.robot.enabled_time, 1)

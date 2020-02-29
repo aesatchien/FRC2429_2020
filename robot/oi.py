@@ -139,7 +139,7 @@ class OI(object):
         """Moving dashboard commands to a different function
         since they were broken when called due to pybind translation into python in 2020"""
         # These are no longer broken as of 2/3/2020 if we use the newest commands_v1 library.
-        self.drive_fwd_command = AutonomousDrive(self.robot, setpoint=None, control_type='position', timeout=6, source='dashboard')
+        self.drive_fwd_command = AutonomousDrive(self.robot, setpoint=None, control_type='position', timeout=6, source='dashboard', manual_override=True)
         self.rotate_command = AutonomousRotate(self.robot, setpoint=None, timeout=6, source='dashboard')
         self.position_pids_command = UpdatePIDs(self.robot, factor=1, from_dashboard='position')
         self.velocity_pids_command = UpdatePIDs(self.robot, factor=1, from_dashboard='velocity')

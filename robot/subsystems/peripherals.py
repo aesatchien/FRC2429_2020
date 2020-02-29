@@ -16,7 +16,7 @@ class Peripherals(Subsystem):
         self.color_sensor = ColorSensorV3(I2C.Port.kOnboard)
         self.match_confidence = 0
         self.ball_table = NetworkTables.getTable("BallCam")
-        self.lidar = Lidar()
+        #self.lidar = Lidar()
         self.PDB = PowerDistributionPanel()
         self.driverstation = DriverStation.getInstance()
 
@@ -90,10 +90,11 @@ class Peripherals(Subsystem):
         return target_color
 
     def lidar_distance(self):
-        return self.lidar.dist()  # distance in cm
+        pass
+        # return self.lidar.dist()  # distance in cm
 
     def log(self):
-        self.lidar_meas = self.lidar_distance()
+        #self.lidar_meas = self.lidar_distance()
         self.counter += 1
         if self.counter % 10 == 0:
             detected_color = self.color_sensor.getColor()
@@ -104,7 +105,7 @@ class Peripherals(Subsystem):
             SmartDashboard.putNumber("Green", round(detected_color.green, 3))
             SmartDashboard.putNumber("Blue", round(detected_color.blue, 3))
             SmartDashboard.putNumber("Confidence", round(self.match_confidence, 3))
-            SmartDashboard.putNumber("Lidar Distance", self.lidar_meas)
+            #SmartDashboard.putNumber("Lidar Distance", self.lidar_meas)
             #SmartDashboard.putNumber("Cam distance", self.ball_table.getNumber("distance", 0))
             #SmartDashboard.putString('PDB Status', str(self.PDB.getTotalCurrent()))
 

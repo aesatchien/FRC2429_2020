@@ -18,7 +18,7 @@ class AutonomousDrive(Command):
     # may need to use variables at some point ...
     tolerance = 0.5
 
-    def __init__(self, robot, setpoint=None, control_type='position', button = 'None', timeout=None, source=None):
+    def __init__(self, robot, setpoint=None, control_type='position', button = 'None', timeout=None, source=None, manual_override=False):
         """The constructor"""
         #super().__init__()
         Command.__init__(self, name='AutonomousDrive')
@@ -37,6 +37,8 @@ class AutonomousDrive(Command):
         self.button = button
         self.max_thrust = 0.25
         self.encoders_have_reset = False
+        self.manual_override= manual_override
+        self.setpoint_sign = 1.0
 
     def initialize(self):
         """Called just before this Command runs the first time."""
@@ -65,12 +67,16 @@ class AutonomousDrive(Command):
             "\n" + f"** Started {self.getName()} with setpoint {self.setpoint} and control_type {self.control_type} at {self.start_time} s **")
         SmartDashboard.putString("alert",
                                  f"** Started {self.getName()} with setpoint {self.setpoint} and control_type {self.control_type} at {self.start_time} s **")
-        if self.control_type == 'position':
-            self.robot.drivetrain.goToSetPoint(self.setpoint, reset=False)
-        elif self.control_type == 'velocity':
-            self.robot.drivetrain.set_velocity(self.setpoint)
+
+        if self.manual_override:
+            self.robot.drivetrain.reset()
         else:
-            print(f"Invalid control type sent to automous_drive: {self.control_type}")
+            if self.control_type == 'position':
+                self.robot.drivetrain.goToSetPoint(self.setpoint, reset=False)
+            elif self.control_type == 'velocity':
+                self.robot.drivetrain.set_velocity(self.setpoint)
+            else:
+                print(f"Invalid control type sent to automous_drive: {self.control_type}")
 
         self.starting_position = self.robot.drivetrain.get_position()
         self.start_counter = 0
@@ -79,9 +85,19 @@ class AutonomousDrive(Command):
         #error = (self.setpoint - pos)
         #print(f"Error is : {error:4.1f}  Position is : {pos:4.1f}")
 
+        self.setpoint_sign = 1.0  # could do this all with a copysign but better to be explicit
+        if self.setpoint < 0:
+            self.setpoint_sign = -1.0
+
+
     def execute(self):
         """Called repeatedly when this Command is scheduled to run"""
-        self.robot.drivetrain.drive.feed()
+        # having problems at competition guarnateeing that the sparkmax will execute the motion profile
+        if self.manual_override:
+            self.robot.drivetrain.mecanum_velocity_cartesian(thrust=1.0*self.setpoint_sign, strafe=0, z_rotation=0)
+        else:
+            self.robot.drivetrain.drive.feed()
+
         if self.start_counter < 2:
             print(f"Waiting for {self.start_counter} iterations for encoder to clear (because encoder at {self.robot.drivetrain.get_position():4.1f})...")
             self.start_counter += 1
@@ -97,9 +113,7 @@ class AutonomousDrive(Command):
             self.telemetry['output'].append(self.robot.drivetrain.spark_neo_left_front.getAppliedOutput())
         self.counter += 1
 
-        setpoint_sign = 1.0  # could do this all with a copysign but better to be explicit
-        if self.setpoint < 0:
-            setpoint_sign = -1.0
+
 
         # try to trick ourselves into giving ~ a half second to slow down at the end of the motion profile
         # TODO: get more opinions on how to do this better
@@ -107,7 +121,7 @@ class AutonomousDrive(Command):
         if self.control_type == 'position' and not self.has_arrived:
             #pos = self.robot.drivetrain.get_position() - self.starting_position
             pos = self.robot.drivetrain.get_position()
-            error = setpoint_sign*(self.setpoint - pos)
+            error = self.setpoint_sign*(self.setpoint - pos)
             print(f"Error is : {error:4.1f}  Position is : {pos:4.1f}")
             if error <= self.tolerance:
                 self.has_arrived = True
@@ -121,6 +135,8 @@ class AutonomousDrive(Command):
 
         if self.control_type == 'velocity':
             return not self.button.get()
+        elif self.manual_override == True:
+            return self.has_arrived
         elif self.isTimedOut():
             return True
         else:

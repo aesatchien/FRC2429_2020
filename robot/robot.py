@@ -98,13 +98,14 @@ class Robot(CommandBasedRobot):
         self.log()
 
     def log(self):
+        # worried about too much comm during the match
+        silent_mode = False
+        if not silent_mode:
+            self.navigation.log()
+            self.peripherals.log()
 
-        self.navigation.log()
-        self.peripherals.log()
-
-        if self.isReal():
-            self.drivetrain.log()
-
+            if self.isReal():
+                self.drivetrain.log()
 
     def reset(self):
         self.drivetrain.reset()
