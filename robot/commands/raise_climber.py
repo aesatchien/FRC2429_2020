@@ -6,8 +6,6 @@ class RaiseClimber(Command):
     This command opens and closed the piston
     """
 
-    unpressed_min = 5
-
     def __init__(self, robot, direction=None, power=0.2, button=None):
         Command.__init__(self, name='raise_climber')
         self.robot = robot
@@ -15,6 +13,7 @@ class RaiseClimber(Command):
         self.power = power
         self.button = button
 
+        self.unpressed_min = 5
         self.unpressed_counter = 0
 
     def initialize(self):
@@ -40,7 +39,6 @@ class RaiseClimber(Command):
             print("!!! Invalid climbing option passed to raise climber !!!")
 
         pressed = self.button.get()
-
         if not pressed:
             self.unpressed_counter += 1
         else:

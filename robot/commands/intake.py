@@ -16,12 +16,16 @@ class Intake(Command):
         self.end_power = end_power
         self.max_power = 0.8
 
+        self.unpressed_min = 5
+        self.unpressed_counter = 0
+
 
     def initialize(self):
         """Called just before this Command runs the first time."""
         self.start_time = round(Timer.getFPGATimestamp() - self.robot.enabled_time, 1)
         print("\n" + f"** Started {self.getName()} with power {self.power} at {self.start_time} s **", flush=True)
         self.setTimeout(self.timeout)
+        self.unpressed_counter = 0
 
     def execute(self):
         """Called repeatedly when this Command is scheduled to run"""
@@ -36,10 +40,16 @@ class Intake(Command):
                 self.power = -self.robot.oi.co_stick.getRawAxis(2) * self.max_power
         self.robot.ball_handler.run_intake(self.power)
 
+        pressed = self.button.get()
+        if not pressed:
+            self.unpressed_counter += 1
+        else:
+            self.unpressed_counter = 0
+
     def isFinished(self):
         """Make this return true when this Command no longer needs to run execute()"""
         if self.button is not None:
-            return not self.button.get()
+            return self.unpressed_counter >= self.unpressed_min
         else:
             return self.isTimedOut()
 

@@ -53,7 +53,7 @@ class OI(object):
         self.buttonRB.whenPressed(ActuateGate(self.robot, direction='open', button=self.buttonRB, timeout=4))
         self.buttonLB.whenPressed(ActuateGate(self.robot, direction='close', button=self.buttonLB, timeout=2))
         # more intake functions
-        self.buttonB.whenPressed(Intake(self.robot, power=-0.65, button=self.buttonB))
+        self.buttonB.whenPressed(Intake(self.robot, power=-0.75, button=self.buttonB))
         self.buttonA.whenPressed(Intake(self.robot, power=0.5, button=self.buttonA))
         # panel spinner functions
         self.buttonX.whenPressed(PanelSpinner(self.robot, power=0.3, button=self.buttonX))
@@ -77,7 +77,7 @@ class OI(object):
             # intake functions
             self.co_axisButtonRT.whenPressed(Intake(self.robot, power=0, button=self.co_axisButtonRT))
             self.co_axisButtonLT.whenPressed(Intake(self.robot, power=0, button=self.co_axisButtonLT))
-            self.co_buttonB.whenPressed(Intake(self.robot, power=-0.65, button=self.co_buttonB))
+            self.co_buttonB.whenPressed(Intake(self.robot, power=-0.75, button=self.co_buttonB))
             self.co_buttonA.whenPressed(Intake(self.robot, power=0.5, button=self.co_buttonA))
             # hopper functions
             self.co_buttonRB.whenPressed(ActuateGate(self.robot, direction='close', button=self.co_buttonRB, timeout=2))
@@ -88,7 +88,7 @@ class OI(object):
             # climbing functions
             self.co_buttonStart.whenPressed(RaiseClimber(self.robot, direction='climb', power=0.75, button=self.co_buttonStart))
             self.co_povButtonUp.whenPressed(RaiseClimber(self.robot, direction='hookup', power=0.7, button=self.co_povButtonUp))
-            self.co_povButtonDown.whenPressed(RaiseClimber(self.robot, direction='hookdown', power=-0.15, button=self.co_povButtonDown))
+            self.co_povButtonDown.whenPressed(RaiseClimber(self.robot, direction='hookdown', power=-0.20, button=self.co_povButtonDown))
             self.co_povButtonRight.whenPressed(RaiseClimber(self.robot, power=-0.99, direction='right', button=self.co_povButtonRight))
             self.co_povButtonLeft.whenPressed(RaiseClimber(self.robot, power=0.99, direction='left', button=self.co_povButtonLeft))
 
