@@ -15,14 +15,12 @@ class SpinToColor(Command):
         self.thrust = thrust  # push the robot just a little bit to maintain contact with the spinner
         self.timeout = timeout  # do not let this be a forever while loop
 
-        self.old_color = "No Match"
-        self.current_color = "No Match"
         self.start_time = 0
 
     def initialize(self):
         """Called just before this Command runs the first time."""
         self.start_time = round(Timer.getFPGATimestamp() - self.robot.enabled_time, 1)
-        self.telemetry = {'time': [], 'color': []}
+        self.telemetry = {'time': [], 'color': [], 'colorraw':[]}
         if self.source == 'dash':
             self.target_color = self.robot.oi.color_chooser.getSelected()
         elif self.source == 'fms':
@@ -30,19 +28,30 @@ class SpinToColor(Command):
 
         self.setTimeout(self.timeout)
         self.robot.peripherals.panel_clockwise(self.power)
+        self.color_next = self.robot.peripherals.color_nextcw # hardcoded for cw
+        self.old_color = None
+        self.current_color = "No match"
         print("\n" + f"** Started {self.getName()} with target color {self.target_color} and power {self.power} at {self.start_time} s **", flush=True)
 
     def execute(self):
-        self.current_color = self.robot.peripherals.get_color_str()
+        colorraw = self.robot.peripherals.get_color_raw()
+        colornorm = self.robot.peripherals.color_norm(colorraw)
+        self.current_color = self.robot.peripherals.get_color_str(colornorm)
         self.robot.drivetrain.spark_with_stick(thrust=self.thrust)
 
-        if self.current_color != self.old_color:
-            self.timeout += 1.0  # increases time left when color changes
+        # old color and sequence are used only to reset timeout
+        nextcolor = self.color_next.get(self.old_color, '') # old_color is none after initialization, don't recognize a "next" yet
+        if self.current_color == nextcolor:
+            self.timeout = self.timeSinceInitialized() + 1  # increases time left when color changes
             self.setTimeout(self.timeout)
             self.old_color = self.current_color
 
+        if (self.old_color is None) and (self.current_color in self.robot.peripherals.color_dict.keys()):
+            self.old_color = self.current_color # first recognized color clears initial None in old_color
+
         self.telemetry['time'].append(self.timeSinceInitialized())
         self.telemetry['color'].append(self.current_color)
+        self.telemetry['colorraw'].append(f"{colorraw.red:5d},{colorraw.green:5d},{colorraw.blue:5d}")
 
     def isFinished(self):
         return self.current_color == self.target_color or self.isTimedOut()  # correct color or timed out
@@ -50,12 +59,15 @@ class SpinToColor(Command):
     def end(self):
         self.robot.peripherals.panel_clockwise(0)
         self.robot.drivetrain.stop()
-        for key in self.telemetry:
+        for key,value in self.telemetry.items():
             if key == 'time':
-                SmartDashboard.putNumberArray("color_telemetry_" + str(key), self.telemetry[key])
+                for iarray in range(math.ceil(len(value) / 256.)):
+                    SmartDashboard.putNumberArray(f"color_telemetry_{key}_{iarray}", value[256*iarray:min(256*(iarray+1), len(value))])
+                open(f'/home/lvuser/{key}.txt','ab').write('\n'.join([f"{t}" for t in value+['']*2]).encode())
             else:
-                #print(f"color_telemetty is: {self.telemetry['color']} \n and with length {len(self.telemetry['color'])}")
-                SmartDashboard.putStringArray("color_telemetry_" + str(key), self.telemetry[key])
+                for iarray in range(math.ceil(len(value) / 256.)):
+                    SmartDashboard.putStringArray("color_telemetry_{key}_{iarray}", value[256*iarray:min(256*(iarray+1), len(value))])
+                open(f'/home/lvuser/{key}.txt','ab').write('\n'.join(value+['']*2).encode()) # extra empty ensures \n at end
         print("\n" + f"** Ended {self.getName()} at {round(Timer.getFPGATimestamp() - self.robot.enabled_time, 1)} s **")
 
     def interrupted(self):
