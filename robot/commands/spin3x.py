@@ -57,11 +57,11 @@ class Spin3x(Command):
             if key == 'time':
                 for iarray in range(math.ceil(len(value) / 256.)):
                     SmartDashboard.putNumberArray(f"color_telemetry_{key}_{iarray}", value[256*iarray:min(256*(iarray+1), len(value))])
-                open(f'/home/lvuser/{key}.txt','ab').write('\n'.join([f"{t}" for t in value+['']]).encode())
+                open(f'/home/lvuser/{key}.txt','ab').write('\n'.join([f"{t}" for t in value+['']*2]).encode())
             else:
                 for iarray in range(math.ceil(len(value) / 256.)):
                     SmartDashboard.putStringArray("color_telemetry_{key}_{iarray}", value[256*iarray:min(256*(iarray+1), len(value))])
-                open(f'/home/lvuser/{key}.txt','ab').write('\n'.join(value+['']).encode()) # extra empty ensures \n at end
+                open(f'/home/lvuser/{key}.txt','ab').write('\n'.join(value+['']*2).encode()) # extra empty ensures \n at end
 
         print("\n" + f"** Ended {self.getName()} with current color {self.current_color} and {self.color_transition_counter} color transitions at {round(Timer.getFPGATimestamp() - self.robot.enabled_time, 1)} s **")
 
