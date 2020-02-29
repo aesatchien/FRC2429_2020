@@ -30,7 +30,15 @@ class Peripherals(Subsystem):
         self.kGreenTarget = Color(0.222, 0.524, 0.255)  # (0.215, 0.529, 0.255)
         self.kRedTarget = Color(0.364, 0.428, 0.210) #(0.417, 0.398, 0.184)
         self.kYellowTarget = Color(0.305, 0.522, 0.171)  #(0.326, 0.519, 0.154)
+        self.confidence_min = 0.02 # minimum confidence to claim a color match
         self.color_dict = {"blue":self.kBlueTarget, "green":self.kGreenTarget, "red":self.kRedTarget, "yellow":self.kYellowTarget}
+        self.color_seq = ["red", "yellow", "blue", "green"] # clockwise sequence of colors
+        self.color_nextcw = {} # clockwise next color
+        self.color_nextccw = {} # counterclockwise next color
+        for i,c in enumerate(self.color_seq):
+            self.color_nextcw[c] = self.color_seq[(i+1) % len(self.color_seq)]
+            self.color_nextccw[c] = self.color_seq[(i-1) % len(self.color_seq)]
+
 
     def run_spinner(self, power=0):
         self.control_panel_spark.set(power)
@@ -56,7 +64,7 @@ class Peripherals(Subsystem):
         self.match_confidence = 0.5
         for key,value in self.color_dict.items():
             self.match_confidence = self.color_distance(detected_color, value)
-            if self.match_confidence < 0.02:
+            if self.match_confidence < self.confidence_min:
                 color_string = key
                 break
             else:
