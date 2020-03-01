@@ -83,8 +83,8 @@ class OI(object):
             self.co_buttonRB.whenPressed(ActuateGate(self.robot, direction='close', button=self.co_buttonRB, timeout=2))
             self.co_buttonLB.whenPressed(ActuateGate(self.robot, direction='open', button=self.co_buttonLB, timeout=4))
             # panel spinner functions
-            self.co_buttonX.whenPressed(SpinToColor(self.robot, target_color=None, source='fms', power=0.25, thrust=-0.12))
-            self.co_buttonY.whenPressed(Spin3x(self.robot, power=0.75, thrust=-0.12))
+            self.co_buttonX.whenPressed(SpinToColor(self.robot, target_color=None, source='fms', power=0.25, thrust=-0.18))
+            self.co_buttonY.whenPressed(Spin3x(self.robot, power=0.75, thrust=-0.18))
             # climbing functions
             self.co_buttonStart.whenPressed(RaiseClimber(self.robot, direction='climb', power=0.75, button=self.co_buttonStart))
             self.co_povButtonUp.whenPressed(RaiseClimber(self.robot, direction='hookup', power=0.7, button=self.co_povButtonUp))

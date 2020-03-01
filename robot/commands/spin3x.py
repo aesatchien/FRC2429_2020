@@ -37,7 +37,7 @@ class Spin3x(Command):
 
         self.robot.drivetrain.spark_with_stick(thrust=self.thrust)
 
-        nextcolor = self.robot.peripherals.color_next.get(self.old_color, '') # old_color is none after initialization, don't recognize a "next" yet
+        nextcolor = self.color_next.get(self.old_color, '') # old_color is none after initialization, don't recognize a "next" yet
         if self.current_color == nextcolor:
             self.timeout = self.timeSinceInitialized() + 1  # increases time left when color changes
             self.setTimeout(self.timeout)

@@ -1,3 +1,4 @@
+import math
 from wpilib.command import Command
 from wpilib import SmartDashboard, Timer
 
