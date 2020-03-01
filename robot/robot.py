@@ -13,6 +13,7 @@ from subsystems.pneumatics import Pneumatics
 from subsystems.peripherals import Peripherals
 from subsystems.ball_handler import Ball_Handler
 from subsystems.climber import Climber
+from subsystems.intake import Intake
 from commands.autonomous_group import AutonomousGroup
 from commands.autonomous_routes import AutonomousRoutes
 
@@ -38,6 +39,7 @@ class Robot(CommandBasedRobot):
         self.peripherals = Peripherals(self)
         self.ball_handler = Ball_Handler(self)
         self.climber = Climber(self)
+        self.intake = Intake(self)
 
         # This MUST be here. If the OI creates Commands (which it very likely
         # will), constructing it during the construction of CommandBase (from
