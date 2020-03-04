@@ -21,6 +21,8 @@ class AutonomousRoutes(CommandGroup):
         goal_ts = 100
         line_panel = 150
         move_only = 40
+        left_collect_dist = 171
+        left_score_dist = 278
 
     def __init__(self, robot, timeout=None):
         CommandGroup.__init__(self, name='AutonomousRoutes')
@@ -88,12 +90,18 @@ class AutonomousRoutes(CommandGroup):
         self.addSequential(ActuateGate(self.robot, direction='close', timeout=2))
 
     def pick_up_and_score(self):
+        '''
         self.pick_up_balls()
 
         self.addSequential(PseudoStrafe(self.robot, self.dists.horizontal_panel_goal))
         self.addSequential(AutonomousDrive(self.robot, setpoint=-self.dists.line_panel))
 
         self.direct_score()
+        '''
+
+        self.addSequential(Intake(self.robot, end_power=0.1))
+        self.addSequential(AutonomousDrive(self.robot, setpoint=self.dists.left_collect_dist))
+        self.addSequential(Intake(self.robot, power=0, end_power=0)) 
 
     def move_only(self):
         """
