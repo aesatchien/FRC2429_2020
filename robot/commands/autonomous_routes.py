@@ -22,7 +22,14 @@ class AutonomousRoutes(CommandGroup):
         line_panel = 150
         move_only = 40
         left_collect_dist = 171
-        left_score_dist = 278
+        l_panel_target_tip = -272
+        tip_port = 20
+        left_score_rot = -24
+        right_pre_intake = 85
+        right_post_intake = 44
+        right_panel_disp = 238
+        right_panel_disp_rot = 20
+        disp_port = 128
 
     def __init__(self, robot, timeout=None):
         CommandGroup.__init__(self, name='AutonomousRoutes')
@@ -89,7 +96,7 @@ class AutonomousRoutes(CommandGroup):
         #self.addSequential(AutonomousWait(self.robot, timeout=3))  #  we have to have a wait command that feeds the drivetrain!
         self.addSequential(ActuateGate(self.robot, direction='close', timeout=2))
 
-    def pick_up_and_score(self):
+    def left_pick_up_and_score(self):
         '''
         self.pick_up_balls()
 
@@ -99,9 +106,38 @@ class AutonomousRoutes(CommandGroup):
         self.direct_score()
         '''
 
-        self.addSequential(Intake(self.robot, end_power=0.1))
+        self.addSequential(Intake(self.robot, end_power=0.1)) 
+
         self.addSequential(AutonomousDrive(self.robot, setpoint=self.dists.left_collect_dist))
-        self.addSequential(Intake(self.robot, power=0, end_power=0)) 
+        self.addSequential(AutonomousRotate(self.robot, setpoint=self.dists.left_score_rot))
+        self.addSequential(AutonomousDrive(self.robot, setpoint=self.dists.l_panel_target_tip))
+        self.addSequential(AutonomousRotate(self.robot, setpoint=-self.dists.left_score_rot))
+        self.addSequential(AutonomousDrive(self.robot, setpoint=-self.dists.tip_port))
+
+        self.addSequential(Intake(self.robot, power=0, end_power=0))
+
+        self.addSequential(ActuateGate(self.robot, direction='open', timeout=3))
+
+    def middle_pick_up_and_score(self):
+        self.addSequential(AutonomousDrive)
+
+    def right_pick_up_and_score(self):
+        self.addSequential(AutonomousDrive(self.robot, setpoint=self.dists.right_pre_intake))
+        self.addSequential(Intake(self.robot, end_power=0.1))
+        self.addSequential(AutonomousDrive(self.robot, setpoint=self.dists.right_post_intake))
+        self.addSequential(AutonomousRotate(self.robot, setpoint=self.dists.right_panel_disp_rot))
+        self.addSequential(AutonomousDrive(self.robot, setpoint=-self.dists.right_panel_disp))
+        self.addSequential(AutonomousRotate(self.robot, setpoint=90 - self.dists.right_panel_disp_rot))
+        self.addSequential(AutonomousDrive(self.robot, setpoint=-self.dists.disp_port))
+        self.addSequential(AutonomousRotate(self.robot, setpoint=-90))
+
+        self.addSequential(AutonomousDrive(self.robot, setpoint=-self.dists.tip_port))
+        self.addSequential(Intake(self.robot, power=0, end_power=0))
+
+        self.addSequential(ActuateGate(self.robot, direction='open', timeout=3))
+
+    def pick_up_and_score(self):
+        pass
 
     def move_only(self):
         """
