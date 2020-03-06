@@ -6,7 +6,7 @@ class Intake(Command):
     This command sets the intake
     """
 
-    def __init__(self, robot, power=0.1, button=None, end_power=0, timeout=3):
+    def __init__(self, robot, power=0.1, button=None, end_power=0, timeout=None):
         Command.__init__(self, name='Intake')
         self.requires(robot.intake)
         self.robot = robot
@@ -24,7 +24,9 @@ class Intake(Command):
         """Called just before this Command runs the first time."""
         self.start_time = round(Timer.getFPGATimestamp() - self.robot.enabled_time, 1)
         print("\n" + f"** Started {self.getName()} with power {self.power} at {self.start_time} s **", flush=True)
-        self.setTimeout(self.timeout)
+
+        if self.timeout is not None:
+            self.setTimeout(self.timeout)
         self.unpressed_counter = 0
 
     def execute(self):
@@ -40,18 +42,21 @@ class Intake(Command):
                 self.power = -self.robot.oi.co_stick.getRawAxis(2) * self.max_power
         self.robot.intake.run_intake(self.power)
 
-        pressed = self.button.get()
-        if not pressed:
-            self.unpressed_counter += 1
-        else:
-            self.unpressed_counter = 0
+        if self.button:
+            pressed = self.button.get()
+            if not pressed:
+                self.unpressed_counter += 1
+            else:
+                self.unpressed_counter = 0
 
     def isFinished(self):
         """Make this return true when this Command no longer needs to run execute()"""
         if self.button is not None:
             return self.unpressed_counter >= self.unpressed_min
-        else:
+        elif self.timeout is not None:
             return self.isTimedOut()
+        else:
+            return True
 
 
     def end(self):
