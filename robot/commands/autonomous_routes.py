@@ -10,7 +10,7 @@ from wpilib import Timer
 from wpilib import SmartDashboard
 
 class AutonomousRoutes(CommandGroup):
-    positions = 'middle', 'left',  'right'
+    positions = 'middle', 'left',  'middle-left', 'right'
     scoring_routes = 'direct score', 'move only', 'pick up balls', 'pick up and score'
     backoff_routes = 'none', 'shield generator port side', 'shield generator trench side', 'trench'
 
@@ -32,6 +32,12 @@ class AutonomousRoutes(CommandGroup):
         right_line_ps_rot = 43  # ps = player station
         right_line_ps = -123
         port_ps = 127
+        ml_start_dist = 112
+        ml_first_pu_dist = 30
+        ml_second_pu_rot = 65
+        ml_second_pu_dist = 10
+        ml_retreat_dist = -24
+        ml_score_dist = -230
 
     def __init__(self, robot, timeout=None):
         CommandGroup.__init__(self, name='AutonomousRoutes')
@@ -143,9 +149,26 @@ class AutonomousRoutes(CommandGroup):
         self.addSequential(Intake(self.robot, power=0, end_power=0)) 
         self.addSequential(ActuateGate(self.robot, direction='open', timeout=3))
 
+    def middle_left_pick_up_and_score(self):
+        self.drive(self.dists.ml_start_dist)
+        self.turn(90)
+        self.addSequential(Intake(self.robot, power=0.1))
+        self.drive(self.dists.ml_first_pu_dist)
+        self.turn(self.dists.ml_second_pu_rot)
+        self.drive(self.dists.ml_second_pu_dist)
+        self.turn(-self.dists.ml_second_pu_rot)
+        self.drive(self.dists.ml_retreat_dist)
+        self.turn(-90)
+        self.drive(self.dists.ml_score_dist)
+
+        self.addSequential(Intake(self.robot, power=0, end_power=0))
+        self.addSequential(ActuateGate(self.robot, direction='open', timeout=3))
+
     def pick_up_and_score(self):
         if self.position == 'left':
             self.left_pick_up_and_score()
+        elif self.position == 'middle-left':
+            self.middle_left_pick_up_and_score()
         elif self.position == 'right':
             self.right_pick_up_and_score()
         else:
