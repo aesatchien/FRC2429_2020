@@ -24,3 +24,7 @@ var/
 *.egg-info/
 .installed.cfg
 *.egg
+
+#FRC stuff
+# imgui.ini - I think I should pass this around so it's the same everywhere
+

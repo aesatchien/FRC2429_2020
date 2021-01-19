@@ -10,7 +10,8 @@ class TrackTelemetry(Command):
 
     def __init__(self, robot, timeout=None):
         """The constructor"""
-        super().__init__()
+        #super().__init__()
+        Command.__init__(self, name='TrackTelemetry')
         # Signal that we require ExampleSubsystem
         #self.requires(robot.drivetrain)
         # little trick here so we can call this either from code explicitly with a setpoint or get from smartdashboard
@@ -19,13 +20,13 @@ class TrackTelemetry(Command):
         else:
             self.setTimeout(timeout)
         self.robot = robot
-        strip_name = lambda x: str(x)[1 + str(x).rfind('.'):-2]
-        self.name = strip_name(self.__class__)
+        #strip_name = lambda x: str(x)[1 + str(x).rfind('.'):-2]
+        #self.name = strip_name(self.__class__)
 
     def initialize(self):
         """Called just before this Command runs the first time."""
         self.start_time = round(Timer.getFPGATimestamp() - self.robot.enabled_time, 1)
-        print("\n" + f"** Started {self.name} at {self.start_time} s **")
+        print("\n" + f"** Started {self.getName()} at {self.start_time} s **")
         self.telemetry = {'time':[], 'position':[], 'velocity':[], 'current':[]}
         self.counter = 0
 
@@ -36,7 +37,7 @@ class TrackTelemetry(Command):
             self.telemetry['time'].append(self.timeSinceInitialized())
             self.telemetry['position'].append(self.robot.drivetrain.get_position())
             self.telemetry['velocity'].append(self.robot.drivetrain.sparkneo_encoder_1.getVelocity())
-            self.telemetry['current'].append(self.robot.drivetrain.spark_neo_l1.getAppliedOutput())
+            #self.telemetry['current'].append(self.robot.drivetrain.spark_neo_l1.getAppliedOutput())
         self.counter += 1
 
     def isFinished(self):
@@ -48,11 +49,11 @@ class TrackTelemetry(Command):
     def end(self):
         """Called once after isFinished returns true"""
         end_time = round(Timer.getFPGATimestamp() - self.robot.enabled_time, 1)
-        print("\n" + f"** Ended {self.name} at {end_time} s with a duration of {round(end_time-self.start_time,1)} s **")
+        print("\n" + f"** Ended {self.getName()} at {end_time} s with a duration of {round(end_time-self.start_time,1)} s **")
         for key in self.telemetry:
             SmartDashboard.putNumberArray("telemetry_"+ str(key), self.telemetry[key])
 
     def interrupted(self):
         """Called when another command which requires one or more of the same subsystems is scheduled to run."""
         self.end()
-        print("\n" + f"** Interrupted {self.name} at {round(Timer.getFPGATimestamp() - self.robot.enabled_time, 1)} s **")
+        print("\n" + f"** Interrupted {self.getName()} at {round(Timer.getFPGATimestamp() - self.robot.enabled_time, 1)} s **")

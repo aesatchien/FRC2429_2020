@@ -9,17 +9,18 @@ class DriveByJoystick(Command):
     """
 
     def __init__(self, robot):
-        super().__init__()
+        #super().__init__()
+        Command.__init__(self, name='DriveByJoystick')
         self.requires(robot.drivetrain)
         self.robot = robot
-        self.twist_sensitivity = 1.0
-        strip_name = lambda x: str(x)[1 + str(x).rfind('.'):-2]
-        self.name = strip_name(self.__class__)
+        self.twist_sensitivity = 0.7
+        self.thrust_sensitivity = 0.99
         # correction variables
         self.is_twist_active = False
         self.heading = 0
         self.corrected_twist = 0
         self.twist_deadzone = 0.05
+        self.deadzone = 0.02
         self.xy_deadzone = 0.15
         self.leadtime = 0.1
         self.execution_count = 0
@@ -39,7 +40,7 @@ class DriveByJoystick(Command):
         self.gyro_error = 0
         self.heading = self.robot.navigation.get_angle()
         self.start_time = round(Timer.getFPGATimestamp() - self.robot.enabled_time,1)
-        print("\n" + f"** Started {self.name} at {self.start_time} s **", flush=True)
+        print("\n" + f"** Started {self.getName()} at {self.start_time} s **", flush=True)
 
     def execute(self):
         """Called repeatedly when this Command is scheduled to run"""
@@ -79,9 +80,24 @@ class DriveByJoystick(Command):
 
         else:
             #self.robot.drivetrain.smooth_drive(self.robot.oi.stick.getRawAxis(1), -self.twist_sensitivity*self.robot.oi.stick.getRawAxis(4))
-            self.robot.drivetrain.spark_with_stick(thrust=-self.robot.oi.stick.getRawAxis(1),
-                                               strafe=self.robot.oi.stick.getRawAxis(0),
-                                               z_rotation=self.twist_sensitivity * self.robot.oi.stick.getRawAxis(4))
+            joystick_values = [-self.robot.oi.stick.getRawAxis(1) * self.thrust_sensitivity, self.robot.oi.stick.getRawAxis(0),
+                                       self.twist_sensitivity * self.robot.oi.stick.getRawAxis(4)]
+            sq = lambda x: x ** 2 if (x > 0) else -1.0 * x ** 2
+            for ix, val in enumerate(joystick_values):
+                if abs(val) < self.deadzone:
+                    joystick_values[ix] = 0
+                else:
+                    joystick_values[ix] = sq(joystick_values[ix])
+            #self.robot.drivetrain.mecanum_velocity_cartesian(thrust=joystick_values[0], strafe=joystick_values[1], z_rotation=joystick_values[2])
+
+            # getting the simulation to work - January 18 2021
+            if self.robot.isReal():
+                self.robot.drivetrain.spark_with_stick(thrust=joystick_values[0], strafe=joystick_values[1], z_rotation=joystick_values[2])
+            else:
+                # tank drive for simulation
+                #self.robot.drivetrain.tank_drive(-self.robot.oi.stick.getRawAxis(1), -self.robot.oi.stick.getRawAxis(3))
+                # arcade drive for simulation
+                self.robot.drivetrain.arcade_drive(joystick_values[0], joystick_values[2])
 
     def isFinished(self):
         """Make this return true when this Command no longer needs to run execute()"""
@@ -90,8 +106,8 @@ class DriveByJoystick(Command):
     def end(self):
         """Called once after isFinished returns true"""
         self.robot.drivetrain.stop()
-        print("\n" + f"** Ended {self.name} at {round(Timer.getFPGATimestamp() - self.robot.enabled_time, 1)} s **", flush=True)
+        print("\n" + f"** Ended {self.getName()} at {round(Timer.getFPGATimestamp() - self.robot.enabled_time, 1)} s **", flush=True)
     def interrupted(self):
         """Called when another command which requires one or more of the same subsystems is scheduled to run."""
         self.robot.drivetrain.stop()
-        print("\n" + f"** Interrupted {self.name} at {round(Timer.getFPGATimestamp() - self.robot.enabled_time, 1)} s **", flush=True)
+        print("\n" + f"** Interrupted {self.getName()} at {round(Timer.getFPGATimestamp() - self.robot.enabled_time, 1)} s **", flush=True)

@@ -2,21 +2,21 @@ from wpilib.command import Command
 from wpilib import Timer
 import math
 from wpilib import SmartDashboard
-from wpilib import DriverStation
+from networktables import NetworkTables
 
 class AutonomousRotate(Command):
     """
-    This command drives the robot over a given distance with simple proportional
-    control - handled internally by the sparkMAX
+    This command rotates the robot over a given angle with simple proportional
+    control
     """
-    def __init__(self, robot, setpoint=None, timeout=None, from_dashboard = True):
+    def __init__(self, robot, setpoint=None, timeout=None, source=None):
         """The constructor"""
-        super().__init__()
-        # Signal that we require ExampleSubsystem
+        #super().__init__()
+        Command.__init__(self, name='AutonomousRotate')
+        # Signal that we require drivetrain
         self.requires(robot.drivetrain)
-        # little trick here so we can call this either from code explicitly with a setpoint or get from smartdashboard
-        self.from_dashboard = from_dashboard
         self.setpoint = setpoint
+        self.source = source
         if timeout is None:
             self.setTimeout(3)
         else:
@@ -26,21 +26,31 @@ class AutonomousRotate(Command):
         self.kp = 0.05
         self.kd = 0.01
         self.kf = 0.1
-        self.start_angle =0
+        self.start_angle = 0
         self.error = 0
         self.power = 0
         self.max_power = 0.25
         self.prev_error = 0
-        strip_name = lambda x: str(x)[1 + str(x).rfind('.'):-2]
-        self.name = strip_name(self.__class__)
 
     def initialize(self):
         """Called just before this Command runs the first time."""
-        if self.from_dashboard:
-            self.setpoint = SmartDashboard.getNumber('Auto Rotation',0)
         self.start_time = round(Timer.getFPGATimestamp() - self.robot.enabled_time, 1)
-        print("\n" + f"** Started {self.name} with setpoint {self.setpoint} at {self.start_time} s **")
-        SmartDashboard.putString("alert", f"** Started {self.name} with setpoint {self.setpoint} at {self.start_time} s **")
+
+        if self.source is None:
+            self.setpoint = self.setpoint
+        elif self.source == "dashboard":
+            self.setpoint = SmartDashboard.getNumber('Auto Rotation', 0)
+        elif self.source == "camera":
+            ball_table = NetworkTables.getTable("BallCam")
+            if ball_table.getNumber("targets", 0) > 0:
+                self.setpoint = ball_table.getNumber("rotation", 0)
+            else:
+                self.setpoint = 0  # this should end us
+                self.has_arrived = True
+            print(f"Rotation found {ball_table.getNumber('rotation', 0)} rotation on BallCam ...")
+
+        print("\n" + f"** Started {self.getName()} with setpoint {self.setpoint} at {self.start_time} s **")
+        SmartDashboard.putString("alert", f"** Started {self.getName()} with setpoint {self.setpoint} at {self.start_time} s **")
         self.start_angle = self.robot.navigation.get_angle()
         self.error = 0
         self.prev_error = 0
@@ -60,7 +70,6 @@ class AutonomousRotate(Command):
 
     def isFinished(self):
         """Make this return true when this Command no longer needs to run execute()"""
-        # somehow need to wait for the error level to get to a tolerance... request from drivetrain?
         # I know I could do this with a math.copysign, but this is more readable
         if self.setpoint > 0:
             return (self.setpoint - (self.robot.navigation.get_angle()-self.start_angle)) <= self.tolerance or self.isTimedOut()
@@ -71,11 +80,11 @@ class AutonomousRotate(Command):
     def end(self):
         """Called once after isFinished returns true"""
         end_time = round(Timer.getFPGATimestamp() - self.robot.enabled_time, 1)
-        print("\n" + f"** Ended {self.name} at {end_time} s with a duration of {round(end_time-self.start_time,1)} s **")
-        SmartDashboard.putString("alert", f"** Ended {self.name} at {end_time} s with a duration of {round(end_time - self.start_time, 1)} s **")
+        print("\n" + f"** Ended {self.getName()} at {end_time} s with a duration of {round(end_time-self.start_time,1)} s **")
+        SmartDashboard.putString("alert", f"** Ended {self.getName()} at {end_time} s with a duration of {round(end_time - self.start_time, 1)} s **")
         self.robot.drivetrain.stop()
 
     def interrupted(self):
         """Called when another command which requires one or more of the same subsystems is scheduled to run."""
         self.robot.drivetrain.stop()
-        print("\n" + f"** Interrupted {self.name} at {round(Timer.getFPGATimestamp() - self.robot.enabled_time, 1)} s **")
+        print("\n" + f"** Interrupted {self.getName()} at {round(Timer.getFPGATimestamp() - self.robot.enabled_time, 1)} s **")
