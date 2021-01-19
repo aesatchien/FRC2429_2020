@@ -34,17 +34,29 @@ class PhysicsEngine:
         self.l_motor = hal.simulation.PWMSim(1)
         self.r_motor = hal.simulation.PWMSim(3)
 
+        # Precompute the encoder constant
+        # -> encoder counts per revolution / wheel circumference
+        self.kEncoder = 360 / (0.5 * 3.14159)
+
+        # NavX (SPI interface)
+        self.navx = hal.simulation.SimDeviceSim("navX-Sensor[4]")
+        self.navx_yaw = self.navx.getDouble("Yaw")
+
+        # stuff left over from the example template
         self.dio1 = hal.simulation.DIOSim(1)
         self.dio2 = hal.simulation.DIOSim(2)
         self.ain2 = hal.simulation.AnalogInSim(2)
-
         self.motor = hal.simulation.PWMSim(4)
+
+        self.r_encoder = hal.simulation.EncoderSim(0)
+        self.l_encoder = hal.simulation.EncoderSim(1)
 
         # Gyro
         self.gyro = hal.simulation.AnalogGyroSim(1)
 
         self.position = 0
-
+        self.l_distance = 0
+        self.r_distance = 0
 
 
         # Change these parameters to fit your robot!
@@ -77,12 +89,14 @@ class PhysicsEngine:
         l_motor = self.l_motor.getSpeed()
         r_motor = self.r_motor.getSpeed()
 
+        # generate the transform to the robot's pose
         transform = self.drivetrain.calculate(l_motor, r_motor, tm_diff)
+        # update the pose
         pose = self.physics_controller.move_robot(transform)
 
+        # cjh keep us on the field - still need to figure out the corner case and mecanum case (may need to flip y?)
         x_limit = 15.97
         y_limit = 8.21
-        # cjh keep us on the field - still need to figure out the corner case and mecanum case (may need to flip y?)
         if pose.translation().x < 0 or pose.translation().x > x_limit:
             curr_x = transform.translation().x
             curr_y = transform.translation().y
@@ -96,6 +110,17 @@ class PhysicsEngine:
             new_transform = geo.Transform2d(geo.Translation2d(-curr_x, curr_y), transform.rotation())
             #print('Out of bounds on y ...', transform, new_transform)
             self.physics_controller.move_robot(new_transform)
+
+        # Update encoders
+        self.l_distance += l_motor * tm_diff
+        self.r_distance += r_motor * tm_diff
+
+        l_dist = int(self.l_distance * self.kEncoder)
+        r_dist = int(self.r_distance * self.kEncoder)
+        self.l_encoder.setCount(l_dist)
+        #self.l_encoder.setRate(self.drivetrain.getLeftVelocityMetersPerSecond())
+        self.r_encoder.setCount(r_dist)
+        #self.r_encoder.setRate(self.drivetrain.getRightVelocityMetersPerSecond())
 
 
         # Update the gyro simulation
@@ -123,4 +148,11 @@ class PhysicsEngine:
         self.dio1.setValue(switch1)
         self.dio2.setValue(switch2)
         self.ain2.setVoltage(self.position)
+
+
         #print(transform, pose)
+
+        # Update the gyro simulation
+        # -> FRC gyros like NavX are positive clockwise, but
+        #    the returned pose is positive counter-clockwise
+        self.navx_yaw.set(-pose.rotation().degrees())
