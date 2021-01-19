@@ -26,5 +26,5 @@ var/
 *.egg
 
 #FRC stuff
-imgui.ini
+# imgui.ini - I think I should pass this around so it's the same everywhere
 
