@@ -30,7 +30,7 @@ class OI(object):
         self.robot = robot
 
         # Set single or double joystick mode
-        self.competition_mode = True
+        self.competition_mode = False
 
         self.initialize_joystics()
         self.assign_buttons()

@@ -64,6 +64,7 @@ class Intake(Command):
         print("\n" + f"** Ended {self.getName()} at {round(Timer.getFPGATimestamp() - self.robot.enabled_time, 1)} s **")
         # Note to self: do not reset self.power here!
         self.robot.intake.run_intake(self.end_power)
+
     def interrupted(self):
         """Called when another command which requires one or more of the same subsystems is scheduled to run."""
         #print("\n" + f"** Interrupted {self.name} at {round(Timer.getFPGATimestamp() - self.robot.enabled_time, 1)} s **")
