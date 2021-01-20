@@ -1,6 +1,7 @@
 from wpilib.command import Command
 from wpilib import Timer
 from wpilib import SendableBuilder
+
 class Intake(Command):
     """
     This command sets the intake

@@ -22,6 +22,7 @@ class Navigation(Subsystem):
             self.navx = None
             self.analog = None
 
+
     def get_roll(self):
         return self.navx.getRoll()
 
