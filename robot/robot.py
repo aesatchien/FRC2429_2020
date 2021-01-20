@@ -2,7 +2,7 @@
 # Attempt to convert 2019 Spartan Java to Python - 11/22/2019 CJH
 # Then attempt to convert that to the 2020 wpilib API - 1/27/2020 CJH
 import wpilib
-from wpilib import Timer
+from wpilib import Timer, SmartDashboard
 from wpilib.command import Scheduler
 from commandbased import CommandBasedRobot
 # 2429-specific imports - need to import every subsystem you instantiate

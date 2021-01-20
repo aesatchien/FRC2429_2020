@@ -15,6 +15,7 @@ from pyfrc.physics.core import PhysicsInterface
 from pyfrc.physics import motor_cfgs, tankmodel
 from pyfrc.physics.units import units
 
+from wpilib import SmartDashboard
 import wpilib.simulation
 import wpilib.geometry as geo
 
@@ -57,7 +58,15 @@ class PhysicsEngine:
         self.position = 0
         self.l_distance = 0
         self.r_distance = 0
+        self.x = 0
+        self.y = 0
+        self.rotation = 0
 
+        self.count = 0
+
+        odometry_string = f"X: {self.x:+3.2f}  Y: {self.x:+3.2f}  Rot: {self.rotation:+3.2f}"
+        self.odometry_list = 256*[odometry_string]
+        SmartDashboard.putString("Odometry", odometry_string)
 
         # Change these parameters to fit your robot!
         bumper_width = 3.25 * units.inch
@@ -84,6 +93,7 @@ class PhysicsEngine:
             :param tm_diff: The amount of time that has passed since the last
                             time that this function was called
         """
+
 
         # Simulate the drivetrain
         l_motor = self.l_motor.getSpeed()
@@ -128,7 +138,7 @@ class PhysicsEngine:
         #    counter-clockwise
         self.gyro.setAngle(-pose.rotation().degrees())
 
-        # update position (use tm_diff so the rate is constant)
+        # update position (use tm_diff so the rate is constant) - SKIP
         self.position += self.motor.getSpeed() * tm_diff * 3
 
         # update limit switches based on position
@@ -156,3 +166,15 @@ class PhysicsEngine:
         # -> FRC gyros like NavX are positive clockwise, but
         #    the returned pose is positive counter-clockwise
         self.navx_yaw.set(-pose.rotation().degrees())
+
+        # update the dashboard.  need to figure out how to unify this.  like maybe have a global robot pose
+        self.count += 1
+        if self.count % 10 == 0:
+            self.x = pose.translation().x
+            self.y = pose.translation().y
+            self.rotation = pose.rotation().degrees()
+            odometry_string = f"X: {self.x:+3.2f}  Y: {self.y:+3.2f}  Rot: {self.rotation:+3.2f}"
+            SmartDashboard.putString("Odometry", odometry_string)
+            self.odometry_list.pop(0)
+            self.odometry_list.append(odometry_string)
+            SmartDashboard.putStringArray("Odometry_List", self.odometry_list)

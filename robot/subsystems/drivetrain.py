@@ -150,7 +150,10 @@ class DriveTrain(Subsystem):
     def spark_with_stick(self, thrust=0, strafe=0, z_rotation=0, gyroAngle=0):
         """Simplest way to drive with a joystick"""
         # self.differential_drive.arcadeDrive(x_speed, self.twist_sensitivity * z_rotation, False)
-        self.mechanum_drive.driveCartesian(xSpeed=thrust*self.thrust_power_maximum, ySpeed=strafe*self.strafe_power_maximum, zRotation=self.twist_power_maximum * z_rotation)
+        if self.robot.isReal():
+            self.drive.driveCartesian(xSpeed=thrust*self.thrust_power_maximum, ySpeed=strafe*self.strafe_power_maximum, zRotation=self.twist_power_maximum * z_rotation)
+        else:
+            self.arcade_drive(thrust*self.thrust_power_maximum, self.twist_power_maximum * z_rotation)
 
     def mecanum_velocity_cartesian(
             self, thrust: float, strafe: float, z_rotation: float, gyroAngle: float = 0.0
@@ -200,7 +203,10 @@ class DriveTrain(Subsystem):
 
     def stop(self):
         # self.differential_drive.arcadeDrive(0, 0)
-        self.mechanum_drive.driveCartesian(0, 0, 0)
+        if self.robot.isReal():
+            self.drive.driveCartesian(0, 0, 0)
+        else:
+            self.differential_drive.arcadeDrive(0, 0)
 
     def smooth_drive(self, thrust, strafe, twist):
         """A less jittery way to drive with a joystick

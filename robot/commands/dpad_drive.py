@@ -71,10 +71,14 @@ class DpadDrive(Command):
 
         #really need to decide on how we're going to drive - smooth or pure stick or velocity
         #self.robot.drivetrain.spark_with_stick(thrust=thrust, strafe=strafe, z_rotation=twist)
-        if self.mode == 'velocity':
-            self.robot.drivetrain.mecanum_velocity_cartesian(thrust=thrust, strafe=strafe, z_rotation=twist)
+        if self.robot.isReal():
+            if self.mode == 'velocity':
+                self.robot.drivetrain.mecanum_velocity_cartesian(thrust=thrust, strafe=strafe, z_rotation=twist)
+            else:
+                self.robot.drivetrain.smooth_drive(thrust=thrust, strafe=strafe, twist=twist)
         else:
-            self.robot.drivetrain.smooth_drive(thrust=thrust, strafe=strafe, twist=twist)
+            # simulation
+            self.robot.drivetrain.arcade_drive(thrust, twist)
 
     def isFinished(self):
         """Make this return true when this Command no longer needs to run execute()"""
