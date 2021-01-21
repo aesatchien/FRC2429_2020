@@ -59,9 +59,15 @@ class PhysicsEngine:
         self.position = 0  # for the limit switch demonstration
         self.l_distance = 0  # encoder distances
         self.r_distance = 0
-        self.x = 0  # x y rot position data calculated from the pose
-        self.y = 0
+        self.x = 2  # x y rot position data calculated from the pose
+        self.y = 8.21/2
         self.rotation = 0
+
+        # Set our position on the field
+        initial_pose = geo.Pose2d(0,0, geo.Rotation2d(0))
+        final_pose = geo.Pose2d(self.x, self.y, geo.Rotation2d(0))
+        initial_position_transform = geo.Transform2d(initial_pose, final_pose)
+        self.physics_controller.move_robot(initial_position_transform)
 
         self.count = 0  # counter for updating the dashboard at a reasonable rate
 
