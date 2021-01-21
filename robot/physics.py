@@ -31,42 +31,46 @@ class PhysicsEngine:
         self.physics_controller = physics_controller
         self.field = wpilib.simulation.Field2d()
 
-        # Motors
+        # Motors - ATM we have simulation motors that run off the PWMs because the CAN motors don't work in sim
         self.l_motor = hal.simulation.PWMSim(1)
         self.r_motor = hal.simulation.PWMSim(3)
 
-        # Precompute the encoder constant
+        # Precompute the encoder constant. This is not necessary for us, since SparkMAX encoders return distances, not counts
         # -> encoder counts per revolution / wheel circumference
         self.kEncoder = 360 / (0.5 * 3.14159)
 
-        # NavX (SPI interface)
+        # NavX (SPI interface) - no idea why the "4" is there, just using it as given
         self.navx = hal.simulation.SimDeviceSim("navX-Sensor[4]")
         self.navx_yaw = self.navx.getDouble("Yaw")
 
-        # stuff left over from the example template
+        # stuff left over from the example template which you can get from the vanilla physics example
         self.dio1 = hal.simulation.DIOSim(1)
         self.dio2 = hal.simulation.DIOSim(2)
         self.ain2 = hal.simulation.AnalogInSim(2)
         self.motor = hal.simulation.PWMSim(4)
 
+        # set up two simulated encoders to see how they effect the robot
         self.r_encoder = hal.simulation.EncoderSim(0)
         self.l_encoder = hal.simulation.EncoderSim(1)
 
         # Gyro
         self.gyro = hal.simulation.AnalogGyroSim(1)
 
-        self.position = 0
-        self.l_distance = 0
+        self.position = 0  # for the limit switch demonstration
+        self.l_distance = 0  # encoder distances
         self.r_distance = 0
-        self.x = 0
+        self.x = 0  # x y rot position data calculated from the pose
         self.y = 0
         self.rotation = 0
 
-        self.count = 0
+        self.count = 0  # counter for updating the dashboard at a reasonable rate
 
-        odometry_string = f"X: {self.x:+3.2f}  Y: {self.x:+3.2f}  Rot: {self.rotation:+3.2f}"
-        self.odometry_list = 256*[odometry_string]
+        # strings to send our simulation data out and grab in Jupyter notebook
+        odometry_string = f"X: {self.x:+03.2f}  Y: {self.y:+03.2f}  Rot: {self.rotation:+03.2f}"
         SmartDashboard.putString("Odometry", odometry_string)
+        odometry_string = f"{self.x:+9.2f} {self.y:+9.2f} {self.rotation:+9.2f} {self.l_distance:+9.2f} {self.r_distance:+9.1f} {self.navx_yaw.get():+9.2f}"
+        self.odometry_list = 256*[odometry_string]
+
 
         # Change these parameters to fit your robot!
         bumper_width = 3.25 * units.inch
@@ -94,7 +98,6 @@ class PhysicsEngine:
                             time that this function was called
         """
 
-
         # Simulate the drivetrain
         l_motor = self.l_motor.getSpeed()
         r_motor = self.r_motor.getSpeed()
@@ -113,7 +116,7 @@ class PhysicsEngine:
             new_transform = geo.Transform2d(geo.Translation2d(-curr_x, curr_y), transform.rotation())
             self.physics_controller.move_robot(new_transform)
 
-        # apparently y is useless in the transform unless you are in mecanum - it goes off the rotation
+        # apparently y is always 0 in the transform unless you are in mecanum - it goes off the rotation
         if pose.translation().y < 0 or pose.translation().y > y_limit:
             curr_x = transform.translation().x
             curr_y = transform.translation().y
@@ -121,7 +124,7 @@ class PhysicsEngine:
             #print('Out of bounds on y ...', transform, new_transform)
             self.physics_controller.move_robot(new_transform)
 
-        # Update encoders
+        # Update encoders - just as a lesson for now
         self.l_distance += l_motor * tm_diff
         self.r_distance += r_motor * tm_diff
 
@@ -132,13 +135,33 @@ class PhysicsEngine:
         self.r_encoder.setCount(r_dist)
         #self.r_encoder.setRate(self.drivetrain.getRightVelocityMetersPerSecond())
 
-
         # Update the gyro simulation
         # -> FRC gyros are positive clockwise, but the returned pose is positive
         #    counter-clockwise
         self.gyro.setAngle(-pose.rotation().degrees())
 
-        # update position (use tm_diff so the rate is constant) - SKIP
+        # Update the navx gyro simulation
+        # -> FRC gyros like NavX are positive clockwise, but
+        #    the returned pose is positive counter-clockwise
+        self.navx_yaw.set(-pose.rotation().degrees())
+
+        # update the dashboard.  need to figure out how to unify this.  like maybe have a global robot pose
+        self.count += 1
+        if self.count % 10 == 0:
+            self.x = pose.translation().x
+            self.y = pose.translation().y
+            self.rotation = pose.rotation().degrees()
+            odometry_string = f"X: {self.x:+03.2f}  Y: {self.y:+03.2f}  Rot: {self.rotation:+03.2f}"
+            SmartDashboard.putString("Odometry", odometry_string)
+
+            # make an odometry string that gives the full history - can recreate if necessary
+            odometry_string = f"{self.x:+9.2f} {self.y:+9.2f} {self.rotation:+9.2f} {self.l_distance:+9.2f} {self.r_distance:+9.1f} {self.navx_yaw.get():+9.2f}"
+            self.odometry_list.pop(0)
+            self.odometry_list.append(odometry_string)
+            SmartDashboard.putStringArray("Odometry_List", self.odometry_list)
+
+# ---------------- CURRENTLY UNUSED BUT USEFUL FOR LEARNING ---------------------------
+        # update 'position' (use tm_diff so the rate is constant) - this is for simulating an elevator, arm etc w/ limit switches
         self.position += self.motor.getSpeed() * tm_diff * 3
 
         # update limit switches based on position
@@ -154,27 +177,7 @@ class PhysicsEngine:
             switch1 = False
             switch2 = False
 
-        # set values here
+        # set values here - nice way to emulate the robot's state
         self.dio1.setValue(switch1)
         self.dio2.setValue(switch2)
         self.ain2.setVoltage(self.position)
-
-
-        #print(transform, pose)
-
-        # Update the gyro simulation
-        # -> FRC gyros like NavX are positive clockwise, but
-        #    the returned pose is positive counter-clockwise
-        self.navx_yaw.set(-pose.rotation().degrees())
-
-        # update the dashboard.  need to figure out how to unify this.  like maybe have a global robot pose
-        self.count += 1
-        if self.count % 10 == 0:
-            self.x = pose.translation().x
-            self.y = pose.translation().y
-            self.rotation = pose.rotation().degrees()
-            odometry_string = f"X: {self.x:+3.2f}  Y: {self.y:+3.2f}  Rot: {self.rotation:+3.2f}"
-            SmartDashboard.putString("Odometry", odometry_string)
-            self.odometry_list.pop(0)
-            self.odometry_list.append(odometry_string)
-            SmartDashboard.putStringArray("Odometry_List", self.odometry_list)
