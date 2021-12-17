@@ -19,6 +19,7 @@ from wpilib import SmartDashboard
 import wpilib.simulation
 import wpilib.geometry as geo
 
+
 class PhysicsEngine:
     """
         Simulates a motor moving something that strikes two limit switches,
@@ -60,11 +61,18 @@ class PhysicsEngine:
         self.l_distance = 0  # encoder distances
         self.r_distance = 0
         self.x = 2  # x y rot position data calculated from the pose
-        self.y = 8.21/2
+        self.y = 8.21 / 2
         self.rotation = 0
 
+        # cjh keep us on the field - still need to figure out the corner case and mecanum case (may need to flip y?)
+        field_size = 'competition'
+        if field_size == 'competition':
+            self.x_limit, self.y_limit = 15.97, 8.21  # meters for a 52.4x26.9' field
+        else:
+            self.x_limit, self.y_limit = 9.144, 9.144 / 2  # meters for a 30x15' field
+
         # Set our position on the field
-        initial_pose = geo.Pose2d(0,0, geo.Rotation2d(0))
+        initial_pose = geo.Pose2d(0, 0, geo.Rotation2d(0))
         final_pose = geo.Pose2d(self.x, self.y, geo.Rotation2d(0))
         initial_position_transform = geo.Transform2d(initial_pose, final_pose)
         self.physics_controller.move_robot(initial_position_transform)
@@ -75,22 +83,21 @@ class PhysicsEngine:
         odometry_string = f"X: {self.x:+03.2f}  Y: {self.y:+03.2f}  Rot: {self.rotation:+03.2f}"
         SmartDashboard.putString("Odometry", odometry_string)
         odometry_string = f"{self.x:+9.2f} {self.y:+9.2f} {self.rotation:+9.2f} {self.l_distance:+9.2f} {self.r_distance:+9.1f} {self.navx_yaw.get():+9.2f}"
-        self.odometry_list = 256*[odometry_string]
-
+        self.odometry_list = 256 * [odometry_string]
 
         # Change these parameters to fit your robot!
         bumper_width = 3.25 * units.inch
 
         # fmt: off
         self.drivetrain = tankmodel.TankModel.theory(
-            motor_cfgs.MOTOR_CFG_CIM,           # motor configuration
-            110 * units.lbs,                    # robot mass
-            10.71,                              # drivetrain gear ratio
-            2,                                  # motors per side
-            22 * units.inch,                    # robot wheelbase
-            23 * units.inch + bumper_width * 2, # robot width
-            32 * units.inch + bumper_width * 2, # robot length
-            6 * units.inch,                     # wheel diameter
+            motor_cfgs.MOTOR_CFG_CIM,  # motor configuration
+            110 * units.lbs,  # robot mass
+            10.71,  # drivetrain gear ratio
+            2,  # motors per side
+            22 * units.inch,  # robot wheelbase
+            23 * units.inch + bumper_width * 2,  # robot width
+            32 * units.inch + bumper_width * 2,  # robot length
+            6 * units.inch,  # wheel diameter
         )
         # fmt: on
 
@@ -98,7 +105,7 @@ class PhysicsEngine:
         """
             Called when the simulation parameters for the program need to be
             updated.
-            
+
             :param now: The current time as a float
             :param tm_diff: The amount of time that has passed since the last
                             time that this function was called
@@ -114,20 +121,19 @@ class PhysicsEngine:
         pose = self.physics_controller.move_robot(transform)
 
         # cjh keep us on the field - still need to figure out the corner case and mecanum case (may need to flip y?)
-        x_limit = 15.97
-        y_limit = 8.21
-        if pose.translation().x < 0 or pose.translation().x > x_limit:
+
+        if pose.translation().x < 0 or pose.translation().x > self.x_limit:
             curr_x = transform.translation().x
             curr_y = transform.translation().y
             new_transform = geo.Transform2d(geo.Translation2d(-curr_x, curr_y), transform.rotation())
             self.physics_controller.move_robot(new_transform)
 
         # apparently y is always 0 in the transform unless you are in mecanum - it goes off the rotation
-        if pose.translation().y < 0 or pose.translation().y > y_limit:
+        if pose.translation().y < 0 or pose.translation().y > self.y_limit:
             curr_x = transform.translation().x
             curr_y = transform.translation().y
             new_transform = geo.Transform2d(geo.Translation2d(-curr_x, curr_y), transform.rotation())
-            #print('Out of bounds on y ...', transform, new_transform)
+            # print('Out of bounds on y ...', transform, new_transform)
             self.physics_controller.move_robot(new_transform)
 
         # Update encoders - just as a lesson for now
@@ -137,9 +143,9 @@ class PhysicsEngine:
         l_dist = int(self.l_distance * self.kEncoder)
         r_dist = int(self.r_distance * self.kEncoder)
         self.l_encoder.setCount(l_dist)
-        #self.l_encoder.setRate(self.drivetrain.getLeftVelocityMetersPerSecond())
+        # self.l_encoder.setRate(self.drivetrain.getLeftVelocityMetersPerSecond())
         self.r_encoder.setCount(r_dist)
-        #self.r_encoder.setRate(self.drivetrain.getRightVelocityMetersPerSecond())
+        # self.r_encoder.setRate(self.drivetrain.getRightVelocityMetersPerSecond())
 
         # Update the gyro simulation
         # -> FRC gyros are positive clockwise, but the returned pose is positive
@@ -166,7 +172,7 @@ class PhysicsEngine:
             self.odometry_list.append(odometry_string)
             SmartDashboard.putStringArray("Odometry_List", self.odometry_list)
 
-# ---------------- CURRENTLY UNUSED BUT USEFUL FOR LEARNING ---------------------------
+        # ---------------- CURRENTLY UNUSED BUT USEFUL FOR LEARNING ---------------------------
         # update 'position' (use tm_diff so the rate is constant) - this is for simulating an elevator, arm etc w/ limit switches
         self.position += self.motor.getSpeed() * tm_diff * 3
 
