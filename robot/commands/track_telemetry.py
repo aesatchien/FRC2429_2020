@@ -20,8 +20,8 @@ class TrackTelemetry(Command):
         else:
             self.setTimeout(timeout)
         self.robot = robot
-        strip_name = lambda x: str(x)[1 + str(x).rfind('.'):-2]
-        self.name = strip_name(self.__class__)
+        #strip_name = lambda x: str(x)[1 + str(x).rfind('.'):-2]
+        #self.name = strip_name(self.__class__)
 
     def initialize(self):
         """Called just before this Command runs the first time."""

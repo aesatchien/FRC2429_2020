@@ -6,6 +6,7 @@ from wpilib import SmartDashboard, SpeedControllerGroup, Timer
 from wpilib.command import Subsystem
 from wpilib.drive import DifferentialDrive, MecanumDrive, Vector2d
 import rev
+
 from commands.drive_by_joystick import DriveByJoystick
 
 class DriveTrain(Subsystem):
@@ -51,7 +52,8 @@ class DriveTrain(Subsystem):
         self.deadband = 0.05
 
         # Configure drive motors
-        if True:  # or could be if self.robot.isReal():
+        #if True:  # or could be if self.robot.isReal():
+        if self.robot.isReal():
             motor_type = rev.MotorType.kBrushless
             self.spark_neo_right_front = rev.CANSparkMax(1, motor_type)
             self.spark_neo_right_rear = rev.CANSparkMax(2, motor_type)
@@ -105,14 +107,17 @@ class DriveTrain(Subsystem):
             self.spark_neo_right_rear = wpilib.Talon(4)
 
         # Not sure if speedcontrollergroups work with the single sparkmax in python - seems to complain
-        drive_type = 'mechanum'
+        # drive_type = 'mechanum'  # comp bot
+        drive_type = 'wcd'  # practice bot, sim as of 1/16/2021
+
         if drive_type == 'wcd':
             # WCD
             print("Enabling WCD drive!")
-            err_1 = self.spark_neo_left_rear.follow(self.spark_neo_left_front)
-            err_2 = self.spark_neo_right_rear.follow(self.spark_neo_right_front)
-            if err_1 != rev.CANError.kOk or err_2 != rev.CANError.kOk:
-                print(f"Warning: drivetrain follower issue with neo2 returning {err_1} and neo4 returning {err_2}")
+            if robot.isReal():
+                err_1 = self.spark_neo_left_rear.follow(self.spark_neo_left_front)
+                err_2 = self.spark_neo_right_rear.follow(self.spark_neo_right_front)
+                if err_1 != rev.CANError.kOk or err_2 != rev.CANError.kOk:
+                    print(f"Warning: drivetrain follower issue with neo2 returning {err_1} and neo4 returning {err_2}")
             self.speedgroup_left = SpeedControllerGroup(self.spark_neo_left_front)
             self.speedgroup_right = SpeedControllerGroup(self.spark_neo_right_front)
             self.differential_drive = DifferentialDrive(self.speedgroup_left, self.speedgroup_right)
@@ -254,9 +259,12 @@ class DriveTrain(Subsystem):
                                            zRotation=self.twist_power_maximum * self.current_twist)
 
     def tank_drive(self, left, right):
-        """Not sure why we would ever need this, but it's here if we do"""
-        pass
-        # self.differential_drive.tankDrive(left, right)
+        """This is thrown in for simulation"""
+        self.differential_drive.tankDrive(left, right)
+
+    def arcade_drive(self, speed, rotation):
+        """This is thrown in for simulation"""
+        self.differential_drive.arcadeDrive(speed, rotation, False)
 
     def get_position(self):
         """:returns: The encoder position of one of the Neos"""

@@ -56,9 +56,7 @@ class Robot(CommandBasedRobot):
     def autonomousInit(self):
         self.reset()
         self.enabled_time = Timer.getFPGATimestamp()
-
         self.autonomousCommand = AutonomousRoutes(self)
-
         self.autonomousCommand.start()
 
 

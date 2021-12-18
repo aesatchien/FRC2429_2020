@@ -89,7 +89,15 @@ class DriveByJoystick(Command):
                 else:
                     joystick_values[ix] = sq(joystick_values[ix])
             #self.robot.drivetrain.mecanum_velocity_cartesian(thrust=joystick_values[0], strafe=joystick_values[1], z_rotation=joystick_values[2])
-            self.robot.drivetrain.spark_with_stick(thrust=joystick_values[0], strafe=joystick_values[1], z_rotation=joystick_values[2])
+
+            # getting the simulation to work - January 18 2021
+            if self.robot.isReal():
+                self.robot.drivetrain.spark_with_stick(thrust=joystick_values[0], strafe=joystick_values[1], z_rotation=joystick_values[2])
+            else:
+                # tank drive for simulation
+                #self.robot.drivetrain.tank_drive(-self.robot.oi.stick.getRawAxis(1), -self.robot.oi.stick.getRawAxis(3))
+                # arcade drive for simulation
+                self.robot.drivetrain.arcade_drive(joystick_values[0], joystick_values[2])
 
     def isFinished(self):
         """Make this return true when this Command no longer needs to run execute()"""
