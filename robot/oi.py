@@ -75,8 +75,8 @@ class OI(object):
         # co-pilot joystick to commands
         if self.competition_mode:
             # intake functions
-            self.co_axisButtonRT.whenPressed(Intake(self.robot, power=0, button=self.co_axisButtonRT))
-            self.co_axisButtonLT.whenPressed(Intake(self.robot, power=0, button=self.co_axisButtonLT))
+            #self.co_axisButtonRT.whenPressed(Intake(self.robot, power=0, button=self.co_axisButtonRT))
+            #self.co_axisButtonLT.whenPressed(Intake(self.robot, power=0, button=self.co_axisButtonLT))
             self.co_buttonB.whenPressed(Intake(self.robot, power=-0.75, button=self.co_buttonB))
             self.co_buttonA.whenPressed(Intake(self.robot, power=0.5, button=self.co_buttonA))
             # hopper functions

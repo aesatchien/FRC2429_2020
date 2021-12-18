@@ -52,7 +52,7 @@ class Spin3x(Command):
         self.telemetry['colorraw'].append(f"{colorraw.red:5d},{colorraw.green:5d},{colorraw.blue:5d}")
 
     def isFinished(self):
-        return self.color_transition_counter >= 25 or self.isTimedOut()  # correct color or timed out
+        return self.color_transition_counter >= 30 or self.isTimedOut()  # correct color or timed out - need minimm of 25 but 30 to be safe
 
     def end(self):
         self.robot.peripherals.panel_clockwise(0)

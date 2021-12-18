@@ -29,15 +29,15 @@ class Ball_Handler(Subsystem):
         self.hopper_spark.set(0.2)
 
     def close_gate(self):
-        print('closing gate')
+        #print('closing gate')
         self.hopper_spark.set(0.3)
 
     def open_gate(self):
-        print('opening gate')
+        #print('opening gate')
         self.hopper_spark.set(-0.3)
 
     def relax_gate(self):
-        print('relaxing gate')
+        #print('relaxing gate')
         self.hopper_spark.set(0)
 
     def log(self):

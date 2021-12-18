@@ -30,14 +30,14 @@ class Intake(Command):
     def execute(self):
         """Called repeatedly when this Command is scheduled to run"""
         if self.button == self.robot.oi.axisButtonRT:
-            self.power = self.robot.oi.stick.getRawAxis(3) * self.max_power
+            self.power = (0.5+ self.robot.oi.stick.getRawAxis(3)/2.0)
         elif self.button == self.robot.oi.axisButtonLT:
-            self.power = -self.robot.oi.stick.getRawAxis(2) * self.max_power
+            self.power = -(0.5 + self.robot.oi.stick.getRawAxis(2)/2)
         if self.robot.oi.competition_mode:
             if self.button == self.robot.oi.co_axisButtonRT:
-                self.power = self.robot.oi.co_stick.getRawAxis(3) * self.max_power
+                self.power = (0.5 + self.robot.oi.co_stick.getRawAxis(3)/2.0)
             elif self.button == self.robot.oi.co_axisButtonLT:
-                self.power = -self.robot.oi.co_stick.getRawAxis(2) * self.max_power
+                self.power = -(0.5 + self.robot.oi.co_stick.getRawAxis(2) /2.0)
         self.robot.intake.run_intake(self.power)
 
         pressed = self.button.get()
