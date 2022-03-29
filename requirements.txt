@@ -12,7 +12,7 @@ ipython==7.19.0
 ipython-genutils==0.2.0
 jedi==0.17.2
 packaging==20.8
-paramiko==2.7.2
+paramiko==2.10.1
 parso==0.7.1
 pickleshare==0.7.5
 Pint==0.16.1
